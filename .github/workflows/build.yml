@@ -1,0 +1,43 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: '1.27.x'
+  GOMOBILE_VERSION: v0.0.0-20261011034528-197770444867
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: core/go.sum
+      - name: Resolve modules
+        working-directory: core
+        run: go mod tidy
+      - name: Vet and test
+        working-directory: core
+        run: |
+          go vet ./...
+          go test -ldflags=-checklinkname=0 ./...
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-modules
+          path: |
+            core/go.mod
+            core/go.sum

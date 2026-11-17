@@ -1,0 +1,10 @@
+.DS_Store
+/build/
+/apple/*.xcodeproj/
+/apple/Frameworks/
+/apple/DerivedData/
+*.ipa
+*.xcuserstate
+xcuserdata/
+go.work
+go.work.sum
