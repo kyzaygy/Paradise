@@ -18,7 +18,7 @@ var links = []string{
 	"vless://11111111-2222-3333-4444-555555555555@example.com:443?type=tcp&security=reality&pbk=Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw&sid=ab12&sni=www.microsoft.com&fp=chrome&flow=xtls-rprx-vision#R",
 	"vless://11111111-2222-3333-4444-555555555555@x.example.com:443?type=xhttp&security=tls&sni=x.example.com&path=%2Fapi&mode=packet-up#X",
 	"vless://11111111-2222-3333-4444-555555555555@g.example.com:443?type=grpc&security=tls&serviceName=svc#G",
-	"vless://11111111-2222-3333-4444-555555555555@h.example.com:80?type=httpupgrade&path=%2Fup#H",
+	"vless://11111111-2222-3333-4444-555555555555@h.example.com:443?type=httpupgrade&security=tls&sni=h.example.com&path=%2Fup#H",
 	"trojan://secret@t.example.com:8443?type=ws&path=%2Fws&host=cdn.example.com#T",
 	"vmess://" + base64.StdEncoding.EncodeToString([]byte(`{"v":"2","ps":"V","add":"v.example.com","port":"443","id":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","aid":"0","net":"ws","path":"/vm","tls":"tls"}`)),
 	"ss://" + base64.RawURLEncoding.EncodeToString([]byte("aes-256-gcm:password")) + "@s.example.com:8388#S",
