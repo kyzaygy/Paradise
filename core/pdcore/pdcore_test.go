@@ -23,6 +23,8 @@ var links = []string{
 	"vmess://" + base64.StdEncoding.EncodeToString([]byte(`{"v":"2","ps":"V","add":"v.example.com","port":"443","id":"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee","aid":"0","net":"ws","path":"/vm","tls":"tls"}`)),
 	"ss://" + base64.RawURLEncoding.EncodeToString([]byte("aes-256-gcm:password")) + "@s.example.com:8388#S",
 	"ss://2022-blake3-aes-128-gcm:" + "YWFhYWFhYWFhYWFhYWFhYQ==" + "@s2.example.com:443#S2",
+	"hysteria2://pass@h.example.com:443?sni=h.example.com&obfs=salamander&obfs-password=secret12#HY2",
+	"hy2://pass@h.example.com:20000-30000?sni=h.example.com#HY2hop",
 }
 
 func TestConfigsAreAcceptedByXray(t *testing.T) {

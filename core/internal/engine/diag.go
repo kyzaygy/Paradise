@@ -36,6 +36,7 @@ var fixtures = []string{
 	"trojan://pw@t.example.com:443?type=ws&path=%2Fws#Trojan",
 	"vmess://eyJ2IjoiMiIsInBzIjoiVk1lc3MiLCJhZGQiOiJ2LmV4YW1wbGUuY29tIiwicG9ydCI6IjQ0MyIsImlkIjoiYWFhYWFhYWEtYmJiYi1jY2NjLWRkZGQtZWVlZWVlZWVlZWVlIiwiYWlkIjoiMCIsIm5ldCI6IndzIiwicGF0aCI6Ii92bSIsInRscyI6InRscyJ9",
 	"ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ@s.example.com:8388#SS",
+	"hysteria2://pass@h.example.com:443?sni=h.example.com#HY2",
 }
 
 func timed(name string, f func() (string, error)) Check {
@@ -91,7 +92,7 @@ func (e *Engine) selfTest() []Check {
 			}
 			parsed = append(parsed, srv)
 		}
-		return fmt.Sprintf("%d links: vless reality/xhttp/grpc, trojan, vmess, ss", len(parsed)), nil
+		return fmt.Sprintf("%d links: vless reality/xhttp/grpc, trojan, vmess, ss, hysteria2", len(parsed)), nil
 	}))
 
 	checks = append(checks, timed("xray_config", func() (string, error) {
@@ -238,6 +239,7 @@ type FetchTest struct {
 	Warnings []string        `json:"warnings,omitempty"`
 	Meta     []string        `json:"meta,omitempty"`
 	UA       string          `json:"userAgent"`
+	Trace    []string        `json:"trace,omitempty"`
 }
 
 func (e *Engine) testFetch(id, raw string) (any, error) {
@@ -259,15 +261,19 @@ func (e *Engine) testFetch(id, raw string) (any, error) {
 	defer cancel()
 	dev := e.deviceHeaders(send, hwid)
 	out := FetchTest{Host: sub.HostOf(raw), UA: dev.UserAgent}
-	body, header, rep, err := sub.FetchDetailed(ctx, e.client, raw, dev)
-	out.Report = rep
+	res, err := sub.Resolve(ctx, e.client, raw, dev, "diag")
+	out.Report, out.Trace = res.Report, res.Trace
+	for _, step := range res.Trace {
+		logx.Info("diag", "  %s", step)
+	}
 	if err != nil {
 		ae := apperr.From(err)
-		out.Error = ae
-		logx.Warn("diag", "testFetch %s: %s %s status=%d kind=%s", out.Host, ae.Code, ae.Detail, rep.Status, rep.BodyKind)
+		out.Error = &apperr.Error{Code: ae.Code, Detail: logx.Redact(ae.Detail)}
+		logx.Warn("diag", "testFetch %s: %s %s", out.Host, ae.Code, ae.Detail)
 		return out, nil
 	}
-	parsed, err := sub.Parse(body, "diag")
+	parsed := res.Parsed
+	out.OK = true
 	out.Format = parsed.Format
 	out.Servers = len(parsed.Servers)
 	for i, w := range parsed.Warnings {
@@ -276,19 +282,13 @@ func (e *Engine) testFetch(id, raw string) (any, error) {
 		}
 		out.Warnings = append(out.Warnings, logx.Redact(w))
 	}
-	for k := range sub.MergeHeaders(parsed.Headers, header) {
+	for k := range sub.MergeHeaders(parsed.Headers, res.Header) {
 		lk := strings.ToLower(k)
 		for _, known := range []string{"subscription-userinfo", "profile-title", "profile-update-interval", "support-url", "announce", "profile-web-page-url", "routing"} {
 			if lk == known {
 				out.Meta = append(out.Meta, lk)
 			}
 		}
-	}
-	if err != nil {
-		ae := apperr.From(err)
-		out.Error = &apperr.Error{Code: ae.Code, Detail: logx.Redact(ae.Detail)}
-	} else {
-		out.OK = true
 	}
 	b, _ := json.Marshal(out.Report)
 	logx.Info("diag", "testFetch %s: ok=%v servers=%d format=%s report=%s", out.Host, out.OK, out.Servers, out.Format, b)

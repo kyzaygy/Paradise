@@ -69,7 +69,6 @@ func TestParseURIErrors(t *testing.T) {
 		"vless://@example.com:443",
 		"vless://id@example.com:0",
 		"vless://id@example.com:443?security=reality&sni=a",
-		"hysteria2://pw@h.example.com:443",
 		"ss://YWVzLTI1Ni1nY206cGFzcw@s.example.com:8388?plugin=obfs-local",
 		"vless://id@example.com:443?type=quic",
 	} {

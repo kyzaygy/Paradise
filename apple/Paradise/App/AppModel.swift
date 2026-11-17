@@ -59,8 +59,9 @@ final class AppModel: ObservableObject {
       Task { @MainActor in self?.online = path.status == .satisfied }
     }
     monitor.start(queue: DispatchQueue(label: "app.paradise.path"))
+    let opened = await Task.detached(priority: .userInitiated) { Result { try Core.open() } }.value
     do {
-      try Core.open()
+      try opened.get()
     } catch let error as CoreError where error.code == "storage" {
       AppLog.error("app", "storage unavailable: \(error.detail ?? "")")
       storageBroken = true

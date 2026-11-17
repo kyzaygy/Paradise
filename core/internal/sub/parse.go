@@ -47,7 +47,7 @@ func DecodeBase64(s string) ([]byte, error) {
 func Parse(data []byte, subscriptionID string) (Parsed, error) {
 	p := Parsed{Format: "uri", Headers: http.Header{}}
 	s := strings.TrimSpace(strings.TrimPrefix(string(data), "\ufeff"))
-	if strings.HasPrefix(strings.ToLower(s), "<!doctype html") || strings.HasPrefix(strings.ToLower(s), "<html") {
+	if looksLikeHTML(s) {
 		return p, apperr.New(apperr.HTMLResponse, "")
 	}
 	s = stripBodyMetadata(s, p.Headers)
@@ -126,6 +126,22 @@ func Parse(data []byte, subscriptionID string) (Parsed, error) {
 	return p, nil
 }
 
+func looksLikeHTML(s string) bool {
+	head := strings.ToLower(s)
+	if len(head) > 4096 {
+		head = head[:4096]
+	}
+	if strings.HasPrefix(head, "<") {
+		return true
+	}
+	for _, tag := range []string{"<!doctype html", "<html", "<head", "<body", "<script", "<meta ", "<div"} {
+		if strings.Contains(head, tag) {
+			return true
+		}
+	}
+	return false
+}
+
 func firstWarning(w []string) string {
 	if len(w) == 0 {
 		return ""
@@ -190,7 +206,7 @@ func firstObject(v any) object {
 	return obj(a[0])
 }
 
-var supported = map[string]bool{"vless": true, "vmess": true, "trojan": true, "shadowsocks": true, "socks": true, "http": true}
+var supported = map[string]bool{"vless": true, "vmess": true, "trojan": true, "shadowsocks": true, "socks": true, "http": true, "hysteria": true}
 
 // IsService reports outbounds that are not proxies.
 func IsService(protocol string) bool {
@@ -288,6 +304,8 @@ func ParseURI(raw string) (model.Server, error) {
 		return model.Server{}, errors.New("not a link")
 	}
 	switch strings.ToLower(scheme) {
+	case "hysteria2", "hy2":
+		return parseHysteria2(raw)
 	case "vmess":
 		return parseVMess(raw)
 	case "ss":

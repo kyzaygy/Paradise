@@ -58,7 +58,12 @@ enum Redactor {
   private static let uuid = try? NSRegularExpression(pattern: "(?i)\\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\b")
   private static let code = try? NSRegularExpression(pattern: "\\b(PD1|SVOI1)\\.[A-Za-z0-9_\\-+/=]{8,}")
 
-  static func clean(_ input: String) -> String {
+  /// Redacts a multi-line document line by line, without truncating it.
+  static func cleanDocument(_ input: String) -> String {
+    input.split(separator: "\n", omittingEmptySubsequences: false).map { clean(String($0), limit: 4000) }.joined(separator: "\n")
+  }
+
+  static func clean(_ input: String, limit: Int = 600) -> String {
     var s = input
     s = replace(code, in: s, with: "$1.<code>")
     if let url = url {
@@ -81,7 +86,7 @@ enum Redactor {
       s = out
     }
     s = replace(uuid, in: s, with: "<uuid>")
-    return s.count > 600 ? String(s.prefix(600)) + "…" : s
+    return s.count > limit ? String(s.prefix(limit)) + "…" : s
   }
 
   private static func replace(_ re: NSRegularExpression?, in s: String, with template: String) -> String {

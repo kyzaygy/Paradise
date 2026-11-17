@@ -175,6 +175,7 @@ struct DiagnosticsView: View {
       if let error = r.error { parts.append("error: \(error.code) \(error.detail ?? "")") }
       if let warnings = r.warnings, !warnings.isEmpty { parts.append("skipped: " + warnings.prefix(3).joined(separator: "; ")) }
       parts.append("UA: \(r.userAgent)")
+      if let trace = r.trace, !trace.isEmpty { parts.append("steps: " + trace.joined(separator: " | ")) }
       fetchResults[sub.id] = Row(name: r.host, state: r.ok ? .ok : .fail, ms: r.report.ms, detail: parts.joined(separator: " · "))
     } catch {
       fetchResults[sub.id] = Row(name: sub.displayName, state: .fail, detail: (error as? LocalizedError)?.errorDescription ?? "\(error)")
@@ -239,7 +240,7 @@ struct DiagnosticsView: View {
     add("VPN", vpnRows)
     out.append("== App log")
     out.append(contentsOf: AppLog.snapshot().suffix(300).map(\.text))
-    return Redactor.clean(out.joined(separator: "\n"))
+    return Redactor.cleanDocument(out.joined(separator: "\n"))
   }
 
   private func copyReport() {
@@ -281,6 +282,7 @@ struct FetchTestResult: Decodable {
   var warnings: [String]?
   var meta: [String]?
   var userAgent: String
+  var trace: [String]?
 }
 
 private struct RowView: View {

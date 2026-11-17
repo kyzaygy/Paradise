@@ -172,7 +172,7 @@ struct CoreError: Error, LocalizedError, Codable {
       return String(format: L("error.http_status.code"), detail)
     }
     if code == "invalid_input", detail == "duplicate" { return L("error.duplicate") }
-    if ["tunnel", "tunnel_stopped", "storage", "config", "network"].contains(code), let detail = detail, !detail.isEmpty {
+    if ["tunnel", "tunnel_stopped", "storage", "config", "network", "empty_subscription", "unsupported_format"].contains(code), let detail = detail, !detail.isEmpty {
       return text + " (" + detail + ")"
     }
     return text

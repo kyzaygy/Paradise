@@ -81,24 +81,16 @@ func (e *Engine) download(link, id, hwid string, send bool) (sub.Parsed, *model.
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	host := sub.HostOf(link)
-	body, header, rep, err := sub.FetchDetailed(ctx, e.client, link, e.deviceHeaders(send, hwid))
+	res, err := sub.Resolve(ctx, e.client, link, e.deviceHeaders(send, hwid), id)
+	for _, step := range res.Trace {
+		logx.Info("sub", "  %s", step)
+	}
 	if err != nil {
 		ae := apperr.From(err)
-		logx.Warn("sub", "fetch %s: %s %s (status %d, %d bytes, %s, %dms)", host, ae.Code, ae.Detail, rep.Status, rep.Bytes, rep.BodyKind, rep.MS)
+		logx.Warn("sub", "fetch %s failed: %s %s", host, ae.Code, ae.Detail)
 		return sub.Parsed{}, nil, err
 	}
-	parsed, err := sub.Parse(body, id)
-	if err != nil {
-		ae := apperr.From(err)
-		logx.Warn("sub", "parse %s: %s %s (body %s, %d bytes, content-type %q)", host, ae.Code, ae.Detail, rep.BodyKind, rep.Bytes, rep.ContentType)
-		for i, w := range parsed.Warnings {
-			if i >= 5 {
-				break
-			}
-			logx.Warn("sub", "  %s", w)
-		}
-		return parsed, nil, err
-	}
+	parsed, header, rep := res.Parsed, res.Header, res.Report
 	logx.Info("sub", "fetch %s: %d servers, format %s, %d bytes, %d warnings, %dms", host, len(parsed.Servers), parsed.Format, rep.Bytes, len(parsed.Warnings), rep.MS)
 	for i, w := range parsed.Warnings {
 		if i >= 5 {
