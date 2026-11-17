@@ -131,7 +131,7 @@ struct SignalBars: View {
       ForEach(0..<4, id: \.self) { i in
         RoundedRectangle(cornerRadius: 1)
           .fill(i < bars ? color : Color.white.opacity(0.18))
-          .frame(width: 2.5, height: CGFloat(4 + i * 2.5))
+          .frame(width: 2.5, height: 4 + CGFloat(i) * 2.5)
       }
     }
     .accessibilityHidden(true)
