@@ -34,7 +34,7 @@ struct ExportView: View {
       .navigationTitle(L("export.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) { Button(L("common.done")) { dismiss() } }
+        ToolbarItem(placement: .navigationBarLeading) { Button(L("common.done")) { dismiss() } }
       }
     }
   }

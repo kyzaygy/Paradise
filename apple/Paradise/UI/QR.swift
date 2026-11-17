@@ -56,7 +56,7 @@ struct QRScannerSheet: View {
         }
       }
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .navigationBarLeading) {
           Button(L("common.cancel")) { dismiss() }.tint(.white)
         }
       }

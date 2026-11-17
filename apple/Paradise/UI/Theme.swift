@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// "Lagoon" visual language: deep ink surfaces, one teal accent, rounded type.
+/// "Frost" visual language: graphite surfaces, one silver accent, rounded type (matches the app icon).
 enum Theme {
   static func dynamic(light: UInt32, dark: UInt32) -> Color {
     Color(UIColor { trait in
@@ -9,16 +9,16 @@ enum Theme {
     })
   }
 
-  static let canvas = dynamic(light: 0xF3F5F7, dark: 0x090D12)
-  static let surface = dynamic(light: 0xFFFFFF, dark: 0x121921)
-  static let surfaceRaised = dynamic(light: 0xE9EEF2, dark: 0x1A2330)
-  static let hairline = dynamic(light: 0xD9E0E6, dark: 0x243040)
-  static let accent = dynamic(light: 0x0B9A87, dark: 0x3EE0C8)
-  static let accentSoft = dynamic(light: 0xD5F3EE, dark: 0x0E2E2B)
-  static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x032019)
-  static let warning = dynamic(light: 0xB7791F, dark: 0xF2B347)
-  static let danger = dynamic(light: 0xC53A3A, dark: 0xFF6B6B)
-  static let muted = dynamic(light: 0x5B6775, dark: 0x8C99A8)
+  static let canvas = dynamic(light: 0xEDEFF2, dark: 0x0F1115)
+  static let surface = dynamic(light: 0xFFFFFF, dark: 0x191C22)
+  static let surfaceRaised = dynamic(light: 0xE2E5EA, dark: 0x23272F)
+  static let hairline = dynamic(light: 0xD3D8DE, dark: 0x2B3039)
+  static let accent = dynamic(light: 0x3A414E, dark: 0xE3E7EE)
+  static let accentSoft = dynamic(light: 0xE0E3E8, dark: 0x262A32)
+  static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x14171C)
+  static let warning = dynamic(light: 0xA86A12, dark: 0xF0B44C)
+  static let danger = dynamic(light: 0xC23B3B, dark: 0xFF6E6E)
+  static let muted = dynamic(light: 0x626A76, dark: 0x8F96A2)
 
   static func title(_ style: Font.TextStyle = .title2) -> Font { .system(style, design: .rounded).weight(.bold) }
   static func label(_ style: Font.TextStyle = .body) -> Font { .system(style, design: .rounded).weight(.semibold) }

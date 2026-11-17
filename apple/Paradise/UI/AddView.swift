@@ -58,7 +58,7 @@ struct AddView: View {
       .navigationTitle(L("add.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) { Button(L("common.cancel")) { dismiss() } }
+        ToolbarItem(placement: .navigationBarLeading) { Button(L("common.cancel")) { dismiss() } }
       }
       .sheet(isPresented: $scanning) {
         QRScannerSheet { value in

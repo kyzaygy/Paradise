@@ -1,4 +1,4 @@
-Первая сборка Paradise для iOS (17+).
+Первая сборка Paradise для iOS 16–27.
 
 **Что есть**
 - Подписки по ссылке, конфиги текстом (vless/vmess/trojan/ss, Base64, Xray JSON), файл и QR-код.

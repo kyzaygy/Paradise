@@ -16,7 +16,7 @@ if [ ! -d "$FRAMEWORK" ]; then
   go install "golang.org/x/mobile/cmd/gomobile@$GOMOBILE_VERSION"
   go install "golang.org/x/mobile/cmd/gobind@$GOMOBILE_VERSION"
   gomobile init
-  (cd "$ROOT/core" && gomobile bind -target=ios/arm64 -iosversion=17.0 -trimpath \
+  (cd "$ROOT/core" && gomobile bind -target=ios/arm64 -iosversion=16.0 -trimpath \
     -ldflags='-checklinkname=0 -s -w' -o "$FRAMEWORK" ./pdcore)
 fi
 

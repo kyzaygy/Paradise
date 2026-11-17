@@ -46,10 +46,10 @@ struct ServersView: View {
       .navigationTitle(L("servers.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .navigationBarLeading) {
           Button(L("common.done")) { dismiss() }
         }
-        ToolbarItemGroup(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
           Menu {
             Picker(L("servers.sort"), selection: $sort) {
               Text(L("servers.sort.original")).tag(Sort.original)

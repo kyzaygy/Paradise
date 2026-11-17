@@ -24,7 +24,7 @@ GitHub Actions (`.github/workflows/build.yml`) прогоняет тесты я�
 scripts/build-ios.sh
 ```
 
-Нужны Xcode, Go 1.27 и XcodeGen (скрипт поставит его через Homebrew).
+Минимальная версия — iOS 16. Нужны Xcode, Go 1.27 и XcodeGen (скрипт поставит его через Homebrew).
 
 ## Установка IPA
 

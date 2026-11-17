@@ -37,7 +37,7 @@ struct ImportPreviewView: View {
       .navigationTitle(L("preview.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) { Button(L("common.cancel")) { dismiss() } }
+        ToolbarItem(placement: .navigationBarLeading) { Button(L("common.cancel")) { dismiss() } }
       }
     }
     .task { await load(password: "") }

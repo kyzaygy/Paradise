@@ -76,7 +76,7 @@ struct SettingsView: View {
       .navigationTitle(L("settings.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .topBarLeading) { Button(L("common.done")) { dismiss() } }
+        ToolbarItem(placement: .navigationBarLeading) { Button(L("common.done")) { dismiss() } }
       }
       .confirmationDialog(L("settings.reset_confirm"), isPresented: $confirmReset, titleVisibility: .visible) {
         Button(L("settings.reset"), role: .destructive) { Task { await model.resetAll() } }
@@ -111,7 +111,7 @@ struct LicensesView: View {
       }
       .navigationTitle(L("settings.licenses"))
       .navigationBarTitleDisplayMode(.inline)
-      .toolbar { ToolbarItem(placement: .topBarLeading) { Button(L("common.done")) { dismiss() } } }
+      .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button(L("common.done")) { dismiss() } } }
     }
   }
 }
