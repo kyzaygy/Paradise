@@ -41,3 +41,49 @@ jobs:
           path: |
             core/go.mod
             core/go.sum
+
+  ios:
+    needs: core
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: core/go.sum
+      - name: Restore Go framework
+        id: framework
+        uses: actions/cache@v4
+        with:
+          path: apple/Frameworks/PDCore.xcframework
+          key: pdcore-${{ runner.os }}-${{ env.GOMOBILE_VERSION }}-${{ hashFiles('core/**') }}
+      - name: Resolve modules
+        if: steps.framework.outputs.cache-hit != 'true'
+        working-directory: core
+        run: go mod tidy
+      - name: Build IPA
+        run: scripts/build-ios.sh "${{ github.run_number }}"
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Paradise-ipa
+          path: |
+            build/*.ipa
+            build/*.sha256
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          IPA="$(cat build/ipa-path.txt)"
+          gh release create "$GITHUB_REF_NAME" "$IPA" "$IPA.sha256" \
+            --title "Paradise $GITHUB_REF_NAME" --prerelease \
+            --notes-file docs/RELEASE.md

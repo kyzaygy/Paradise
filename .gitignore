@@ -8,3 +8,5 @@
 xcuserdata/
 go.work
 go.work.sum
+/apple/Support/*.plist
+/apple/Support/*.entitlements

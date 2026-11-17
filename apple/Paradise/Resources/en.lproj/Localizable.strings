@@ -1,0 +1,204 @@
+/* Common */
+"common.cancel" = "Cancel";
+"common.close" = "Close";
+"common.copied" = "Copied";
+"common.copy" = "Copy";
+"common.delete" = "Delete";
+"common.done" = "Done";
+"common.save" = "Save";
+
+/* Status */
+"status.connected" = "Protected";
+"status.connecting" = "Connecting…";
+"status.disconnected" = "Not connected";
+"status.disconnecting" = "Disconnecting…";
+"status.reasserting" = "Reconnecting…";
+
+/* Home */
+"home.add" = "Add";
+"home.settings" = "Settings";
+"home.offline" = "No internet connection";
+"home.tap_to_connect" = "Tap to connect";
+"home.choose_server" = "Choose a server";
+"home.a11y.connect" = "Connect VPN";
+"home.a11y.disconnect" = "Disconnect VPN";
+"home.a11y.servers" = "Open the server list";
+
+"empty.title" = "Add a subscription";
+"empty.body" = "Copy the link from your provider and paste it here. You can also scan a QR code or receive a profile from another device.";
+"empty.paste" = "Paste from clipboard";
+"empty.other" = "QR code, file or text";
+
+"storage.title" = "Can't open your data";
+"storage.body" = "The encryption key on this device doesn't match the saved data. You can delete it and start over.";
+"storage.reset" = "Delete data and start over";
+
+"mode.all" = "All traffic through VPN";
+"mode.profile" = "Subscription rules";
+
+/* Add */
+"add.title" = "Add";
+"add.hint" = "A subscription link, configs (vless://, vmess://, trojan://, ss://) or a profile transfer code.";
+"add.placeholder" = "Paste here…";
+"add.paste" = "Paste";
+"add.scan" = "QR code";
+"add.file" = "File";
+"add.submit" = "Add";
+"add.formats" = "Link lists, Base64 and Xray JSON are supported. Paradise and SVOI transfer codes open with a preview.";
+"add.clipboard_empty" = "There is no text in the clipboard";
+
+"import.added" = "Servers added: %ld.";
+"import.skipped" = "Lines skipped: %ld.";
+
+/* Scanner */
+"scan.hint" = "Point the camera at a QR code";
+"scan.denied" = "No camera access. Allow it in Settings to scan QR codes.";
+"scan.open_settings" = "Open Settings";
+
+/* Servers */
+"servers.title" = "Servers";
+"servers.empty" = "No servers yet";
+"servers.favorites" = "Favorites";
+"servers.search" = "Search";
+"servers.sort" = "Sort";
+"servers.sort.original" = "As in subscription";
+"servers.sort.latency" = "By latency";
+"servers.sort.name" = "By name";
+"servers.probe" = "Test latency";
+"servers.probe_stop" = "Stop testing";
+"servers.probe_one" = "Test this server";
+"servers.favorite" = "Favorite";
+"servers.unfavorite" = "Remove from favorites";
+"servers.refresh" = "Update";
+"servers.refreshing" = "Updating…";
+"servers.rename" = "Rename";
+"servers.rename_placeholder" = "Name";
+"servers.support" = "Provider support";
+"servers.subscription_actions" = "Subscription actions";
+"servers.delete_confirm" = "Delete the subscription and its servers?";
+"servers.count" = "Servers: %ld";
+"servers.traffic" = "%@ of %@";
+"servers.expires" = "until %@";
+"subscription.local" = "Configs";
+
+"latency.ms" = "%lld ms";
+"latency.failed" = "No response";
+"probe.vpn_active" = "Disconnect the VPN to test latency, otherwise the test would run through the active tunnel.";
+
+/* Connection */
+"connect.dropped_rules" = "Routing rules skipped: %ld (they need geoip/geosite databases, which the app doesn't ship yet).";
+"settings.reconnect_hint" = "Changes apply on the next connection.";
+
+/* Transfer */
+"transfer.share" = "Share";
+"transfer.receive" = "Receive";
+"transfer.imported" = "Profile received, sources added: %ld.";
+"transfer.imported_duplicates" = "Already present: %ld.";
+
+"export.title" = "Share profile";
+"export.scope" = "What to share";
+"export.scope.subscriptions" = "Subscriptions only";
+"export.scope.favorites" = "Subscriptions and favorites";
+"export.scope.everything" = "Subscriptions, favorites and settings";
+"export.summary" = "You have %ld subscriptions and %ld servers.";
+"export.protection" = "Protection";
+"export.password" = "Password";
+"export.password_placeholder" = "At least 4 characters";
+"export.password_footer" = "The code can't be opened without the password. Send the password separately, not in the same message.";
+"export.expiry" = "Expires";
+"export.expiry.never" = "Never";
+"export.expiry.hour" = "1 hour";
+"export.expiry.day" = "24 hours";
+"export.expiry.week" = "7 days";
+"export.expiry_footer" = "After it expires the app won't accept the code. Without a password the expiry can be bypassed; with a password it can't.";
+"export.own_device" = "This is my device";
+"export.own_device_footer" = "Turn on when moving the profile to yourself: the device ID for your provider is kept. Don't turn it on for other people.";
+"export.compatible" = "SVOI compatible";
+"export.compatible_footer" = "An SVOI1 code opens in SVOI on Windows and Android. Password and expiry aren't available in this format; favorites and settings aren't included.";
+"export.create" = "Create code";
+"export.secret_warning" = "The code gives access to your subscriptions. Share it only with people you trust.";
+"export.qr_a11y" = "Profile QR code";
+"export.qr_too_big" = "The profile is too large for a QR code. Send a file or a link.";
+"export.contains" = "Subscriptions: %ld, embedded servers: %ld, favorites: %ld.";
+"export.encrypted" = "Password protected";
+"export.expires_at" = "Valid until %@";
+"export.skipped" = "Not included: %ld (SVOI only accepts HTTPS links on port 443).";
+"export.share_file" = "Send as file";
+"export.share_message" = "A Paradise profile. Open the file in Paradise.";
+"export.copy_link" = "Link";
+"export.copy_code" = "Code";
+"export.again" = "Change options";
+
+"preview.title" = "Receive profile";
+"preview.locked" = "This code is password protected";
+"preview.password" = "Password";
+"preview.unlock" = "Open";
+"preview.expires" = "Valid until %@";
+"preview.until" = "until %@";
+"preview.unnamed" = "Profile";
+"preview.counts" = "Subscriptions: %ld · servers: %ld · favorites: %ld";
+"preview.encrypted" = "Password";
+"preview.sources" = "What will be added";
+"preview.duplicate" = "Already added";
+"preview.skipped" = "Configs for other cores skipped: %ld";
+"preview.strategy" = "How to add";
+"preview.merge" = "Add to mine";
+"preview.replace" = "Replace all";
+"preview.merge_footer" = "Your subscriptions stay; new ones are added next to them.";
+"preview.merge_footer_dups" = "Your subscriptions stay. Duplicates (%ld) will be skipped.";
+"preview.replace_footer" = "Current subscriptions and favorites will be deleted and replaced.";
+"preview.replace_confirm" = "Delete current subscriptions and replace them with the received ones?";
+"preview.apply_settings" = "Apply settings";
+"preview.apply_identity" = "Moving to my own device (device ID)";
+"preview.import" = "Add";
+"preview.failure_hint" = "Ask for the code again, as a file or a link.";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.mode" = "Mode";
+"settings.mode_footer" = "“Subscription rules” uses your provider's routing when the subscription is Xray JSON. Otherwise all traffic goes through the VPN and the local network stays direct.";
+"settings.kill_switch" = "Strict mode (kill switch)";
+"settings.kill_switch_footer" = "While the VPN is on, no traffic leaves outside the tunnel. Known iOS limitations: App Store updates of this app may fail and push notifications over Wi‑Fi may be delayed.";
+"settings.subscriptions" = "Subscriptions";
+"settings.auto_refresh" = "Update on launch";
+"settings.send_hwid" = "Send device info";
+"settings.send_hwid_footer" = "Providers with device limits need a device ID (x-hwid). It's only sent to the subscription server.";
+"settings.hwid" = "Device ID";
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.licenses" = "Licenses";
+"settings.diagnostics" = "Tunnel diagnostics";
+"settings.language" = "The interface language follows the system (English or Russian).";
+"settings.reset" = "Delete all data";
+"settings.reset_confirm" = "Delete all subscriptions and settings from this device?";
+"settings.privacy" = "Paradise collects no analytics and sends no data to its own servers. Subscriptions are stored encrypted on the device.";
+
+/* Errors */
+"error.invalid_input" = "Couldn't recognize the input.";
+"error.duplicate" = "This subscription is already added.";
+"error.network" = "Couldn't reach the subscription server. Check your connection and the link.";
+"error.http_status" = "The subscription server returned an error.";
+"error.http_status.code" = "The subscription server returned HTTP %@.";
+"error.html_response" = "A web page came back instead of a subscription. Check the link.";
+"error.empty_subscription" = "The subscription has no supported servers.";
+"error.unsupported_format" = "This format isn't supported.";
+"error.too_large" = "Too much data.";
+"error.not_found" = "Not found. Refresh the list.";
+"error.storage" = "Couldn't save data.";
+"error.config" = "The server configuration is invalid.";
+"error.probe_failed" = "The server didn't respond.";
+"error.probe_busy" = "Wait for the current test to finish.";
+"error.cancelled" = "Cancelled.";
+"error.transfer_corrupted" = "The code is damaged. Copy it completely or send it as a file.";
+"error.transfer_version" = "The code was made by a newer version. Update Paradise.";
+"error.transfer_password_required" = "A password is required.";
+"error.transfer_password_wrong" = "Wrong password.";
+"error.transfer_expired" = "The code has expired. Ask for a new one.";
+"error.transfer_empty" = "The code has no subscriptions.";
+"error.transfer_too_large" = "The profile is too large.";
+"error.tunnel" = "Couldn't start the VPN.";
+"error.tunnel_missing" = "The VPN extension is missing. Install the whole IPA, including PacketTunnel.";
+"error.tunnel_permission" = "iOS didn't allow creating the VPN. The app and its extension must be signed with the Network Extension entitlement.";
+"error.tunnel_stopped" = "The VPN extension stopped. Try another server.";
+"error.tunnel_timeout" = "The connection didn't come up within 25 seconds. Try another server.";
+"error.internal" = "Something went wrong. Please try again.";

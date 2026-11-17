@@ -1,0 +1,204 @@
+/* Common */
+"common.cancel" = "Отмена";
+"common.close" = "Закрыть";
+"common.copied" = "Скопировано";
+"common.copy" = "Скопировать";
+"common.delete" = "Удалить";
+"common.done" = "Готово";
+"common.save" = "Сохранить";
+
+/* Status */
+"status.connected" = "Защищено";
+"status.connecting" = "Подключаемся…";
+"status.disconnected" = "Не подключено";
+"status.disconnecting" = "Отключаемся…";
+"status.reasserting" = "Восстанавливаем связь…";
+
+/* Home */
+"home.add" = "Добавить";
+"home.settings" = "Настройки";
+"home.offline" = "Нет подключения к интернету";
+"home.tap_to_connect" = "Нажмите, чтобы подключиться";
+"home.choose_server" = "Выберите сервер";
+"home.a11y.connect" = "Подключить VPN";
+"home.a11y.disconnect" = "Отключить VPN";
+"home.a11y.servers" = "Открыть список серверов";
+
+"empty.title" = "Добавьте подписку";
+"empty.body" = "Скопируйте ссылку у своего провайдера и вставьте её сюда. Можно также отсканировать QR-код или получить профиль с другого устройства.";
+"empty.paste" = "Вставить из буфера";
+"empty.other" = "QR-код, файл или текст";
+
+"storage.title" = "Не удалось открыть данные";
+"storage.body" = "Ключ шифрования на этом устройстве не подходит к сохранённым данным. Их можно удалить и начать заново.";
+"storage.reset" = "Удалить данные и начать заново";
+
+"mode.all" = "Весь трафик через VPN";
+"mode.profile" = "Правила из подписки";
+
+/* Add */
+"add.title" = "Добавить";
+"add.hint" = "Ссылка на подписку, конфигурации (vless://, vmess://, trojan://, ss://) или код переноса профиля.";
+"add.placeholder" = "Вставьте сюда…";
+"add.paste" = "Вставить";
+"add.scan" = "QR-код";
+"add.file" = "Файл";
+"add.submit" = "Добавить";
+"add.formats" = "Поддерживаются списки ссылок, Base64 и Xray JSON. Коды переноса Paradise и SVOI открываются с предпросмотром.";
+"add.clipboard_empty" = "В буфере обмена нет текста";
+
+"import.added" = "Добавлено серверов: %ld.";
+"import.skipped" = "Пропущено строк: %ld.";
+
+/* Scanner */
+"scan.hint" = "Наведите камеру на QR-код";
+"scan.denied" = "Нет доступа к камере. Разрешите его в Настройках, чтобы сканировать QR-коды.";
+"scan.open_settings" = "Открыть Настройки";
+
+/* Servers */
+"servers.title" = "Серверы";
+"servers.empty" = "Серверов пока нет";
+"servers.favorites" = "Избранное";
+"servers.search" = "Поиск";
+"servers.sort" = "Сортировка";
+"servers.sort.original" = "Как в подписке";
+"servers.sort.latency" = "По задержке";
+"servers.sort.name" = "По названию";
+"servers.probe" = "Проверить задержку";
+"servers.probe_stop" = "Остановить проверку";
+"servers.probe_one" = "Проверить этот сервер";
+"servers.favorite" = "В избранное";
+"servers.unfavorite" = "Убрать из избранного";
+"servers.refresh" = "Обновить";
+"servers.refreshing" = "Обновляем…";
+"servers.rename" = "Переименовать";
+"servers.rename_placeholder" = "Название";
+"servers.support" = "Поддержка провайдера";
+"servers.subscription_actions" = "Действия с подпиской";
+"servers.delete_confirm" = "Удалить подписку и её серверы?";
+"servers.count" = "Серверов: %ld";
+"servers.traffic" = "%@ из %@";
+"servers.expires" = "до %@";
+"subscription.local" = "Конфигурации";
+
+"latency.ms" = "%lld мс";
+"latency.failed" = "Нет ответа";
+"probe.vpn_active" = "Отключите VPN, чтобы проверить задержку: иначе проверка пойдёт через уже работающий туннель.";
+
+/* Connection */
+"connect.dropped_rules" = "Правил маршрутизации пропущено: %ld (нужны базы geoip/geosite, их пока нет в приложении).";
+"settings.reconnect_hint" = "Изменения применятся при следующем подключении.";
+
+/* Transfer */
+"transfer.share" = "Поделиться";
+"transfer.receive" = "Получить";
+"transfer.imported" = "Профиль получен, добавлено источников: %ld.";
+"transfer.imported_duplicates" = "Уже были: %ld.";
+
+"export.title" = "Поделиться профилем";
+"export.scope" = "Что передать";
+"export.scope.subscriptions" = "Только подписки";
+"export.scope.favorites" = "Подписки и избранное";
+"export.scope.everything" = "Подписки, избранное и настройки";
+"export.summary" = "Сейчас у вас подписок: %ld, серверов: %ld.";
+"export.protection" = "Защита";
+"export.password" = "Пароль";
+"export.password_placeholder" = "Не короче 4 символов";
+"export.password_footer" = "Без пароля код не открыть. Передайте пароль отдельно, не в том же сообщении.";
+"export.expiry" = "Срок действия";
+"export.expiry.never" = "Без срока";
+"export.expiry.hour" = "1 час";
+"export.expiry.day" = "24 часа";
+"export.expiry.week" = "7 дней";
+"export.expiry_footer" = "После срока приложение не примет код. Без пароля срок можно обойти, с паролем — нельзя.";
+"export.own_device" = "Это моё устройство";
+"export.own_device_footer" = "Включите, если переносите профиль себе: сохранится идентификатор устройства для провайдера. Другому человеку не включайте.";
+"export.compatible" = "Совместимый с SVOI";
+"export.compatible_footer" = "Код SVOI1 откроется в SVOI на Windows и Android. Пароль и срок в этом формате недоступны, избранное и настройки не передаются.";
+"export.create" = "Создать код";
+"export.secret_warning" = "Код даёт доступ к вашим подпискам. Передавайте его только тем, кому доверяете.";
+"export.qr_a11y" = "QR-код профиля";
+"export.qr_too_big" = "Профиль слишком большой для QR-кода. Отправьте файл или ссылку.";
+"export.contains" = "Подписок: %ld, встроенных серверов: %ld, избранных: %ld.";
+"export.encrypted" = "Защищено паролем";
+"export.expires_at" = "Действует до %@";
+"export.skipped" = "Не вошло в код: %ld (SVOI принимает только HTTPS-ссылки на 443 порту).";
+"export.share_file" = "Отправить файлом";
+"export.share_message" = "Профиль Paradise. Откройте файл в приложении Paradise.";
+"export.copy_link" = "Ссылка";
+"export.copy_code" = "Код";
+"export.again" = "Изменить параметры";
+
+"preview.title" = "Получить профиль";
+"preview.locked" = "Код защищён паролем";
+"preview.password" = "Пароль";
+"preview.unlock" = "Открыть";
+"preview.expires" = "Действует до %@";
+"preview.until" = "до %@";
+"preview.unnamed" = "Профиль";
+"preview.counts" = "Подписок: %ld · серверов: %ld · избранных: %ld";
+"preview.encrypted" = "С паролем";
+"preview.sources" = "Что будет добавлено";
+"preview.duplicate" = "Уже есть";
+"preview.skipped" = "Пропущено конфигураций для других ядер: %ld";
+"preview.strategy" = "Как добавить";
+"preview.merge" = "Добавить к своим";
+"preview.replace" = "Заменить всё";
+"preview.merge_footer" = "Ваши подписки останутся, новые добавятся рядом.";
+"preview.merge_footer_dups" = "Ваши подписки останутся. Повторы (%ld) будут пропущены.";
+"preview.replace_footer" = "Текущие подписки и избранное будут удалены и заменены.";
+"preview.replace_confirm" = "Удалить текущие подписки и заменить их полученными?";
+"preview.apply_settings" = "Применить настройки";
+"preview.apply_identity" = "Перенос на моё устройство (идентификатор)";
+"preview.import" = "Добавить";
+"preview.failure_hint" = "Попросите отправить код ещё раз: файлом или ссылкой.";
+
+/* Settings */
+"settings.title" = "Настройки";
+"settings.mode" = "Режим";
+"settings.mode_footer" = "«Правила из подписки» использует маршрутизацию провайдера, если подписка в формате Xray JSON. В остальных случаях весь трафик идёт через VPN, локальная сеть — напрямую.";
+"settings.kill_switch" = "Строгий режим (kill switch)";
+"settings.kill_switch_footer" = "Пока VPN включён, трафик не уходит мимо туннеля. Известные ограничения iOS: при включённом режиме может не обновляться приложение из App Store и задерживаться пуши по Wi‑Fi.";
+"settings.subscriptions" = "Подписки";
+"settings.auto_refresh" = "Обновлять при запуске";
+"settings.send_hwid" = "Отправлять данные устройства";
+"settings.send_hwid_footer" = "Провайдеры с ограничением устройств требуют идентификатор (x-hwid). Мы отправляем его только серверу подписки.";
+"settings.hwid" = "ID устройства";
+"settings.about" = "О приложении";
+"settings.version" = "Версия";
+"settings.licenses" = "Лицензии";
+"settings.diagnostics" = "Диагностика туннеля";
+"settings.language" = "Язык интерфейса — как в системе (русский или английский).";
+"settings.reset" = "Удалить все данные";
+"settings.reset_confirm" = "Удалить все подписки и настройки с этого устройства?";
+"settings.privacy" = "Paradise не собирает аналитику и не отправляет данные на свои серверы. Подписки хранятся на устройстве в зашифрованном виде.";
+
+/* Errors */
+"error.invalid_input" = "Не удалось распознать ввод.";
+"error.duplicate" = "Эта подписка уже добавлена.";
+"error.network" = "Не удалось связаться с сервером подписки. Проверьте интернет и ссылку.";
+"error.http_status" = "Сервер подписки вернул ошибку.";
+"error.http_status.code" = "Сервер подписки вернул ошибку HTTP %@.";
+"error.html_response" = "Вместо подписки пришла веб-страница. Проверьте ссылку.";
+"error.empty_subscription" = "В подписке нет поддерживаемых серверов.";
+"error.unsupported_format" = "Формат не поддерживается.";
+"error.too_large" = "Слишком большой объём данных.";
+"error.not_found" = "Не найдено. Обновите список.";
+"error.storage" = "Не удалось сохранить данные.";
+"error.config" = "Конфигурация сервера некорректна.";
+"error.probe_failed" = "Сервер не ответил.";
+"error.probe_busy" = "Дождитесь окончания проверки.";
+"error.cancelled" = "Отменено.";
+"error.transfer_corrupted" = "Код повреждён. Скопируйте его целиком или отправьте файлом.";
+"error.transfer_version" = "Код создан более новой версией. Обновите Paradise.";
+"error.transfer_password_required" = "Нужен пароль.";
+"error.transfer_password_wrong" = "Неверный пароль.";
+"error.transfer_expired" = "Срок действия кода истёк. Попросите новый.";
+"error.transfer_empty" = "В коде нет подписок.";
+"error.transfer_too_large" = "Профиль слишком большой.";
+"error.tunnel" = "Не удалось запустить VPN.";
+"error.tunnel_missing" = "В сборке нет VPN-расширения. Установите IPA целиком, вместе с PacketTunnel.";
+"error.tunnel_permission" = "iOS не разрешила создать VPN. Нужна подпись с правом Network Extension для приложения и расширения.";
+"error.tunnel_stopped" = "VPN-расширение остановилось. Попробуйте другой сервер.";
+"error.tunnel_timeout" = "Подключение не установилось за 25 секунд. Попробуйте другой сервер.";
+"error.internal" = "Что-то пошло не так. Попробуйте ещё раз.";
