@@ -152,7 +152,7 @@ func (e *Engine) Call(method, args string) (result string) {
 		}
 	} else {
 		out = envelope{OK: true, Data: data}
-		if method != "logs" && method != "state" && method != "log" {
+		if method != "logs" && method != "state" && method != "log" && method != "probe" && method != "configs" && method != "geoStatus" && method != "classify" {
 			level := "info"
 			if ms > 1500 {
 				level = "warn"

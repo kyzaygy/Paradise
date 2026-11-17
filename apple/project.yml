@@ -7,7 +7,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.1.0'
+    MARKETING_VERSION: '0.2.0'
     CURRENT_PROJECT_VERSION: '1'
     CODE_SIGNING_ALLOWED: 'NO'
     CODE_SIGNING_REQUIRED: 'NO'
@@ -41,9 +41,10 @@ targets:
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
-        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         NSCameraUsageDescription: The camera is used to scan QR codes of subscriptions and profiles.
+        NSLocationWhenInUseUsageDescription: Location access lets Paradise read the current Wi-Fi name for On Demand rules. It is not stored or sent anywhere.
         LSSupportsOpeningDocumentsInPlace: false
         CFBundleURLTypes:
           - CFBundleURLName: com.kyzaygy.paradise.import

@@ -46,6 +46,11 @@ struct CoreServer: Codable, Identifiable, Hashable {
   var security: String
   var favorite: Bool
   var fullProfile: Bool
+  var cc: String?
+  var city: String?
+  var region: String?
+  var desc: String?
+  var fragment: Bool?
 
   var detail: String {
     var parts = [`protocol`.uppercased()]
@@ -56,11 +61,110 @@ struct CoreServer: Codable, Identifiable, Hashable {
 }
 
 struct CoreSettings: Codable, Hashable {
-  var mode: String
-  var killSwitch: Bool
-  var autoRefresh: Bool
-  var sendHwid: Bool
-  var probeUrl: String
+  var mode: String = "all"
+  var activeConfig: String?
+  var killSwitch: Bool = false
+  var autoRefresh: Bool = true
+  var refreshHours: Int = 0
+  var sendHwid: Bool = true
+  var probeUrl: String = ""
+  var testMethod: String = "tcp"
+  var mtu: Int = 1500
+  var ipv6: Bool = true
+  var dns: [String] = ["1.1.1.1", "8.8.8.8"]
+  var excludeLocal: Bool = true
+  var excludeApns: Bool = true
+  var sniffing: Bool = true
+  var tcpFastOpen: Bool = false
+  var keepAlive: Int = 0
+  var mux: Bool = false
+  var udpRelay: Bool = true
+  var blockQuic: Bool = false
+  var proxyShare: Bool = false
+  var proxyPort: Int = 1080
+  var proxyLan: Bool = false
+  var fragment: Bool = false
+  var fragmentPackets: String = "tlshello"
+  var fragmentLength: String = "100-200"
+  var fragmentInterval: String = "10-20"
+  var logLevel: String = "warning"
+  var dnsLog: Bool = false
+  var connectionLog: Bool = false
+  var autoDeleteLogs: Bool = true
+  var hideVpnIcon: Bool = false
+  var loopbackRoute: Bool = false
+  var overwriteExisting: Bool = false
+  var autoRename: Bool = true
+  var geoipUrl: String = ""
+  var geositeUrl: String = ""
+  var autoUpdateConfigs: Bool = true
+
+  init() {}
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    let d = CoreSettings()
+    func v<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T { (try? c.decodeIfPresent(T.self, forKey: key)) ?? fallback }
+    mode = v(.mode, d.mode)
+    activeConfig = try? c.decodeIfPresent(String.self, forKey: .activeConfig)
+    killSwitch = v(.killSwitch, d.killSwitch)
+    autoRefresh = v(.autoRefresh, d.autoRefresh)
+    refreshHours = v(.refreshHours, d.refreshHours)
+    sendHwid = v(.sendHwid, d.sendHwid)
+    probeUrl = v(.probeUrl, d.probeUrl)
+    testMethod = v(.testMethod, d.testMethod)
+    mtu = v(.mtu, d.mtu)
+    ipv6 = v(.ipv6, d.ipv6)
+    dns = v(.dns, d.dns)
+    excludeLocal = v(.excludeLocal, d.excludeLocal)
+    excludeApns = v(.excludeApns, d.excludeApns)
+    sniffing = v(.sniffing, d.sniffing)
+    tcpFastOpen = v(.tcpFastOpen, d.tcpFastOpen)
+    keepAlive = v(.keepAlive, d.keepAlive)
+    mux = v(.mux, d.mux)
+    udpRelay = v(.udpRelay, d.udpRelay)
+    blockQuic = v(.blockQuic, d.blockQuic)
+    proxyShare = v(.proxyShare, d.proxyShare)
+    proxyPort = v(.proxyPort, d.proxyPort)
+    proxyLan = v(.proxyLan, d.proxyLan)
+    fragment = v(.fragment, d.fragment)
+    fragmentPackets = v(.fragmentPackets, d.fragmentPackets)
+    fragmentLength = v(.fragmentLength, d.fragmentLength)
+    fragmentInterval = v(.fragmentInterval, d.fragmentInterval)
+    logLevel = v(.logLevel, d.logLevel)
+    dnsLog = v(.dnsLog, d.dnsLog)
+    connectionLog = v(.connectionLog, d.connectionLog)
+    autoDeleteLogs = v(.autoDeleteLogs, d.autoDeleteLogs)
+    hideVpnIcon = v(.hideVpnIcon, d.hideVpnIcon)
+    loopbackRoute = v(.loopbackRoute, d.loopbackRoute)
+    overwriteExisting = v(.overwriteExisting, d.overwriteExisting)
+    autoRename = v(.autoRename, d.autoRename)
+    geoipUrl = v(.geoipUrl, d.geoipUrl)
+    geositeUrl = v(.geositeUrl, d.geositeUrl)
+    autoUpdateConfigs = v(.autoUpdateConfigs, d.autoUpdateConfigs)
+  }
+}
+
+struct CoreConfig: Codable, Identifiable, Hashable {
+  var id: String
+  var name: String
+  var host: String?
+  var remote: Bool
+  var builtin: Bool
+  var provided: Bool
+  var active: Bool
+  var rules: Int
+  var updatedAt: String?
+  var lastError: String?
+}
+
+struct CoreCountry: Codable, Identifiable, Hashable {
+  var cc: String
+  var region: String
+  var lat: Double
+  var lon: Double
+  var servers: Int
+  var id: String { cc.isEmpty ? "??" : cc }
 }
 
 struct CoreState: Codable {
@@ -69,18 +173,104 @@ struct CoreState: Codable {
   var selected: String
   var settings: CoreSettings
   var hwid: String
+  var configs: [CoreConfig]
+  var countries: [CoreCountry]
 
-  static let empty = CoreState(subscriptions: [], servers: [], selected: "",
-                               settings: CoreSettings(mode: "all", killSwitch: false, autoRefresh: true, sendHwid: true, probeUrl: ""),
-                               hwid: "")
+  static let empty = CoreState(subscriptions: [], servers: [], selected: "", settings: CoreSettings(), hwid: "", configs: [], countries: [])
+
+  init(subscriptions: [CoreSubscription], servers: [CoreServer], selected: String, settings: CoreSettings, hwid: String, configs: [CoreConfig], countries: [CoreCountry]) {
+    self.subscriptions = subscriptions
+    self.servers = servers
+    self.selected = selected
+    self.settings = settings
+    self.hwid = hwid
+    self.configs = configs
+    self.countries = countries
+  }
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    subscriptions = try c.decode([CoreSubscription].self, forKey: .subscriptions)
+    servers = try c.decode([CoreServer].self, forKey: .servers)
+    selected = try c.decode(String.self, forKey: .selected)
+    settings = try c.decode(CoreSettings.self, forKey: .settings)
+    hwid = (try? c.decodeIfPresent(String.self, forKey: .hwid)) ?? ""
+    configs = (try? c.decodeIfPresent([CoreConfig].self, forKey: .configs)) ?? []
+    countries = (try? c.decodeIfPresent([CoreCountry].self, forKey: .countries)) ?? []
+  }
 
   var selectedServer: CoreServer? { servers.first { $0.id == selected } }
+  var activeConfig: CoreConfig? { configs.first { $0.active } }
+}
+
+struct ConfigWarning: Codable, Hashable {
+  var line: Int
+  var code: String
+  var text: String?
+}
+
+struct ConfigStats: Codable, Hashable {
+  var rules: Int
+  var domains: Int
+  var ips: Int
+}
+
+struct ConfigReport: Codable {
+  var warnings: [ConfigWarning]
+  var ignored: [String]
+  var stats: ConfigStats
+  var missingGeo: [String]?
+  var missingSets: [String]?
+  var geoCodes: [String]?
+  var sets: [String]?
+  var dnsHijack: Bool
+  var final: String
+  var valid: Bool
+  var error: String?
+}
+
+struct ConfigDetail: Codable {
+  var config: CoreConfig
+  var text: String
+  var report: ConfigReport
+}
+
+struct ConfigSaveResult: Codable {
+  var state: CoreState
+  var id: String
+  var report: ConfigReport
+}
+
+struct GeoFileStatus: Codable, Hashable {
+  var present: Bool
+  var bytes: Int64
+  var codes: Int
+  var updatedAt: String?
+}
+
+struct GeoStatus: Codable {
+  var ip: GeoFileStatus
+  var site: GeoFileStatus
+  var ipUrl: String
+  var siteUrl: String
+}
+
+struct ExportServersResult: Codable {
+  var text: String
+  var format: String
+  var count: Int
+  var skipped: Int
+  var fileName: String
 }
 
 struct ImportResult: Codable {
   var state: CoreState
-  var subscriptionId: String
+  var kind: String?
+  var subscriptionId: String?
+  var configId: String?
   var added: Int
+  var replaced: Int?
+  var duplicates: Int?
   var warnings: Int
 }
 
@@ -91,16 +281,24 @@ struct RefreshResult: Codable {
 
 struct TunnelConfig: Codable {
   var config: String
+  var net: String?
   var serverId: String
   var serverName: String
   var address: String
   var killSwitch: Bool
+  var excludeLocal: Bool?
+  var excludeApns: Bool?
   var droppedRules: Int
+  var mode: String?
+  var configName: String?
+  var ruleWarnings: Int?
+  var missingGeo: [String]?
 }
 
 struct ProbeResult: Codable {
   var id: String
   var ms: Int64
+  var method: String?
 }
 
 struct TransferCounts: Codable, Hashable {
@@ -172,6 +370,8 @@ struct CoreError: Error, LocalizedError, Codable {
       return String(format: L("error.http_status.code"), detail)
     }
     if code == "invalid_input", detail == "duplicate" { return L("error.duplicate") }
+    if code == "unsupported_format", detail == "happ-crypt" { return L("error.happ_crypt") }
+    if code == "invalid_input", detail == "builtin" { return L("error.builtin_config") }
     if ["tunnel", "tunnel_stopped", "storage", "config", "network", "empty_subscription", "unsupported_format"].contains(code), let detail = detail, !detail.isEmpty {
       return text + " (" + detail + ")"
     }

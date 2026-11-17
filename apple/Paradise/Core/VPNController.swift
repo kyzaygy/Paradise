@@ -88,14 +88,17 @@ final class VPNController: ObservableObject {
       let proto = NETunnelProviderProtocol()
       proto.providerBundleIdentifier = try providerID()
       proto.serverAddress = tunnel.address.isEmpty ? "Paradise" : tunnel.address
-      proto.providerConfiguration = ["config": tunnel.config, "serverId": tunnel.serverId, "serverName": tunnel.serverName]
+      proto.providerConfiguration = ["config": tunnel.config, "net": tunnel.net ?? "{}", "serverId": tunnel.serverId, "serverName": tunnel.serverName]
       proto.disconnectOnSleep = false
       proto.includeAllNetworks = tunnel.killSwitch
-      proto.excludeLocalNetworks = true
+      proto.excludeLocalNetworks = tunnel.excludeLocal ?? true
+      if #available(iOS 16.4, *) {
+        proto.excludeAPNs = tunnel.excludeApns ?? true
+      }
       manager.protocolConfiguration = proto
       manager.localizedDescription = "Paradise"
       manager.isEnabled = true
-      manager.isOnDemandEnabled = false
+      Self.applyOnDemand(to: manager)
       try await save(manager)
       AppLog.info("vpn", "configuration saved, starting tunnel")
       guard current == attempt else { throw CancellationError() }
@@ -138,8 +141,80 @@ final class VPNController: ObservableObject {
 
   func disconnect() async {
     attempt += 1
+    if let manager = manager, manager.isOnDemandEnabled {
+      // otherwise iOS reconnects right away
+      manager.isOnDemandEnabled = false
+      try? await save(manager)
+    }
     try? await stopAndWait()
     refresh()
+  }
+
+  /// On Demand rules from the app preferences: connect always / on Wi-Fi / on cellular,
+  /// and stay disconnected on trusted Wi-Fi networks.
+  static func applyOnDemand(to manager: NETunnelProviderManager) {
+    let prefs = AppPrefs.shared
+    guard prefs.onDemand else {
+      manager.isOnDemandEnabled = false
+      manager.onDemandRules = nil
+      return
+    }
+    var rules: [NEOnDemandRule] = []
+    let trusted = prefs.trustedSSIDs.filter { !$0.isEmpty }
+    if !trusted.isEmpty {
+      let rule = NEOnDemandRuleDisconnect()
+      rule.interfaceTypeMatch = .wiFi
+      rule.ssidMatch = trusted
+      rules.append(rule)
+    }
+    switch prefs.onDemandMode {
+    case "wifi":
+      let wifi = NEOnDemandRuleConnect()
+      wifi.interfaceTypeMatch = .wiFi
+      rules.append(wifi)
+      let other = NEOnDemandRuleIgnore()
+      other.interfaceTypeMatch = .any
+      rules.append(other)
+    case "cellular":
+      let cell = NEOnDemandRuleConnect()
+      cell.interfaceTypeMatch = .cellular
+      rules.append(cell)
+      let other = NEOnDemandRuleIgnore()
+      other.interfaceTypeMatch = .any
+      rules.append(other)
+    default:
+      let any = NEOnDemandRuleConnect()
+      any.interfaceTypeMatch = .any
+      rules.append(any)
+    }
+    manager.onDemandRules = rules
+    manager.isOnDemandEnabled = true
+  }
+
+  /// Saves On Demand changes to the existing configuration without reconnecting.
+  func updateOnDemand() async {
+    try? await loadManager()
+    guard let manager = manager else { return }
+    Self.applyOnDemand(to: manager)
+    try? await save(manager)
+    refresh()
+  }
+
+  /// Sends a short command to the running extension.
+  func send(_ message: String) async -> Data? {
+    guard let session = manager?.connection as? NETunnelProviderSession, isActive else { return nil }
+    return await withCheckedContinuation { continuation in
+      do {
+        try session.sendProviderMessage(Data(message.utf8)) { continuation.resume(returning: $0) }
+      } catch {
+        continuation.resume(returning: nil)
+      }
+    }
+  }
+
+  func trafficStats() async -> TrafficStats? {
+    guard let data = await send("stats") else { return nil }
+    return try? JSONDecoder().decode(TrafficStats.self, from: data)
   }
 
   private func stopAndWait() async throws {
@@ -208,8 +283,18 @@ struct TunnelLogs: Decodable {
   }
   var entries: [Entry]
   var xray: String
+  var access: String?
   var heapMB: Int
   var sysMB: Int
   var goroutines: Int
   var footprintMB: Double?
+}
+
+struct TrafficStats: Decodable, Equatable {
+  var up: UInt64
+  var down: UInt64
+  var reflected: UInt64?
+  var totalUp: UInt64
+  var totalDown: UInt64
+  var since: Double
 }

@@ -277,6 +277,11 @@ func base(srv model.Server, o Options, tunnel bool) (object, string, int, error)
 	if tunnel && s.BlockQUIC {
 		pre = append(pre, object{"type": "field", "network": "udp", "port": "443", "outboundTag": "block"})
 	}
+	ipv6 := s.IPv6 && (o.Rules == nil || s.Mode != "config" || o.Rules.IPv6 == nil || *o.Rules.IPv6)
+	if tunnel && !ipv6 {
+		// IPv6 stays captured by the tunnel (no leak) and is refused, so apps fall back to IPv4
+		pre = append(pre, object{"type": "field", "ip": []any{"::/0"}, "outboundTag": "block"})
+	}
 
 	if keepProfile {
 		routing, _ := cfg["routing"].(map[string]any)

@@ -1,1 +1,2 @@
 "NSCameraUsageDescription" = "The camera is used to scan QR codes of subscriptions and profiles.";
+"NSLocationWhenInUseUsageDescription" = "Location access lets Paradise read the current Wi-Fi name for On Demand rules. It is not stored or sent anywhere.";
