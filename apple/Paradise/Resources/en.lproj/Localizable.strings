@@ -202,3 +202,21 @@
 "error.tunnel_stopped" = "The VPN extension stopped. Try another server.";
 "error.tunnel_timeout" = "The connection didn't come up within 25 seconds. Try another server.";
 "error.internal" = "Something went wrong. Please try again.";
+
+/* Diagnostics */
+"diag.title" = "Diagnostics";
+"diag.run" = "Run self-test";
+"diag.selftest" = "Self-test";
+"diag.selftest_footer" = "Checks storage, the core, the link parser, Xray configs for all your servers, profile transfer, the VPN extension, the network and UI stalls. Servers are not contacted.";
+"diag.subscriptions" = "Subscription downloads";
+"diag.no_subscriptions" = "No link subscriptions";
+"diag.vpn_test" = "Test connection";
+"diag.vpn_footer" = "Connects to the selected server, makes two HTTPS requests through the tunnel and collects the extension's memory and logs. If the VPN was off, it is turned off again afterwards.";
+"diag.console" = "Console";
+"diag.copy_report" = "Copy report";
+"diag.share_report" = "Share report as file";
+"diag.privacy" = "Logs live in memory only. Subscription links, keys, UUIDs and transfer codes are stripped.";
+"diag.only_problems" = "Warnings and errors only";
+"diag.source" = "Source";
+"diag.autorefresh" = "Auto refresh";
+"diag.clear" = "Clear";

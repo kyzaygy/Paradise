@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -60,15 +59,33 @@ func NewClient() *http.Client {
 	}
 }
 
+// FetchReport describes a download without exposing its content.
+type FetchReport struct {
+	Status      int    `json:"status"`
+	ContentType string `json:"contentType,omitempty"`
+	Bytes       int    `json:"bytes"`
+	MS          int64  `json:"ms"`
+	FinalHost   string `json:"finalHost,omitempty"`
+	Redirects   int    `json:"redirects"`
+	BodyKind    string `json:"bodyKind,omitempty"`
+}
+
 // Fetch downloads a subscription and returns the body and response headers.
 func Fetch(ctx context.Context, client *http.Client, raw string, d Device) ([]byte, http.Header, error) {
+	body, header, _, err := FetchDetailed(ctx, client, raw, d)
+	return body, header, err
+}
+
+// FetchDetailed is Fetch plus a report that is filled even on failure.
+func FetchDetailed(ctx context.Context, client *http.Client, raw string, d Device) ([]byte, http.Header, FetchReport, error) {
+	var rep FetchReport
 	u, err := ValidateURL(raw)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, rep, err
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, nil, apperr.New(apperr.InvalidInput, "request")
+		return nil, nil, rep, apperr.New(apperr.InvalidInput, "request")
 	}
 	req.Header.Set("Accept", "text/plain, application/json;q=0.9, */*;q=0.5")
 	req.Header.Set("User-Agent", d.UserAgent)
@@ -84,25 +101,80 @@ func Fetch(ctx context.Context, client *http.Client, raw string, d Device) ([]by
 		set("x-device-model", d.Model)
 		set("x-device-locale", d.Locale)
 	}
+	start := time.Now()
 	resp, err := client.Do(req)
+	rep.MS = time.Since(start).Milliseconds()
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, nil, apperr.New(apperr.Cancelled, "")
+			return nil, nil, rep, apperr.New(apperr.Cancelled, "")
 		}
-		return nil, nil, apperr.New(apperr.Network, "")
+		return nil, nil, rep, apperr.New(apperr.Network, networkHint(err))
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, nil, apperr.New(apperr.HTTPStatus, strconv.Itoa(resp.StatusCode))
+	rep.Status = resp.StatusCode
+	rep.ContentType = resp.Header.Get("Content-Type")
+	if resp.Request != nil && resp.Request.URL != nil {
+		rep.FinalHost = resp.Request.URL.Hostname()
+		if rep.FinalHost != u.Hostname() {
+			rep.Redirects = 1
+		}
 	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, MaxBody+1))
+	rep.MS = time.Since(start).Milliseconds()
+	rep.Bytes = len(body)
+	rep.BodyKind = BodyKind(body)
 	if err != nil {
-		return nil, nil, apperr.New(apperr.Network, "read")
+		return nil, nil, rep, apperr.New(apperr.Network, "read")
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, nil, rep, apperr.New(apperr.HTTPStatus, strconv.Itoa(resp.StatusCode))
 	}
 	if len(body) > MaxBody {
-		return nil, nil, apperr.New(apperr.TooLarge, "body")
+		return nil, nil, rep, apperr.New(apperr.TooLarge, "body")
 	}
-	return body, resp.Header, nil
+	return body, resp.Header, rep, nil
+}
+
+// networkHint classifies a transport error without leaking the URL.
+func networkHint(err error) string {
+	s := strings.ToLower(err.Error())
+	switch {
+	case strings.Contains(s, "no such host"):
+		return "dns"
+	case strings.Contains(s, "timeout") || strings.Contains(s, "deadline"):
+		return "timeout"
+	case strings.Contains(s, "connection refused"):
+		return "refused"
+	case strings.Contains(s, "connection reset"):
+		return "reset"
+	case strings.Contains(s, "certificate") || strings.Contains(s, "x509") || strings.Contains(s, "tls"):
+		return "tls"
+	case strings.Contains(s, "redirect"):
+		return "redirect"
+	}
+	return "connect"
+}
+
+// BodyKind guesses what a response body is, without returning any of it.
+func BodyKind(b []byte) string {
+	s := strings.TrimSpace(strings.TrimPrefix(string(b), "\ufeff"))
+	low := strings.ToLower(s)
+	switch {
+	case s == "":
+		return "empty"
+	case strings.HasPrefix(low, "<!doctype") || strings.HasPrefix(low, "<html"):
+		return "html"
+	case strings.HasPrefix(s, "{") || strings.HasPrefix(s, "["):
+		return "json"
+	case strings.Contains(s, "://"):
+		return "uri-list"
+	case strings.HasPrefix(low, "proxies:") || strings.Contains(low, "\nproxies:"):
+		return "clash-yaml"
+	}
+	if _, err := DecodeBase64(s); err == nil {
+		return "base64"
+	}
+	return "unknown"
 }
 
 // ParseMeta extracts provider metadata from headers (response headers merged with body metadata).
@@ -202,6 +274,3 @@ func HostOf(raw string) string {
 	}
 	return u.Hostname()
 }
-
-// Describe returns a short human description of an error for logs (no secrets).
-func Describe(err error) string { return fmt.Sprint(apperr.From(err).Code) }

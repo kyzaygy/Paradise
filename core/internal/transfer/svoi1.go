@@ -18,10 +18,10 @@ import (
 // responseFormat/sourceProfileCore).
 
 type svoiProfile struct {
-	Version  int           `json:"version"`
-	Name     string        `json:"name"`
-	Identity svoiIdentity  `json:"identity"`
-	Sources  []svoiSource  `json:"sources"`
+	Version  int          `json:"version"`
+	Name     string       `json:"name"`
+	Identity svoiIdentity `json:"identity"`
+	Sources  []svoiSource `json:"sources"`
 }
 
 type svoiIdentity struct {

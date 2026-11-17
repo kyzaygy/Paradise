@@ -280,3 +280,44 @@ func TestExpiredTransfer(t *testing.T) {
 		t.Fatalf("%+v", r)
 	}
 }
+
+func TestSelfTestAndTestFetch(t *testing.T) {
+	v := newEnv(t)
+	v.e.SetValidator(func(b []byte) error {
+		if !strings.Contains(string(b), `"protocol":"tun"`) {
+			return context.Canceled
+		}
+		return nil
+	})
+	var res ImportResult
+	_ = json.Unmarshal(v.call("addSubscription", map[string]any{"url": v.server.URL + "/sub/TOKENSECRET"}), &res)
+	var checks []Check
+	_ = json.Unmarshal(v.call("selfTest", map[string]any{}), &checks)
+	if len(checks) < 8 {
+		t.Fatalf("checks %+v", checks)
+	}
+	for _, c := range checks {
+		if !c.OK {
+			t.Fatalf("check failed: %+v", c)
+		}
+	}
+	var ft FetchTest
+	_ = json.Unmarshal(v.call("testFetch", map[string]any{"id": res.SubscriptionID}), &ft)
+	if !ft.OK || ft.Servers != 2 || ft.Report.Status != 200 || ft.Report.BodyKind != "uri-list" || len(ft.Meta) < 2 {
+		t.Fatalf("fetch test %+v", ft)
+	}
+	v.body.Store("<!DOCTYPE html><html>blocked</html>")
+	_ = json.Unmarshal(v.call("testFetch", map[string]any{"id": res.SubscriptionID}), &ft)
+	if ft.OK || ft.Error == nil || ft.Error.Code != "html_response" || ft.Report.BodyKind != "html" {
+		t.Fatalf("html fetch test %+v", ft)
+	}
+	var logs []map[string]any
+	_ = json.Unmarshal(v.call("logs", map[string]any{"after": 0}), &logs)
+	raw, _ := json.Marshal(logs)
+	if len(logs) == 0 || strings.Contains(string(raw), "TOKENSECRET") || strings.Contains(string(raw), "11111111-2222") {
+		t.Fatalf("logs empty or leak secrets: %s", raw)
+	}
+	if r := v.callRaw("addSubscription", map[string]any{"url": "https://nonexistent.invalid/sub/TOKENSECRET"}); r.OK || r.Error.Code != "network" {
+		t.Fatalf("%+v", r)
+	}
+}

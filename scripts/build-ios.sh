@@ -43,16 +43,25 @@ test -d "$APP/PlugIns/PacketTunnel.appex" || { echo "PacketTunnel.appex is missi
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Info.plist")
 
 echo "==> Packaging IPA"
-WORK="$(mktemp -d)"
-mkdir -p "$WORK/Payload"
-cp -R "$APP" "$WORK/Payload/"
-PAYLOAD_APP="$WORK/Payload/Paradise.app"
-# Ad hoc signature only to carry entitlements; re-sign with your own certificate before installing.
-codesign --force --sign - --entitlements "$ROOT/apple/Support/PacketTunnel.entitlements" "$PAYLOAD_APP/PlugIns/PacketTunnel.appex"
-codesign --force --sign - --entitlements "$ROOT/apple/Support/Paradise.entitlements" "$PAYLOAD_APP"
-IPA="$OUT/Paradise-$VERSION-$BUILD_NUMBER-unsigned.ipa"
-rm -f "$IPA"
-(cd "$WORK" && zip -qry "$IPA" Payload)
-shasum -a 256 "$IPA" | tee "$IPA.sha256"
-du -h "$IPA"
-echo "$IPA" > "$OUT/ipa-path.txt"
+# package NAME APP_ENTITLEMENTS EXT_ENTITLEMENTS EXTENSION
+package() {
+  local work payload out
+  work="$(mktemp -d)"
+  mkdir -p "$work/Payload"
+  cp -R "$APP" "$work/Payload/"
+  payload="$work/Payload/Paradise.app"
+  # Ad hoc signature only carries entitlements; re-sign with your own certificate before installing.
+  codesign --force --sign - --entitlements "$3" "$payload/PlugIns/PacketTunnel.appex"
+  codesign --force --sign - --entitlements "$2" "$payload"
+  out="$OUT/Paradise-$VERSION-$BUILD_NUMBER-$1.$4"
+  rm -f "$out"
+  (cd "$work" && zip -qry "$out" Payload)
+  (cd "$OUT" && shasum -a 256 "$(basename "$out")") > "$out.sha256"
+  cat "$out.sha256"
+  du -h "$out"
+}
+# For re-signing with a developer certificate (entitlements come from your profile).
+package unsigned "$ROOT/apple/Support/Paradise.entitlements" "$ROOT/apple/Support/PacketTunnel.entitlements" ipa
+# For TrollStore: carries application-identifier and keychain groups so Keychain and the VPN work.
+package trollstore "$ROOT/apple/TrollStore/Paradise.entitlements" "$ROOT/apple/TrollStore/PacketTunnel.entitlements" tipa
+echo "$OUT/Paradise-$VERSION-$BUILD_NUMBER-unsigned.ipa" > "$OUT/ipa-path.txt"

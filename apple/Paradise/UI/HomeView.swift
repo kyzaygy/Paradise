@@ -52,6 +52,7 @@ struct HomeView: View {
       .accessibilityLabel(L("home.add"))
       Spacer()
       Text("Paradise").font(Theme.title(.title3)).accessibilityAddTraits(.isHeader)
+        .onLongPressGesture(minimumDuration: 0.8) { model.sheet = .diagnostics }
       Spacer()
       Button { model.sheet = .settings } label: {
         Image(systemName: "gearshape").font(.title3.weight(.semibold))
@@ -78,6 +79,11 @@ struct HomeView: View {
       VStack(alignment: .leading, spacing: 12) {
         Text(L("storage.title")).font(Theme.label(.headline))
         Text(L("storage.body")).font(.subheadline).foregroundStyle(Theme.muted)
+        if let e = Core.openError as? CoreError {
+          Text("\(e.code) \(e.detail ?? "")").font(Theme.mono).foregroundStyle(Theme.muted)
+        }
+        Button { model.sheet = .diagnostics } label: { Text(L("diag.title")) }
+          .buttonStyle(SecondaryButtonStyle())
         Button(role: .destructive) { Task { await model.eraseAndRestart() } } label: {
           Text(L("storage.reset"))
         }

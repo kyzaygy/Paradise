@@ -8,6 +8,33 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
   private var pump: PacketPump?
   private var generation = 0
   private var running = false
+  private var memoryTimer: DispatchSourceTimer?
+  private let logPath = FileManager.default.temporaryDirectory.appendingPathComponent("xray.log").path
+
+  private func log(_ level: String, _ msg: String) { PdcoreLog(level, "tunnel", msg) }
+
+  private static func footprintMB() -> Double {
+    var info = task_vm_info_data_t()
+    var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+    let kr = withUnsafeMutablePointer(to: &info) {
+      $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+        task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+      }
+    }
+    return kr == KERN_SUCCESS ? Double(info.phys_footprint) / 1_048_576 : -1
+  }
+
+  private func startMemoryLog() {
+    memoryTimer?.cancel()
+    let timer = DispatchSource.makeTimerSource(queue: lifecycle)
+    timer.schedule(deadline: .now() + 5, repeating: 20)
+    timer.setEventHandler { [weak self] in
+      let mb = Self.footprintMB()
+      self?.log(mb > 40 ? "warn" : "info", String(format: "memory footprint %.1f MB (limit ~50 MB)", mb))
+    }
+    timer.resume()
+    memoryTimer = timer
+  }
 
   private static let excluded4: [(String, String)] = [
     ("10.0.0.0", "255.0.0.0"), ("172.16.0.0", "255.240.0.0"), ("192.168.0.0", "255.255.0.0"),
@@ -18,11 +45,14 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
     lifecycle.async {
       self.generation += 1
       let attempt = self.generation
+      self.log("info", String(format: "start requested, footprint %.1f MB", Self.footprintMB()))
       guard let config = (self.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["config"] as? String,
             !config.isEmpty, config.utf8.count <= 4 * 1024 * 1024 else {
+        self.log("error", "no configuration in providerConfiguration")
         completionHandler(self.error("No server configuration. Open Paradise and connect again."))
         return
       }
+      try? FileManager.default.removeItem(atPath: self.logPath)
       self.cleanup()
       let settings = NEPacketTunnelNetworkSettings(tunnelRemoteAddress: "198.18.0.1")
       let ipv4 = NEIPv4Settings(addresses: ["172.19.0.1"], subnetMasks: ["255.255.255.252"])
@@ -45,6 +75,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
             return
           }
           if let error = error {
+            self.log("error", "setTunnelNetworkSettings failed: \(error.localizedDescription)")
             completionHandler(error)
             return
           }
@@ -61,8 +92,9 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
             guard fcntl(fds[1], F_SETFL, O_NONBLOCK) != -1 else { throw self.error("fcntl failed: \(errno)") }
             var on: Int32 = 1
             _ = setsockopt(fds[1], SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size))
-            let result: String? = PdcoreStartTunnel(config, fds[0])
+            let result: String? = PdcoreStartTunnel(config, fds[0], self.logPath)
             if let failure = result, !failure.isEmpty { throw self.error(failure) }
+            self.startMemoryLog()
             self.running = true
             Darwin.close(fds[0])
             fds[0] = -1
@@ -70,6 +102,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
               guard let self = self else { return }
               self.lifecycle.async {
                 guard self.generation == attempt else { return }
+                self.log("error", "packet channel stopped")
                 self.cleanup()
                 self.cancelTunnelWithError(self.error("Packet channel stopped"))
               }
@@ -77,8 +110,10 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
             fds[1] = -1
             self.pump = pump
             pump.start()
+            self.log("info", String(format: "tunnel up, footprint %.1f MB", Self.footprintMB()))
             completionHandler(nil)
           } catch {
+            self.log("error", "start failed: \(error.localizedDescription)")
             for fd in fds where fd >= 0 { Darwin.close(fd) }
             self.cleanup()
             completionHandler(error)
@@ -90,6 +125,7 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
 
   override func stopTunnel(with reason: NEProviderStopReason, completionHandler: @escaping () -> Void) {
     lifecycle.async {
+      self.log("info", "stop requested, reason \(reason.rawValue)")
       self.generation += 1
       self.cleanup()
       completionHandler()
@@ -98,9 +134,17 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
 
   override func handleAppMessage(_ messageData: Data, completionHandler: ((Data?) -> Void)?) {
     lifecycle.async {
+      let request = String(data: messageData, encoding: .utf8) ?? ""
+      if request == "logs" {
+        let raw: String? = PdcoreTunnelLogs(self.logPath)
+        var json = (try? JSONSerialization.jsonObject(with: Data((raw ?? "{}").utf8))) as? [String: Any] ?? [:]
+        json["footprintMB"] = Self.footprintMB()
+        completionHandler?(try? JSONSerialization.data(withJSONObject: json))
+        return
+      }
       let stats: String? = PdcoreMemoryStats()
       let version: String? = PdcoreVersion()
-      let text = "xray \(version ?? "") · \(stats ?? "")"
+      let text = String(format: "xray %@ · footprint %.1f MB · %@", version ?? "", Self.footprintMB(), stats ?? "")
       completionHandler?(Data(text.utf8))
     }
   }
@@ -110,6 +154,8 @@ final class PacketTunnelProvider: NEPacketTunnelProvider {
   override func wake() {}
 
   private func cleanup() {
+    memoryTimer?.cancel()
+    memoryTimer = nil
     pump?.stop()
     pump = nil
     if running {

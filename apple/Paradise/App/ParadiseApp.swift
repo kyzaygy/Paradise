@@ -31,6 +31,7 @@ struct RootView: View {
           case .add: AddView()
           case .export: ExportView()
           case .settings: SettingsView()
+          case .diagnostics: DiagnosticsView()
           case .preview(let code): ImportPreviewView(code: code)
           }
         }

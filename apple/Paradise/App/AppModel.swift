@@ -6,7 +6,7 @@ import UIKit
 @MainActor
 final class AppModel: ObservableObject {
   enum Sheet: Identifiable {
-    case servers, add, export, settings
+    case servers, add, export, settings, diagnostics
     case preview(String)
 
     var id: String {
@@ -15,6 +15,7 @@ final class AppModel: ObservableObject {
       case .add: return "add"
       case .export: return "export"
       case .settings: return "settings"
+      case .diagnostics: return "diagnostics"
       case .preview(let code): return "preview-\(code.hashValue)"
       }
     }
@@ -52,6 +53,8 @@ final class AppModel: ObservableObject {
   func start() async {
     guard !started else { return }
     started = true
+    HangDetector.shared.start()
+    AppLog.info("app", DiagnosticsView.deviceLine())
     monitor.pathUpdateHandler = { [weak self] path in
       Task { @MainActor in self?.online = path.status == .satisfied }
     }
@@ -59,6 +62,7 @@ final class AppModel: ObservableObject {
     do {
       try Core.open()
     } catch let error as CoreError where error.code == "storage" {
+      AppLog.error("app", "storage unavailable: \(error.detail ?? "")")
       storageBroken = true
       loading = false
       return
@@ -70,6 +74,7 @@ final class AppModel: ObservableObject {
     await reload()
     await vpn.load()
     loading = false
+    AppLog.info("app", "ready: \(state.subscriptions.count) subscriptions, \(state.servers.count) servers, vpn \(VPNController.name(vpn.status))")
     if state.settings.autoRefresh, state.subscriptions.contains(where: { $0.remote }) {
       await refreshAll(silent: true)
     }
@@ -92,6 +97,7 @@ final class AppModel: ObservableObject {
   func show(_ error: Error) {
     if error is CancellationError { return }
     if let core = error as? CoreError, core.code == "cancelled" { return }
+    AppLog.warn("ui", "shown error: \((error as? LocalizedError)?.errorDescription ?? "\(error)")")
     banner = Banner(text: (error as? LocalizedError)?.errorDescription ?? error.localizedDescription, isError: true)
   }
 

@@ -172,6 +172,9 @@ struct CoreError: Error, LocalizedError, Codable {
       return String(format: L("error.http_status.code"), detail)
     }
     if code == "invalid_input", detail == "duplicate" { return L("error.duplicate") }
+    if ["tunnel", "tunnel_stopped", "storage", "config", "network"].contains(code), let detail = detail, !detail.isEmpty {
+      return text + " (" + detail + ")"
+    }
     return text
   }
 }
@@ -195,8 +198,21 @@ enum Core {
     return base.appendingPathComponent("Paradise", isDirectory: true)
   }
 
+  private(set) static var openError: Error?
+
   static func open() throws {
     if isOpen { return }
+    do {
+      try openCore()
+      openError = nil
+    } catch {
+      openError = error
+      AppLog.error("core", "open failed: \((error as? LocalizedError)?.errorDescription ?? "\(error)") [\((error as? CoreError)?.detail ?? "")]")
+      throw error
+    }
+  }
+
+  private static func openCore() throws {
     let dir = dataDirectory
     try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true,
                                             attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
@@ -213,6 +229,7 @@ enum Core {
     let envelope = try JSONDecoder().decode(Envelope<Empty>.self, from: Data((raw ?? "").utf8))
     if !envelope.ok { throw envelope.error ?? CoreError(code: "internal", detail: nil) }
     isOpen = true
+    AppLog.info("core", "opened (key: \(Keychain.mode.rawValue))")
   }
 
   /// Deletes the encrypted profile (used when the storage key no longer matches).
@@ -221,16 +238,40 @@ enum Core {
   }
 
   static func call<T: Decodable>(_ method: String, _ args: [String: Any] = [:], as type: T.Type = T.self) async throws -> T {
+    if !isOpen {
+      do { try open() } catch {
+        AppLog.error("core", "\(method): core is not open")
+        throw error
+      }
+    }
     let json = String(data: try JSONSerialization.data(withJSONObject: args), encoding: .utf8) ?? "{}"
-    let raw: String = try await withCheckedThrowingContinuation { continuation in
+    let started = Date()
+    let raw: String = await withCheckedContinuation { continuation in
       queue.async {
         let result: String? = PdcoreCall(method, json)
         continuation.resume(returning: result ?? "")
       }
     }
-    let envelope = try JSONDecoder().decode(Envelope<T>.self, from: Data(raw.utf8))
+    let ms = Int(Date().timeIntervalSince(started) * 1000)
+    if ms > 800 && method != "probe" && method != "selfTest" && !method.hasPrefix("refresh") && method != "addSubscription" && method != "testFetch" {
+      AppLog.warn("perf", "\(method) took \(ms) ms")
+    }
+    let envelope: Envelope<T>
+    do {
+      envelope = try JSONDecoder().decode(Envelope<T>.self, from: Data(raw.utf8))
+    } catch {
+      AppLog.error("core", "\(method): cannot decode response (\(String(describing: error).prefix(300)))")
+      throw CoreError(code: "internal", detail: "decode \(method)")
+    }
     if envelope.ok, let data = envelope.data { return data }
-    throw envelope.error ?? CoreError(code: "internal", detail: "empty")
+    let err = envelope.error ?? CoreError(code: "internal", detail: "empty \(method)")
+    if err.code != "cancelled" { AppLog.warn("core", "\(method) → \(err.code) \(err.detail ?? "")") }
+    throw err
+  }
+
+  static func log(_ level: String, _ source: String, _ msg: String) {
+    guard isOpen else { return }
+    PdcoreLog(level, source, msg)
   }
 
   static var xrayVersion: String {

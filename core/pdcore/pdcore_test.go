@@ -87,3 +87,35 @@ func TestOpenAndCall(t *testing.T) {
 		t.Fatal("no version")
 	}
 }
+
+func TestTunnelLogsAndValidator(t *testing.T) {
+	if err := validateConfig([]byte(`{"outbounds":[{"protocol":"freedom"}]}`)); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateConfig([]byte(`{"outbounds":[{"protocol":"nope"}]}`)); err == nil {
+		t.Fatal("invalid config accepted")
+	}
+	Log("info", "test", "hello https://secret.example.com/path/TOKEN")
+	out := TunnelLogs("")
+	if !strings.Contains(out, "hello") || strings.Contains(out, "TOKEN") {
+		t.Fatal(out)
+	}
+	_ = Open(t.TempDir(), base64.StdEncoding.EncodeToString(make([]byte, 32)), `{}`)
+	var env struct {
+		OK   bool `json:"ok"`
+		Data []struct {
+			Name   string `json:"name"`
+			OK     bool   `json:"ok"`
+			Detail string `json:"detail"`
+		} `json:"data"`
+	}
+	r := Call("selfTest", "{}")
+	if err := json.Unmarshal([]byte(r), &env); err != nil || !env.OK || len(env.Data) < 8 {
+		t.Fatal(r)
+	}
+	for _, c := range env.Data {
+		if !c.OK {
+			t.Fatalf("self-test %s failed: %s", c.Name, c.Detail)
+		}
+	}
+}

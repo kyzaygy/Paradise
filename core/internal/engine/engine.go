@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/kyzaygy/paradise/core/internal/apperr"
+	"github.com/kyzaygy/paradise/core/internal/logx"
 	"github.com/kyzaygy/paradise/core/internal/model"
 	"github.com/kyzaygy/paradise/core/internal/store"
 	"github.com/kyzaygy/paradise/core/internal/sub"
@@ -43,6 +44,8 @@ type Engine struct {
 	device Device
 	prober Prober
 	now    func() time.Time
+	// validate checks an Xray config (core.LoadConfig); nil in unit tests.
+	validate func([]byte) error
 
 	probeMu     sync.Mutex
 	probeCtx    context.Context
@@ -66,6 +69,7 @@ func New(dir string, key []byte, dev Device, prober Prober) (*Engine, error) {
 	if dev.AppVersion == "" {
 		dev.AppVersion = "0.1.0"
 	}
+	logx.Info("core", "opened: %d subscriptions, %d favorites", len(doc.Subscriptions), len(doc.Favorites))
 	e := &Engine{doc: doc, store: st, client: sub.NewClient(), device: dev, prober: prober, now: time.Now, probeSlots: make(chan struct{}, 4)}
 	e.probeCtx, e.probeCancel = context.WithCancel(context.Background())
 	if doc.HWID == "" {
@@ -74,6 +78,9 @@ func New(dir string, key []byte, dev Device, prober Prober) (*Engine, error) {
 	}
 	return e, nil
 }
+
+// SetValidator installs the Xray config validator used by selfTest.
+func (e *Engine) SetValidator(f func([]byte) error) { e.validate = f }
 
 // SetHTTPClient replaces the subscription client (tests).
 func (e *Engine) SetHTTPClient(c *http.Client) { e.client = c }
@@ -100,19 +107,45 @@ type envelope struct {
 }
 
 // Call dispatches a method with JSON arguments and returns a JSON envelope.
-func (e *Engine) Call(method, args string) string {
+// Every call is timed and logged (method name only, never arguments).
+func (e *Engine) Call(method, args string) (result string) {
+	start := time.Now()
 	if strings.TrimSpace(args) == "" {
 		args = "{}"
 	}
-	data, err := e.dispatch(method, []byte(args))
+	var data any
+	var err error
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logx.Error("core", "panic in %s: %v", method, r)
+				err = apperr.New(apperr.Internal, "panic")
+			}
+		}()
+		data, err = e.dispatch(method, []byte(args))
+	}()
+	ms := time.Since(start).Milliseconds()
 	var out envelope
 	if err != nil {
-		out = envelope{OK: false, Error: apperr.From(err)}
+		ae := apperr.From(err)
+		ae = &apperr.Error{Code: ae.Code, Detail: logx.Redact(ae.Detail)}
+		out = envelope{OK: false, Error: ae}
+		if ae.Code != apperr.Cancelled {
+			logx.Warn("core", "%s failed in %dms: %s %s", method, ms, ae.Code, ae.Detail)
+		}
 	} else {
 		out = envelope{OK: true, Data: data}
+		if method != "logs" && method != "state" && method != "log" {
+			level := "info"
+			if ms > 1500 {
+				level = "warn"
+			}
+			logx.Add(level, "core", "%s ok in %dms", method, ms)
+		}
 	}
 	b, mErr := json.Marshal(out)
 	if mErr != nil {
+		logx.Error("core", "%s: marshal failed", method)
 		return `{"ok":false,"error":{"code":"internal","detail":"marshal"}}`
 	}
 	return string(b)
@@ -237,6 +270,36 @@ func (e *Engine) dispatch(method string, args []byte) (any, error) {
 			return nil, err
 		}
 		return e.importTransfer(in)
+	case "logs":
+		var in struct{ After int64 }
+		if err := decode(args, &in); err != nil {
+			return nil, err
+		}
+		return logx.Since(in.After), nil
+	case "clearLogs":
+		logx.Clear()
+		return map[string]bool{"cleared": true}, nil
+	case "log":
+		var in struct{ Level, Source, Msg string }
+		if err := decode(args, &in); err != nil {
+			return nil, err
+		}
+		if in.Level != "warn" && in.Level != "error" {
+			in.Level = "info"
+		}
+		if in.Source == "" {
+			in.Source = "app"
+		}
+		logx.Add(in.Level, in.Source, "%s", in.Msg)
+		return map[string]bool{"ok": true}, nil
+	case "selfTest":
+		return e.selfTest(), nil
+	case "testFetch":
+		var in struct{ ID, URL string }
+		if err := decode(args, &in); err != nil {
+			return nil, err
+		}
+		return e.testFetch(in.ID, in.URL)
 	case "resetAll":
 		return e.mutate(func(d *model.Document) error {
 			*d = model.Document{Version: 1, HWID: randomHex(16), Settings: model.DefaultSettings()}

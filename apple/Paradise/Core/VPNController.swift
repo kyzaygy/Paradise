@@ -53,13 +53,28 @@ final class VPNController: ObservableObject {
   }
 
   private func refresh() {
-    status = manager?.connection.status ?? .invalid
+    let newStatus = manager?.connection.status ?? .invalid
+    if newStatus != status { AppLog.info("vpn", "status \(Self.name(status)) → \(Self.name(newStatus))") }
+    status = newStatus
     connectedDate = isConnected ? manager?.connection.connectedDate : nil
     connectedServerID = (manager?.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["serverId"] as? String ?? ""
   }
 
+  static func name(_ s: NEVPNStatus) -> String {
+    switch s {
+    case .invalid: return "invalid"
+    case .disconnected: return "disconnected"
+    case .connecting: return "connecting"
+    case .connected: return "connected"
+    case .reasserting: return "reasserting"
+    case .disconnecting: return "disconnecting"
+    @unknown default: return "unknown"
+    }
+  }
+
   func connect(_ tunnel: TunnelConfig) async throws {
     guard !busy else { return }
+    AppLog.info("vpn", "connect: \(tunnel.serverName), killSwitch=\(tunnel.killSwitch), config \(tunnel.config.utf8.count) bytes")
     busy = true
     attempt += 1
     let current = attempt
@@ -82,6 +97,7 @@ final class VPNController: ObservableObject {
       manager.isEnabled = true
       manager.isOnDemandEnabled = false
       try await save(manager)
+      AppLog.info("vpn", "configuration saved, starting tunnel")
       guard current == attempt else { throw CancellationError() }
       try manager.connection.startVPNTunnel()
       for tick in 0..<250 {
@@ -89,13 +105,17 @@ final class VPNController: ObservableObject {
         if isConnected { return }
         guard current == attempt else { throw CancellationError() }
         if tick > 15 && (status == .disconnected || status == .invalid) {
-          throw CoreError(code: "tunnel_stopped", detail: nil)
+          let reason = await lastDisconnectReason()
+          AppLog.error("vpn", "extension stopped during start: \(reason)")
+          throw CoreError(code: "tunnel_stopped", detail: reason)
         }
         try await Task.sleep(nanoseconds: 100_000_000)
       }
       manager.connection.stopVPNTunnel()
+      AppLog.error("vpn", "connect timeout")
       throw CoreError(code: "tunnel_timeout", detail: nil)
     } catch let error as NSError where error.domain == NEVPNErrorDomain {
+      AppLog.error("vpn", "NEVPNError \(error.code): \(error.localizedDescription)")
       if error.code == NEVPNError.Code.configurationReadWriteFailed.rawValue || error.code == 5 {
         throw CoreError(code: "tunnel_permission", detail: nil)
       }
@@ -132,17 +152,64 @@ final class VPNController: ObservableObject {
     }
   }
 
-  /// Asks the extension for diagnostics (memory, core version).
-  func diagnostics() async -> String {
-    guard let session = manager?.connection as? NETunnelProviderSession, isConnected else { return "" }
+  /// The reason iOS recorded for the last disconnect (iOS 16+).
+  func lastDisconnectReason() async -> String {
+    guard let connection = manager?.connection else { return "no manager" }
     return await withCheckedContinuation { continuation in
-      do {
-        try session.sendProviderMessage(Data("diag".utf8)) { data in
-          continuation.resume(returning: data.flatMap { String(data: $0, encoding: .utf8) } ?? "")
+      connection.fetchLastDisconnectError { error in
+        guard let e = error as NSError? else { continuation.resume(returning: "no error recorded"); return }
+        var text = "\(e.domain) \(e.code): \(e.localizedDescription)"
+        if let underlying = e.userInfo[NSUnderlyingErrorKey] as? NSError {
+          text += " / \(underlying.domain) \(underlying.code): \(underlying.localizedDescription)"
         }
-      } catch {
-        continuation.resume(returning: "")
+        continuation.resume(returning: text)
       }
     }
   }
+
+  /// Asks the extension for its logs (works while the extension process is alive).
+  func tunnelLogs() async -> TunnelLogs? {
+    guard let session = manager?.connection as? NETunnelProviderSession, isActive else { return nil }
+    let data: Data? = await withCheckedContinuation { continuation in
+      do {
+        try session.sendProviderMessage(Data("logs".utf8)) { continuation.resume(returning: $0) }
+      } catch {
+        continuation.resume(returning: nil)
+      }
+    }
+    guard let data = data else { return nil }
+    return try? JSONDecoder().decode(TunnelLogs.self, from: data)
+  }
+
+  /// Checks that VPN preferences can be read (permission/entitlement problems show up here).
+  func preferencesCheck() async -> (Bool, String) {
+    do {
+      let managers: [NETunnelProviderManager] = try await withCheckedThrowingContinuation { continuation in
+        NETunnelProviderManager.loadAllFromPreferences { managers, error in
+          if let error = error { continuation.resume(throwing: error) } else { continuation.resume(returning: managers ?? []) }
+        }
+      }
+      let id = (try? providerID()) ?? "missing"
+      return (true, "\(managers.count) configuration(s), extension \(id)")
+    } catch {
+      let e = error as NSError
+      return (false, "\(e.domain) \(e.code): \(e.localizedDescription)")
+    }
+  }
+}
+
+struct TunnelLogs: Decodable {
+  struct Entry: Decodable {
+    var id: Int64
+    var time: Int64
+    var level: String
+    var source: String
+    var msg: String
+  }
+  var entries: [Entry]
+  var xray: String
+  var heapMB: Int
+  var sysMB: Int
+  var goroutines: Int
+  var footprintMB: Double?
 }

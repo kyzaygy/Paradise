@@ -77,6 +77,7 @@ jobs:
           name: Paradise-ipa
           path: |
             build/*.ipa
+            build/*.tipa
             build/*.sha256
       - name: Publish release
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
@@ -88,6 +89,6 @@ jobs:
           TAG="v$VERSION"
           # One prerelease per version, always pointing at the latest successful build.
           gh release delete "$TAG" --cleanup-tag -y 2>/dev/null || true
-          gh release create "$TAG" "$IPA" "$IPA.sha256" --target "$GITHUB_SHA" \
+          gh release create "$TAG" build/*.ipa build/*.tipa build/*.sha256 --target "$GITHUB_SHA" \
             --title "Paradise $VERSION (build ${{ github.run_number }})" --prerelease \
             --notes-file docs/RELEASE.md

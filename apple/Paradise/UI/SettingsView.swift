@@ -7,7 +7,6 @@ struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @State private var confirmReset = false
   @State private var showLicenses = false
-  @State private var diagnostics = ""
 
   init() {}
 
@@ -58,9 +57,8 @@ struct SettingsView: View {
           LabeledContent(L("settings.version"), value: version)
           LabeledContent("Xray-core", value: Core.isOpen ? Core.xrayVersion : "—")
           Button(L("settings.licenses")) { showLicenses = true }
-          if vpn.isConnected {
-            Button(L("settings.diagnostics")) { Task { diagnostics = await vpn.diagnostics() } }
-            if !diagnostics.isEmpty { Text(diagnostics).font(Theme.mono).foregroundStyle(Theme.muted) }
+          Button { model.sheet = .diagnostics } label: {
+            Label(L("diag.title"), systemImage: "stethoscope")
           }
           Text(L("settings.language")).font(.footnote).foregroundStyle(Theme.muted)
         }

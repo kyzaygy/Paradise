@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kyzaygy/paradise/core/internal/apperr"
+	"github.com/kyzaygy/paradise/core/internal/logx"
 	"github.com/kyzaygy/paradise/core/internal/model"
 	"github.com/kyzaygy/paradise/core/internal/sub"
 )
@@ -79,13 +80,31 @@ func (e *Engine) addSubscription(raw, name string) (any, error) {
 func (e *Engine) download(link, id, hwid string, send bool) (sub.Parsed, *model.Meta, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	body, header, err := sub.Fetch(ctx, e.client, link, e.deviceHeaders(send, hwid))
+	host := sub.HostOf(link)
+	body, header, rep, err := sub.FetchDetailed(ctx, e.client, link, e.deviceHeaders(send, hwid))
 	if err != nil {
+		ae := apperr.From(err)
+		logx.Warn("sub", "fetch %s: %s %s (status %d, %d bytes, %s, %dms)", host, ae.Code, ae.Detail, rep.Status, rep.Bytes, rep.BodyKind, rep.MS)
 		return sub.Parsed{}, nil, err
 	}
 	parsed, err := sub.Parse(body, id)
 	if err != nil {
+		ae := apperr.From(err)
+		logx.Warn("sub", "parse %s: %s %s (body %s, %d bytes, content-type %q)", host, ae.Code, ae.Detail, rep.BodyKind, rep.Bytes, rep.ContentType)
+		for i, w := range parsed.Warnings {
+			if i >= 5 {
+				break
+			}
+			logx.Warn("sub", "  %s", w)
+		}
 		return parsed, nil, err
+	}
+	logx.Info("sub", "fetch %s: %d servers, format %s, %d bytes, %d warnings, %dms", host, len(parsed.Servers), parsed.Format, rep.Bytes, len(parsed.Warnings), rep.MS)
+	for i, w := range parsed.Warnings {
+		if i >= 5 {
+			break
+		}
+		logx.Warn("sub", "  skipped %s", w)
 	}
 	return parsed, sub.ParseMeta(sub.MergeHeaders(parsed.Headers, header)), nil
 }
@@ -174,4 +193,3 @@ func (e *Engine) refreshAll() (any, error) {
 	defer e.mu.Unlock()
 	return RefreshResult{State: e.stateLocked(), Errors: errs}, nil
 }
-
