@@ -79,11 +79,15 @@ jobs:
             build/*.ipa
             build/*.sha256
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           IPA="$(cat build/ipa-path.txt)"
-          gh release create "$GITHUB_REF_NAME" "$IPA" "$IPA.sha256" \
-            --title "Paradise $GITHUB_REF_NAME" --prerelease \
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/DerivedData/Build/Products/Release-iphoneos/Paradise.app/Info.plist)
+          TAG="v$VERSION"
+          # One prerelease per version, always pointing at the latest successful build.
+          gh release delete "$TAG" --cleanup-tag -y 2>/dev/null || true
+          gh release create "$TAG" "$IPA" "$IPA.sha256" --target "$GITHUB_SHA" \
+            --title "Paradise $VERSION (build ${{ github.run_number }})" --prerelease \
             --notes-file docs/RELEASE.md
