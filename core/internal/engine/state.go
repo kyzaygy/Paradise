@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/kyzaygy/paradise/core/internal/model"
+	"github.com/kyzaygy/paradise/core/internal/place"
 	"github.com/kyzaygy/paradise/core/internal/sub"
 )
 
@@ -33,6 +34,17 @@ type PublicServer struct {
 	Security       string `json:"security"`
 	Favorite       bool   `json:"favorite"`
 	FullProfile    bool   `json:"fullProfile"`
+	Country        string `json:"cc,omitempty"`
+	City           string `json:"city,omitempty"`
+	Region         string `json:"region,omitempty"`
+	Desc           string `json:"desc,omitempty"`
+	Fragment       bool   `json:"fragment,omitempty"`
+}
+
+// PublicCountry is a country present in the user's servers.
+type PublicCountry struct {
+	place.Country
+	Servers int `json:"servers"`
 }
 
 // State is the full UI snapshot.
@@ -42,11 +54,15 @@ type State struct {
 	Selected      string               `json:"selected"`
 	Settings      model.Settings       `json:"settings"`
 	HWID          string               `json:"hwid"`
+	Configs       []PublicConfig       `json:"configs"`
+	Countries     []PublicCountry      `json:"countries"`
 }
 
 func (e *Engine) stateLocked() State {
 	d := e.doc
-	st := State{Subscriptions: []PublicSubscription{}, Servers: []PublicServer{}, Settings: d.Settings, HWID: d.HWID}
+	st := State{Subscriptions: []PublicSubscription{}, Servers: []PublicServer{}, Settings: d.Settings, HWID: d.HWID, Configs: []PublicConfig{}, Countries: []PublicCountry{}}
+	countries := map[string]int{}
+	var order []string
 	for _, s := range d.Subscriptions {
 		ps := PublicSubscription{ID: s.ID, Name: s.Name, Remote: s.URL != "", Count: len(s.Servers), Meta: s.Meta, LastError: s.LastError, Warnings: s.Warnings}
 		if s.URL != "" {
@@ -58,12 +74,32 @@ func (e *Engine) stateLocked() State {
 		}
 		st.Subscriptions = append(st.Subscriptions, ps)
 		for _, srv := range s.Servers {
-			st.Servers = append(st.Servers, PublicServer{
+			loc := e.locate(srv)
+			ps := PublicServer{
 				ID: srv.ID, Key: srv.Key, SubscriptionID: s.ID, Name: srv.Name, Protocol: srv.Protocol,
 				Address: srv.Address, Port: srv.Port, Network: srv.Network, Security: srv.Security,
 				Favorite: d.IsFavorite(srv.Key), FullProfile: len(srv.Profile) > 0,
-			})
+				Country: loc.Code, City: loc.City, Desc: srv.Desc, Fragment: srv.Fragment != nil,
+			}
+			if c, ok := place.Info(loc.Code); ok {
+				ps.Region = c.Region
+			}
+			st.Servers = append(st.Servers, ps)
+			if _, seen := countries[loc.Code]; !seen {
+				order = append(order, loc.Code)
+			}
+			countries[loc.Code]++
 		}
+	}
+	for _, cc := range order {
+		c, ok := place.Info(cc)
+		if !ok {
+			c = place.Country{Code: cc}
+		}
+		st.Countries = append(st.Countries, PublicCountry{Country: c, Servers: countries[cc]})
+	}
+	for i := range d.Configs {
+		st.Configs = append(st.Configs, publicConfig(d, &d.Configs[i]))
 	}
 	if _, srv := d.ResolveSelected(); srv != nil {
 		st.Selected = srv.ID

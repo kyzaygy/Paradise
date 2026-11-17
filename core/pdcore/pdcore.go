@@ -125,7 +125,17 @@ func StartTunnel(config string, fd int32, logPath string) string {
 	if logPath != "" {
 		var cfg map[string]any
 		if json.Unmarshal([]byte(config), &cfg) == nil {
-			cfg["log"] = map[string]any{"loglevel": "warning", "access": "none", "dnsLog": false, "error": logPath}
+			level, access, dnsLog := "warning", "none", false
+			if l, ok := cfg["log"].(map[string]any); ok {
+				if v, ok := l["loglevel"].(string); ok && v != "" {
+					level = v
+				}
+				if v, ok := l["access"].(string); ok && v == "file" {
+					access = AccessLogPath(logPath)
+				}
+				dnsLog, _ = l["dnsLog"].(bool)
+			}
+			cfg["log"] = map[string]any{"loglevel": level, "access": access, "dnsLog": dnsLog, "error": logPath}
 			if b, err := json.Marshal(cfg); err == nil {
 				config = string(b)
 			}
@@ -144,37 +154,65 @@ func StartTunnel(config string, fd int32, logPath string) string {
 	return ""
 }
 
-// TunnelLogs returns the extension's log buffer and the tail of the Xray log file as JSON.
-func TunnelLogs(logPath string) string {
-	tail := ""
-	if logPath != "" {
-		if f, err := os.Open(logPath); err == nil {
-			if st, err := f.Stat(); err == nil {
-				size := st.Size()
-				const max = 12 << 10
-				if size > max {
-					_, _ = f.Seek(size-max, io.SeekStart)
-				}
-				b, _ := io.ReadAll(io.LimitReader(f, max))
-				lines := strings.Split(string(b), "\n")
-				for i := range lines {
-					lines[i] = logx.Redact(lines[i])
-				}
-				tail = strings.Join(lines, "\n")
-			}
-			_ = f.Close()
-		}
+// AccessLogPath is where connection logs go when enabled.
+func AccessLogPath(logPath string) string {
+	return strings.TrimSuffix(logPath, ".log") + "-access.log"
+}
+
+func tailFile(path string, max int64) string {
+	if path == "" {
+		return ""
 	}
+	f, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer f.Close()
+	st, err := f.Stat()
+	if err != nil {
+		return ""
+	}
+	size := st.Size()
+	if size > max {
+		_, _ = f.Seek(size-max, io.SeekStart)
+	}
+	b, _ := io.ReadAll(io.LimitReader(f, max))
+	lines := strings.Split(string(b), "\n")
+	if size > max && len(lines) > 1 {
+		lines = lines[1:] // drop the partial first line
+	}
+	for i := range lines {
+		lines[i] = logx.Redact(lines[i])
+	}
+	return strings.Join(lines, "\n")
+}
+
+// TunnelLogs returns the extension's log buffer and the tails of the Xray log files as JSON.
+func TunnelLogs(logPath string) string {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
+	access := ""
+	if logPath != "" {
+		access = tailFile(AccessLogPath(logPath), 48<<10)
+	}
 	b, _ := json.Marshal(map[string]any{
 		"entries":    logx.Since(0),
-		"xray":       tail,
+		"xray":       tailFile(logPath, 24<<10),
+		"access":     access,
 		"heapMB":     m.HeapAlloc >> 20,
 		"sysMB":      m.Sys >> 20,
 		"goroutines": runtime.NumGoroutine(),
 	})
 	return string(b)
+}
+
+// ClearTunnelLogs truncates the Xray log files.
+func ClearTunnelLogs(logPath string) {
+	if logPath == "" {
+		return
+	}
+	_ = os.Truncate(logPath, 0)
+	_ = os.Truncate(AccessLogPath(logPath), 0)
 }
 
 // StopTunnel stops the running instance.

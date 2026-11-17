@@ -30,6 +30,7 @@ type Parsed struct {
 	Servers  []model.Server
 	Warnings []string
 	Headers  http.Header // metadata found inside the body (#profile-title: ...)
+	Routing  []string    // happ://routing/… links found in the body
 }
 
 // DecodeBase64 accepts standard and URL-safe alphabets, with or without padding.
@@ -109,6 +110,15 @@ func Parse(data []byte, subscriptionID string) (Parsed, error) {
 			if line == "" || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "//") {
 				continue
 			}
+			low := strings.ToLower(line)
+			if strings.HasPrefix(low, "happ://routing/") {
+				p.Routing = append(p.Routing, line)
+				continue
+			}
+			if strings.HasPrefix(low, "happ://crypt") {
+				p.Warnings = append(p.Warnings, fmt.Sprintf("line %d: encrypted Happ link", i+1))
+				continue
+			}
 			srv, err := ParseURI(line)
 			if err != nil {
 				p.Warnings = append(p.Warnings, fmt.Sprintf("line %d: %v", i+1, err))
@@ -118,6 +128,10 @@ func Parse(data []byte, subscriptionID string) (Parsed, error) {
 		}
 	}
 	if len(p.Servers) == 0 {
+		if len(p.Routing) > 0 {
+			p.Format = "routing"
+			return p, nil
+		}
 		return p, apperr.New(apperr.EmptySubscription, firstWarning(p.Warnings))
 	}
 	if len(p.Servers) > MaxServers {
@@ -206,7 +220,7 @@ func firstObject(v any) object {
 	return obj(a[0])
 }
 
-var supported = map[string]bool{"vless": true, "vmess": true, "trojan": true, "shadowsocks": true, "socks": true, "http": true, "hysteria": true}
+var supported = map[string]bool{"vless": true, "vmess": true, "trojan": true, "shadowsocks": true, "socks": true, "http": true, "hysteria": true, "wireguard": true}
 
 // IsService reports outbounds that are not proxies.
 func IsService(protocol string) bool {
@@ -235,6 +249,14 @@ func ServerFromOutbound(name string, out object) (model.Server, error) {
 	}
 	address := str(endpoint["address"])
 	port := number(endpoint["port"])
+	if protocol == "wireguard" {
+		peer := firstObject(settings["peers"])
+		host, p, err := net.SplitHostPort(str(peer["endpoint"]))
+		if err != nil {
+			return model.Server{}, errors.New("wireguard: invalid endpoint")
+		}
+		address, port = host, number(p)
+	}
 	if address == "" || port < 1 || port > 65535 {
 		return model.Server{}, errors.New("missing address or port")
 	}
@@ -242,6 +264,9 @@ func ServerFromOutbound(name string, out object) (model.Server, error) {
 	network := str(stream["network"])
 	if network == "" {
 		network = "tcp"
+	}
+	if protocol == "wireguard" {
+		network = "udp"
 	}
 	security := str(stream["security"])
 	if security == "" {
@@ -297,8 +322,18 @@ func cloneObject(m object) object {
 	return c
 }
 
-// ParseURI parses vless://, vmess://, trojan://, ss://, socks:// and http(s) proxy links.
+// ParseURI parses vless://, vmess://, trojan://, ss://, socks://, hysteria2:// and wireguard:// links.
+// Happ-style extras in the name ("#Name?serverDescription=…&fragment=…") are applied too.
 func ParseURI(raw string) (model.Server, error) {
+	srv, err := parseURI(raw)
+	if err != nil {
+		return srv, err
+	}
+	applyNameExtras(&srv)
+	return srv, nil
+}
+
+func parseURI(raw string) (model.Server, error) {
 	scheme, _, ok := strings.Cut(raw, "://")
 	if !ok {
 		return model.Server{}, errors.New("not a link")
@@ -310,6 +345,10 @@ func ParseURI(raw string) (model.Server, error) {
 		return parseVMess(raw)
 	case "ss":
 		return parseShadowsocks(raw)
+	case "wireguard", "wg":
+		return parseWireGuard(raw)
+	case "socks", "socks5":
+		raw = expandSocks(raw)
 	}
 	u, err := url.Parse(raw)
 	if err != nil {
@@ -319,13 +358,16 @@ func ParseURI(raw string) (model.Server, error) {
 	if err != nil || port < 1 || port > 65535 || u.Hostname() == "" {
 		return model.Server{}, errors.New("invalid address or port")
 	}
-	if u.User == nil {
+	protocol := strings.ToLower(u.Scheme)
+	if u.User == nil && protocol != "socks" && protocol != "socks5" {
 		return model.Server{}, errors.New("missing credentials")
 	}
-	credential := u.User.Username()
+	credential := ""
+	if u.User != nil {
+		credential = u.User.Username()
+	}
 	q := u.Query()
 	settings := object{}
-	protocol := strings.ToLower(u.Scheme)
 	switch protocol {
 	case "vless":
 		if credential == "" {
@@ -359,7 +401,8 @@ func ParseURI(raw string) (model.Server, error) {
 	if err != nil {
 		return model.Server{}, err
 	}
-	return ServerFromOutbound(u.Fragment, object{"protocol": protocol, "settings": settings, "streamSettings": stream})
+	name, _ := url.PathUnescape(u.EscapedFragment())
+	return ServerFromOutbound(name, object{"protocol": protocol, "settings": settings, "streamSettings": stream})
 }
 
 func defaultString(s, d string) string {

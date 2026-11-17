@@ -17,6 +17,8 @@ import (
 	"github.com/kyzaygy/paradise/core/internal/apperr"
 	"github.com/kyzaygy/paradise/core/internal/logx"
 	"github.com/kyzaygy/paradise/core/internal/model"
+	"github.com/kyzaygy/paradise/core/internal/place"
+	"github.com/kyzaygy/paradise/core/internal/rules"
 	"github.com/kyzaygy/paradise/core/internal/store"
 	"github.com/kyzaygy/paradise/core/internal/sub"
 )
@@ -51,6 +53,13 @@ type Engine struct {
 	probeCtx    context.Context
 	probeCancel context.CancelFunc
 	probeSlots  chan struct{}
+
+	dir       string
+	bigClient *http.Client
+	places    map[string]place.Place // server key → detected location
+	geoMu     sync.Mutex
+	geoCache  map[string][]string // "ip:ru" / "site:google" → entries
+	geoStamp  time.Time
 }
 
 // New opens the engine with an encrypted store in dir.
@@ -70,10 +79,18 @@ func New(dir string, key []byte, dev Device, prober Prober) (*Engine, error) {
 		dev.AppVersion = "0.1.0"
 	}
 	logx.Info("core", "opened: %d subscriptions, %d favorites", len(doc.Subscriptions), len(doc.Favorites))
-	e := &Engine{doc: doc, store: st, client: sub.NewClient(), device: dev, prober: prober, now: time.Now, probeSlots: make(chan struct{}, 4)}
+	e := &Engine{doc: doc, store: st, client: sub.NewClient(), device: dev, prober: prober, now: time.Now, probeSlots: make(chan struct{}, 4),
+		dir: dir, bigClient: &http.Client{Timeout: 3 * time.Minute}, places: map[string]place.Place{}, geoCache: map[string][]string{}}
 	e.probeCtx, e.probeCancel = context.WithCancel(context.Background())
+	changed := false
 	if doc.HWID == "" {
 		doc.HWID = randomHex(16)
+		changed = true
+	}
+	if ensureDefaultConfig(doc, e.now()) {
+		changed = true
+	}
+	if changed {
 		_ = st.Save(doc)
 	}
 	return e, nil
@@ -232,11 +249,14 @@ func (e *Engine) dispatch(method string, args []byte) (any, error) {
 			return nil
 		})
 	case "updateSettings":
-		var in settingsPatch
-		if err := decode(args, &in); err != nil {
-			return nil, err
-		}
-		return e.mutate(func(d *model.Document) error { in.apply(&d.Settings); return nil })
+		return e.mutate(func(d *model.Document) error { return applySettingsPatch(&d.Settings, args) })
+	case "resetSettings":
+		return e.mutate(func(d *model.Document) error {
+			active := d.Settings.ActiveConfig
+			d.Settings = model.DefaultSettings()
+			d.Settings.ActiveConfig = active
+			return nil
+		})
 	case "tunnelConfig":
 		var in struct{ ID string }
 		if err := decode(args, &in); err != nil {
@@ -244,11 +264,11 @@ func (e *Engine) dispatch(method string, args []byte) (any, error) {
 		}
 		return e.tunnelConfig(in.ID)
 	case "probe":
-		var in struct{ ID string }
+		var in struct{ ID, Iface string }
 		if err := decode(args, &in); err != nil {
 			return nil, err
 		}
-		return e.probe(in.ID)
+		return e.probe(in.ID, in.Iface)
 	case "cancelProbes":
 		e.CancelProbes()
 		return map[string]bool{"cancelled": true}, nil
@@ -303,8 +323,12 @@ func (e *Engine) dispatch(method string, args []byte) (any, error) {
 	case "resetAll":
 		return e.mutate(func(d *model.Document) error {
 			*d = model.Document{Version: 1, HWID: randomHex(16), Settings: model.DefaultSettings()}
+			ensureDefaultConfig(d, e.now())
 			return nil
 		})
+	}
+	if out, handled, err := e.dispatchExtra(method, args); handled {
+		return out, err
 	}
 	return nil, apperr.New(apperr.InvalidInput, "method "+method)
 }
@@ -322,33 +346,40 @@ func (e *Engine) mutate(f func(d *model.Document) error) (any, error) {
 	return e.stateLocked(), nil
 }
 
-type settingsPatch struct {
-	Mode        *string `json:"mode"`
-	KillSwitch  *bool   `json:"killSwitch"`
-	AutoRefresh *bool   `json:"autoRefresh"`
-	SendHWID    *bool   `json:"sendHwid"`
-	ProbeURL    *string `json:"probeUrl"`
-}
-
-func (p settingsPatch) apply(s *model.Settings) {
-	if p.Mode != nil {
-		s.Mode = *p.Mode
+// applySettingsPatch overlays known JSON keys onto the settings and normalizes them.
+func applySettingsPatch(s *model.Settings, args []byte) error {
+	var patch map[string]json.RawMessage
+	if err := json.Unmarshal(args, &patch); err != nil {
+		return apperr.New(apperr.InvalidInput, "args")
 	}
-	if p.KillSwitch != nil {
-		s.KillSwitch = *p.KillSwitch
-	}
-	if p.AutoRefresh != nil {
-		s.AutoRefresh = *p.AutoRefresh
-	}
-	if p.SendHWID != nil {
-		s.SendHWID = *p.SendHWID
-	}
-	if p.ProbeURL != nil {
-		if u, err := sub.ValidateURL(*p.ProbeURL); err == nil {
-			s.ProbeURL = u.String()
+	current, _ := json.Marshal(s)
+	var merged map[string]json.RawMessage
+	_ = json.Unmarshal(current, &merged)
+	for k, v := range patch {
+		if _, known := merged[k]; known || k == "activeConfig" {
+			merged[k] = v
 		}
 	}
-	s.Normalize()
+	if raw, ok := patch["probeUrl"]; ok {
+		var u string
+		if json.Unmarshal(raw, &u) != nil {
+			delete(merged, "probeUrl")
+		} else if parsed, err := sub.ValidateURL(u); err == nil {
+			b, _ := json.Marshal(parsed.String())
+			merged["probeUrl"] = b
+		} else {
+			b, _ := json.Marshal(s.ProbeURL)
+			merged["probeUrl"] = b
+		}
+	}
+	b, _ := json.Marshal(merged)
+	var next model.Settings
+	if err := json.Unmarshal(b, &next); err != nil {
+		return apperr.New(apperr.InvalidInput, "settings")
+	}
+	next.Normalize()
+	*s = next
+	return nil
 }
 
 func clean(s string, n int) string {
@@ -371,6 +402,17 @@ func deleteSubscription(d *model.Document, id string) error {
 			if s, _ := d.FindServer(d.Selected); s == nil {
 				d.Selected = ""
 			}
+			kept := d.Configs[:0]
+			for _, c := range d.Configs {
+				if c.Source == id {
+					if d.Settings.ActiveConfig == c.ID {
+						d.Settings.ActiveConfig = ""
+					}
+					continue
+				}
+				kept = append(kept, c)
+			}
+			d.Configs = kept
 			return nil
 		}
 	}
@@ -398,8 +440,16 @@ func Classify(text string) string {
 		return "empty"
 	case isTransfer(t):
 		return "transfer"
+	case rules.IsRoutingLink(t) && !strings.ContainsAny(t, " \n\t"):
+		return "routing"
+	case strings.HasPrefix(strings.ToLower(t), "happ://crypt"):
+		return "encrypted"
 	case !strings.ContainsAny(t, " \n\t") && (strings.HasPrefix(strings.ToLower(t), "https://") || strings.HasPrefix(strings.ToLower(t), "http://")):
 		return "url"
+	case !strings.ContainsAny(t, " \n\t") && !strings.Contains(strings.ToLower(t), "://@") && appLink(t) != "":
+		return "url"
+	case looksLikeRuleConfig(t):
+		return "ruleconfig"
 	}
 	return "config"
 }

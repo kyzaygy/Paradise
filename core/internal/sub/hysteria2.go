@@ -106,7 +106,10 @@ func parseHysteria2(raw string) (model.Server, error) {
 	if s := q.Get("security"); s != "" && s != "tls" {
 		return invalid("only TLS is supported")
 	}
-	for _, key := range []string{"ports", "mport"} {
+	for _, key := range []string{"ports", "mport", "port"} {
+		if key == "port" && !strings.ContainsAny(q.Get(key), ",-") {
+			continue
+		}
 		if q.Has(key) && !hopping {
 			ports, port, hopping, err = hysteriaPorts(q.Get(key))
 			if err != nil {
@@ -120,6 +123,9 @@ func parseHysteria2(raw string) (model.Server, error) {
 		if password, present := u.User.Password(); present {
 			auth += ":" + password
 		}
+	}
+	if auth == "" {
+		auth = q.Get("auth")
 	}
 	tls := object{"serverName": defaultString(q.Get("sni"), u.Hostname())}
 	if alpn := q.Get("alpn"); alpn != "" {
@@ -146,9 +152,11 @@ func parseHysteria2(raw string) (model.Server, error) {
 	}
 	if hopping {
 		interval := 30
-		if q.Has("hop-interval") {
-			if v, err := strconv.Atoi(q.Get("hop-interval")); err == nil && v >= 5 && v <= 86400 {
-				interval = v
+		for _, key := range []string{"hop-interval", "mportHopInt", "hopInterval"} {
+			if q.Has(key) {
+				if v, err := strconv.Atoi(strings.TrimSuffix(q.Get(key), "s")); err == nil && v >= 5 && v <= 86400 {
+					interval = v
+				}
 			}
 		}
 		masks = append(masks, object{"type": "udphop", "settings": object{"mode": "intervalLocal,intervalRemote", "interval": interval, "remotePorts": ports}})

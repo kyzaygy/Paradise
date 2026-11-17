@@ -10,6 +10,7 @@ import (
 	"github.com/xtls/xray-core/core"
 
 	"github.com/kyzaygy/paradise/core/internal/model"
+	"github.com/kyzaygy/paradise/core/internal/rules"
 	"github.com/kyzaygy/paradise/core/internal/sub"
 	"github.com/kyzaygy/paradise/core/internal/xcfg"
 )
@@ -25,7 +26,12 @@ var links = []string{
 	"ss://2022-blake3-aes-128-gcm:" + "YWFhYWFhYWFhYWFhYWFhYQ==" + "@s2.example.com:443#S2",
 	"hysteria2://pass@h.example.com:443?sni=h.example.com&obfs=salamander&obfs-password=secret12#HY2",
 	"hy2://pass@h.example.com:20000-30000?sni=h.example.com#HY2hop",
+	"socks://" + base64.StdEncoding.EncodeToString([]byte("user:pass")) + "@1.2.3.4:1080#SOCKS",
+	"vless://11111111-2222-3333-4444-555555555555@f.example.com:443?type=tcp&security=tls&sni=f.example.com#F?fragment=1-10,5-20,tlshello&noises=rand,50-150,10-50,ip",
 }
+
+// WireGuard needs a netstack at start, so it is only checked with LoadConfig.
+var wireguardLink = "wireguard://" + strings.ReplaceAll(base64.StdEncoding.EncodeToString(make([]byte, 32)), "+", "%2B") + "@162.159.192.1:2408?publickey=bmXOC%2BF1FxEMF9dyiK2H5%2F1SUtzH0JuVo51h2wPfgyo%3D&address=172.16.0.2/32&mtu=1280&reserved=1,2,3#WG"
 
 func TestConfigsAreAcceptedByXray(t *testing.T) {
 	for _, link := range links {
@@ -33,14 +39,14 @@ func TestConfigsAreAcceptedByXray(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v", link, err)
 		}
-		tun, err := xcfg.Tunnel(srv, model.DefaultSettings())
+		tun, err := xcfg.Tunnel(srv, xcfg.Options{Settings: model.DefaultSettings()})
 		if err != nil {
 			t.Fatal(err)
 		}
 		if _, err := core.LoadConfig("json", bytes.NewReader(tun.JSON)); err != nil {
 			t.Fatalf("%s: tunnel config rejected: %v\n%s", srv.Name, err, tun.JSON)
 		}
-		probe, err := xcfg.Probe(srv, model.DefaultSettings())
+		probe, err := xcfg.Probe(srv, xcfg.Options{Settings: model.DefaultSettings()})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -64,7 +70,7 @@ func TestFullProfileIsAcceptedByXray(t *testing.T) {
 	for _, mode := range []string{"all", "profile"} {
 		s := model.DefaultSettings()
 		s.Mode = mode
-		tun, err := xcfg.Tunnel(srv, s)
+		tun, err := xcfg.Tunnel(srv, xcfg.Options{Settings: s})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -119,5 +125,72 @@ func TestTunnelLogsAndValidator(t *testing.T) {
 		if !c.OK {
 			t.Fatalf("self-test %s failed: %s", c.Name, c.Detail)
 		}
+	}
+}
+
+func TestWireGuardAndOptionsAcceptedByXray(t *testing.T) {
+	srv, err := sub.ParseURI(wireguardLink)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := model.DefaultSettings()
+	s.Fragment, s.Mux, s.TCPFastOpen, s.KeepAlive, s.BlockQUIC, s.UDPRelay = true, true, true, 30, true, false
+	s.ProxyShare, s.ProxyLAN, s.ConnectionLog, s.DNSLog, s.LogLevel = true, true, true, true, "info"
+	for _, srv := range []model.Server{srv, mustParse(t, links[3]), mustParse(t, links[4])} {
+		tun, err := xcfg.Tunnel(srv, xcfg.Options{Settings: s})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := core.LoadConfig("json", bytes.NewReader(tun.JSON)); err != nil {
+			t.Fatalf("%s: %v\n%s", srv.Name, err, tun.JSON)
+		}
+	}
+}
+
+func mustParse(t *testing.T, link string) model.Server {
+	srv, err := sub.ParseURI(link)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return srv
+}
+
+func TestConfigModeAcceptedByXray(t *testing.T) {
+	text := `[General]
+skip-proxy = 192.168.0.0/16, *.local, localhost, captive.apple.com
+dns-server = https://1.1.1.1/dns-query, 8.8.8.8
+[Rule]
+DOMAIN-SUFFIX,example.org,DIRECT
+DOMAIN,ads.example.com,REJECT
+DOMAIN-KEYWORD,tracker,REJECT
+DOMAIN-WILDCARD,*.cdn.example.net,PROXY
+IP-CIDR,1.1.1.0/24,DIRECT,no-resolve
+IP-CIDR6,2001:db8::/32,DIRECT
+DST-PORT,123,DIRECT
+FINAL,PROXY
+[Host]
+router.lan = 192.168.1.1
+*.corp = server:10.0.0.53
+`
+	comp := rules.Compile(rules.Parse(text), rules.Options{})
+	s := model.DefaultSettings()
+	s.Mode = "config"
+	for _, srv := range []model.Server{mustParse(t, links[0]), mustParse(t, links[8])} {
+		tun, err := xcfg.Tunnel(srv, xcfg.Options{Settings: s, Rules: comp})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := core.LoadConfig("json", bytes.NewReader(tun.JSON)); err != nil {
+			t.Fatalf("%s: %v\n%s", srv.Name, err, tun.JSON)
+		}
+	}
+	s.Mode = "direct"
+	tun, _ := xcfg.Tunnel(mustParse(t, links[0]), xcfg.Options{Settings: s})
+	if _, err := core.LoadConfig("json", bytes.NewReader(tun.JSON)); err != nil {
+		t.Fatalf("direct: %v", err)
+	}
+	probe, _ := xcfg.Probe(mustParse(t, links[4]), xcfg.Options{Settings: s, Interface: "lo"})
+	if _, err := core.LoadConfig("json", bytes.NewReader(probe)); err != nil {
+		t.Fatalf("probe with interface: %v", err)
 	}
 }

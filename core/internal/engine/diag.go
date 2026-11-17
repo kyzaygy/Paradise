@@ -100,7 +100,7 @@ func (e *Engine) selfTest() []Check {
 			return "validator unavailable", nil
 		}
 		for _, srv := range parsed {
-			res, err := xcfg.Tunnel(srv, model.DefaultSettings())
+			res, err := xcfg.Tunnel(srv, xcfg.Options{Settings: model.DefaultSettings()})
 			if err != nil {
 				return srv.Name, err
 			}
@@ -109,6 +109,32 @@ func (e *Engine) selfTest() []Check {
 			}
 		}
 		return fmt.Sprintf("%d configs accepted by Xray", len(parsed)), nil
+	}))
+
+	checks = append(checks, timed("routing_config", func() (string, error) {
+		e.mu.Lock()
+		c := e.doc.ActiveConfig()
+		text, name, settings := "", "", e.doc.Settings
+		if c != nil {
+			text, name = c.Text, c.Name
+		}
+		e.mu.Unlock()
+		if c == nil {
+			return "no config", nil
+		}
+		_, comp := e.compile(text)
+		settings.Mode = "config"
+		probe := model.Server{Outbound: json.RawMessage(`{"protocol":"freedom","tag":"proxy"}`)}
+		res, err := xcfg.Tunnel(probe, xcfg.Options{Settings: settings, Rules: comp})
+		if err != nil {
+			return name, err
+		}
+		if e.validate != nil {
+			if err := e.validate(res.JSON); err != nil {
+				return name, apperr.New(apperr.Config, firstLine(err.Error()))
+			}
+		}
+		return fmt.Sprintf("%q: %d rules, %d domains, %d IPs, %d warnings, missing geo %d", name, comp.Stats.Rules, comp.Stats.Domains, comp.Stats.IPs, len(comp.Warnings), len(comp.MissingGeo)), nil
 	}))
 
 	payload := transfer.Payload{Name: "selftest", Subscriptions: []transfer.Source{{Name: "s", URL: "https://example.com/sub"}}}
@@ -179,7 +205,7 @@ func (e *Engine) selfTest() []Check {
 		}
 		bad := []string{}
 		for _, srv := range servers {
-			res, err := xcfg.Tunnel(srv, settings)
+			res, err := xcfg.Tunnel(srv, xcfg.Options{Settings: settings})
 			if err == nil {
 				err = e.validate(res.JSON)
 			}

@@ -77,7 +77,17 @@ func (e *Engine) buildPayload(o ExportOptions) transfer.Payload {
 	}
 	if o.IncludeSettings {
 		s := d.Settings
+		s.ActiveConfig = ""
 		p.Settings = &s
+		for _, c := range d.Configs {
+			if c.Source != "" {
+				continue
+			}
+			p.Configs = append(p.Configs, transfer.RoutingConfig{Name: c.Name, Text: c.Text, URL: c.URL})
+		}
+		if a := d.ActiveConfig(); a != nil {
+			p.ActiveConfig = a.Name
+		}
 	}
 	if o.IncludeIdentity && d.HWID != "" {
 		p.Identity = &transfer.Identity{HWID: d.HWID}
@@ -316,8 +326,38 @@ func (e *Engine) importTransfer(o ImportOptions) (any, error) {
 		doc.Selected, doc.SelectedKey = "", p.Selected
 	}
 	if o.ApplySettings && p.Settings != nil {
+		active := doc.Settings.ActiveConfig
 		doc.Settings = *p.Settings
+		doc.Settings.ActiveConfig = active
 		doc.Settings.Normalize()
+		for i, c := range p.Configs {
+			if i >= 32 || len(c.Text) > 2<<20 {
+				break
+			}
+			name := clean(c.Name, 80)
+			var target *model.RuleConfig
+			for j := range doc.Configs {
+				if strings.EqualFold(doc.Configs[j].Name, name) && doc.Configs[j].Source == "" {
+					target = &doc.Configs[j]
+					break
+				}
+			}
+			if target == nil {
+				doc.Configs = append(doc.Configs, model.RuleConfig{ID: newID(), Name: name})
+				target = &doc.Configs[len(doc.Configs)-1]
+			}
+			target.Text, target.UpdatedAt = c.Text, e.now().UTC()
+			if u, err := sub.ValidateURL(c.URL); err == nil && c.URL != "" {
+				target.URL = u.String()
+			}
+		}
+		if p.ActiveConfig != "" {
+			for _, c := range doc.Configs {
+				if strings.EqualFold(c.Name, p.ActiveConfig) {
+					doc.Settings.ActiveConfig = c.ID
+				}
+			}
+		}
 	}
 	if o.ApplyIdentity && p.Identity != nil {
 		doc.HWID = p.Identity.HWID

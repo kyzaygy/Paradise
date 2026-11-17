@@ -269,3 +269,6 @@ func shortUA(ua string) string {
 	}
 	return ua
 }
+
+// EmbeddedURL returns the subscription URL inside an app deep link, or "".
+func EmbeddedURL(link string) string { return embeddedURL(link) }

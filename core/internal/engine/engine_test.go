@@ -162,6 +162,7 @@ func TestImportTextAndTunnelConfig(t *testing.T) {
 	if !strings.Contains(tc.Config, `"protocol":"tun"`) || tc.ServerName != "B" {
 		t.Fatalf("tunnel %+v", tc)
 	}
+	v.call("updateSettings", map[string]any{"testMethod": "proxy"})
 	var pr ProbeResult
 	_ = json.Unmarshal(v.call("probe", map[string]any{"id": res.State.Servers[0].ID}), &pr)
 	if pr.MS != 42 {

@@ -44,6 +44,15 @@ type Payload struct {
 	Selected      string          `json:"selected,omitempty"`
 	Settings      *model.Settings `json:"settings,omitempty"`
 	Identity      *Identity       `json:"identity,omitempty"`
+	Configs       []RoutingConfig `json:"configs,omitempty"`      // optional, ignored by older readers
+	ActiveConfig  string          `json:"activeConfig,omitempty"` // config name
+}
+
+// RoutingConfig is a text routing config carried with settings.
+type RoutingConfig struct {
+	Name string `json:"name"`
+	Text string `json:"text"`
+	URL  string `json:"url,omitempty"`
 }
 
 // Source is a subscription link or a set of embedded configs.
