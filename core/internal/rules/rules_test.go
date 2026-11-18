@@ -3,6 +3,7 @@ package rules
 import (
 	"encoding/base64"
 	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 )
@@ -179,28 +180,13 @@ func TestRoutingLink(t *testing.T) {
 }
 
 // simple.conf from the user (zeklop/shadowrocket-configs), trimmed to what matters.
-const simpleConf = `# Shadowrocket: 2026-11-18 00:46:41
-[General]
-bypass-system = true
-skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, captive.apple.com
-bypass-tun = 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.0.2.0/24, 192.88.99.0/24, 192.168.0.0/16, 198.18.0.0/15, 198.51.100.0/24, 203.0.113.0/24, 224.0.0.0/4, 255.255.255.255/32
-dns-server = quic://dns11.quad9.net, tls://common.dot.dns.yandex.net
-fallback-dns-server = https://dns.google/dns-query#proxy, https://cloudflare-dns.com/dns-query#proxy, system
-update-url = https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/simple.conf interval=60 strict=true
-
-[Rule]
-RULE-SET,https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/REJECT.list,REJECT
-RULE-SET,https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/RUSSIA.list,DIRECT
-DOMAIN-SUFFIX,ru,DIRECT
-#GEOIP,RU,DIRECT
-FINAL,PROXY
-
-[URL Rewrite]
-'^https://(www.)?yandex.ru' 'https://ya.ru' 302
-`
 
 func TestSimpleConf(t *testing.T) {
-	c := Parse(simpleConf)
+	text, err := os.ReadFile("testdata/simple.conf")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c := Parse(string(text))
 	sets := func(u string) ([]string, bool) {
 		if strings.HasSuffix(u, "REJECT.list") {
 			return []string{"DOMAIN-SUFFIX,doubleclick.net", "DOMAIN-KEYWORD,adservice"}, true

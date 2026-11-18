@@ -106,9 +106,13 @@ func (c selfSigned) tlsSettings(alpn ...string) map[string]any {
 func startXray(t *testing.T, inbound map[string]any, redirectPort int) {
 	t.Helper()
 	cfg := map[string]any{
-		"log":       map[string]any{"loglevel": "warning"},
-		"inbounds":  []any{inbound},
-		"outbounds": []any{map[string]any{"protocol": "freedom", "settings": map[string]any{"redirect": fmt.Sprintf("127.0.0.1:%d", redirectPort)}}},
+		"log":      map[string]any{"loglevel": "warning"},
+		"inbounds": []any{inbound},
+		// Xray blocks private targets for proxy inbounds by default; the test target is on localhost
+		"outbounds": []any{map[string]any{"protocol": "freedom", "settings": map[string]any{
+			"redirect":   fmt.Sprintf("127.0.0.1:%d", redirectPort),
+			"finalRules": []any{map[string]any{"action": "allow", "ip": []any{"127.0.0.0/8"}}},
+		}}},
 	}
 	b, _ := json.Marshal(cfg)
 	inst, err := core.StartInstance("json", b)

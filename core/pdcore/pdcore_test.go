@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -192,5 +194,72 @@ router.lan = 192.168.1.1
 	probe, _ := xcfg.Probe(mustParse(t, links[4]), xcfg.Options{Settings: s, Interface: "lo"})
 	if _, err := core.LoadConfig("json", bytes.NewReader(probe)); err != nil {
 		t.Fatalf("probe with interface: %v", err)
+	}
+}
+
+// The user's Shadowrocket config (core/internal/rules/testdata/simple.conf) compiles into a
+// tunnel config that Xray accepts, with DNS through Xray and the excluded routes kept.
+func TestSimpleConfAcceptedByXray(t *testing.T) {
+	text, err := os.ReadFile("../internal/rules/testdata/simple.conf")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sets := rules.SetSource(func(u string) ([]string, bool) {
+		if strings.HasSuffix(u, "REJECT.list") {
+			return []string{"DOMAIN-SUFFIX,doubleclick.net", "DOMAIN-KEYWORD,adservice"}, true
+		}
+		return []string{"DOMAIN-SUFFIX,vk.com", "DOMAIN-SUFFIX,ozon.ru", "IP-CIDR,95.142.192.0/20,no-resolve"}, true
+	})
+	comp := rules.Compile(rules.Parse(string(text)), rules.Options{Sets: sets})
+	s := model.DefaultSettings()
+	s.Mode = "config"
+	for _, link := range []string{links[0], links[8], wireguardLink} {
+		srv := mustParse(t, link)
+		tun, err := xcfg.Tunnel(srv, xcfg.Options{Settings: s, Rules: comp})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := core.LoadConfig("json", bytes.NewReader(tun.JSON)); err != nil {
+			t.Fatalf("%s: %v\n%s", srv.Name, err, tun.JSON)
+		}
+		var cfg struct {
+			DNS struct {
+				Servers []any  `json:"servers"`
+				Tag     string `json:"tag"`
+			} `json:"dns"`
+			Routing struct {
+				Rules []map[string]any `json:"rules"`
+			} `json:"routing"`
+		}
+		if err := json.Unmarshal(tun.JSON, &cfg); err != nil {
+			t.Fatal(err)
+		}
+		if len(cfg.DNS.Servers) != 4 || cfg.DNS.Tag != "dns-internal" {
+			t.Fatalf("%s: dns %+v", srv.Name, cfg.DNS)
+		}
+		var hijack, reject, direct, final bool
+		for _, r := range cfg.Routing.Rules {
+			out, _ := r["outboundTag"].(string)
+			if port, _ := r["port"].(string); port == "53" && out == "dns-out" {
+				hijack = true
+			}
+			if d, ok := r["domain"].([]any); ok && len(d) > 0 {
+				if out == "block" && strings.Contains(fmt.Sprint(d), "doubleclick.net") {
+					reject = true
+				}
+				if out == "direct" && strings.Contains(fmt.Sprint(d), "vk.com") {
+					direct = true
+				}
+			}
+			if n, _ := r["network"].(string); n == "tcp,udp" && out == "proxy" {
+				final = true
+			}
+		}
+		if !hijack || !reject || !direct || !final {
+			t.Fatalf("%s: routing hijack=%v reject=%v direct=%v final=%v\n%s", srv.Name, hijack, reject, direct, final, tun.JSON)
+		}
+		if len(tun.Net.Excluded) < 14 {
+			t.Fatalf("%s: bypass-tun routes missing: %v", srv.Name, tun.Net.Excluded)
+		}
 	}
 }
