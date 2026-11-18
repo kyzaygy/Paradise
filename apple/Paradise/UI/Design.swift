@@ -169,14 +169,16 @@ struct HomeMetrics {
 }
 
 extension View {
-  /// Frosted glass: the blur of what is behind, the theme's tint and a hairline that is lighter on top.
-  func glass<S: InsettableShape>(_ shape: S, tint: Color? = nil, stroke: Color? = nil) -> some View {
+  /// Glass: the theme's tint and a hairline that is lighter on top. Frosted glass also blurs what is
+  /// behind; it is kept for the large surfaces, since every blur is redrawn on each frame of the space.
+  func glass<S: InsettableShape>(_ shape: S, tint: Color? = nil, stroke: Color? = nil, frosted: Bool = false) -> some View {
     let p = Palette.current
     let edge = stroke ?? p.stroke
+    let fill = tint ?? (frosted ? p.glass : p.raised.opacity(p.isLight ? 0.92 : 0.86))
     return background {
       ZStack {
-        shape.fill(.ultraThinMaterial)
-        shape.fill(tint ?? p.glass)
+        if frosted { shape.fill(.ultraThinMaterial) }
+        shape.fill(fill)
       }
     }
     .overlay(shape.strokeBorder(LinearGradient(colors: [edge, edge.opacity(0.45)], startPoint: .top, endPoint: .bottom), lineWidth: 1))

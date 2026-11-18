@@ -103,8 +103,8 @@ struct HomeScreen: View {
     let panelTop = min(layout.collapsedPanelTop, max(layout.fullPanelTop, layout.panelTop(detent) + panelDrag))
     let nodes = model.countryNodes
     let showEmptyHint = model.state.servers.isEmpty && !model.loading
-    // the space stops while the panel covers it, and in the demo (fixed frames for screenshots and tests)
-    let moving = prefs.galaxyMotion && (model.demo == nil || Demo.motion) && detent != .full
+    // the space stops while the panel or a sheet covers it, and in the demo (fixed frames for screenshots and tests)
+    let moving = prefs.galaxyMotion && (model.demo == nil || Demo.motion) && detent != .full && model.sheet == nil
     return ZStack(alignment: .topLeading) {
       if model.storageBroken {
         Palette.current.background
@@ -296,7 +296,7 @@ struct HomeScreen: View {
       .buttonStyle(PressableStyle())
     }
     .padding(m(20))
-    .glass(shape)
+    .glass(shape, frosted: true)
     .padding(.horizontal, m(24))
   }
 
@@ -312,7 +312,7 @@ struct HomeScreen: View {
       Button(L("storage.reset"), role: .destructive) { Task { await model.eraseAndRestart() } }
     }
     .padding(16)
-    .glass(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    .glass(RoundedRectangle(cornerRadius: 18, style: .continuous), frosted: true)
   }
 }
 
@@ -344,7 +344,7 @@ struct ConnectionCard: View {
       InfoRow(m: m, width: width)
         .frame(height: m(HomeLayout.info) - 1)
     }
-    .glass(RoundedRectangle(cornerRadius: m(22), style: .continuous), stroke: on ? p.accent.opacity(0.5) : p.stroke)
+    .glass(RoundedRectangle(cornerRadius: m(22), style: .continuous), stroke: on ? p.accent.opacity(0.5) : p.stroke, frosted: true)
     .animation(.easeInOut(duration: 0.35), value: on)
   }
 }
@@ -370,18 +370,28 @@ struct StatusLine: View {
     return Button(action: onSelect) {
       HStack(spacing: m(14)) {
         StatusOrb(phase: phase, m: m)
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-          VStack(alignment: .leading, spacing: m(3)) {
-            Text(title)
-              .font(m.font(18, .semibold))
-              .foregroundStyle(p.text)
-              .lineLimit(1)
-              .accessibilityIdentifier("status.title")
-            Text(Self.subtitle(line, now: context.date))
-              .font(m.font(14).monospacedDigit())
-              .foregroundStyle(p.text2)
-              .lineLimit(1)
-              .accessibilityIdentifier("status.subtitle")
+        VStack(alignment: .leading, spacing: m(3)) {
+          Text(title)
+            .font(m.font(18, .semibold))
+            .foregroundStyle(p.text)
+            .lineLimit(1)
+            .accessibilityIdentifier("status.title")
+          // only the timer ticks; a long place is shortened, the timer stays whole
+          TimelineView(.periodic(from: .now, by: 1)) { context in
+            let time = line.since.map { Format.duration(since: $0, now: context.date) }
+            HStack(spacing: m(5)) {
+              if !line.text.isEmpty {
+                Text(line.text).lineLimit(1)
+              }
+              if let time = time {
+                Text(line.text.isEmpty ? time : "· \(time)").fixedSize()
+              }
+            }
+            .font(m.font(14).monospacedDigit())
+            .foregroundStyle(p.text2)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Self.subtitle(line, now: context.date))
+            .accessibilityIdentifier("status.subtitle")
           }
         }
         Spacer(minLength: m(6))
@@ -512,8 +522,8 @@ struct InfoRow: View {
 
   var body: some View {
     let p = Palette.current
-    let ipWidth = (width * 0.36).rounded()
-    let placeWidth = (width * 0.38).rounded()
+    let ipWidth = (width * 0.35).rounded()
+    let placeWidth = (width * 0.31).rounded()
     return HStack(spacing: 0) {
       column(L("home.ip"), width: ipWidth) {
         Text(model.publicIP ?? "—")
@@ -527,11 +537,13 @@ struct InfoRow: View {
       column(L("home.location"), width: placeWidth) {
         HStack(spacing: m(6)) {
           if let cc = model.publicCountry { RoundFlag(cc: cc, diameter: m(16)) }
-          Text(locationText)
+          // the flag shows the country, so the line has room for the city
+          Text(placeText)
             .font(m.font(14, .semibold))
             .foregroundStyle(p.text)
             .lineLimit(1)
             .minimumScaleFactor(0.7)
+            .accessibilityLabel(locationText)
             .accessibilityIdentifier("info.location")
         }
       }
@@ -546,6 +558,12 @@ struct InfoRow: View {
     let country = Format.country(cc)
     if let city = model.publicCity, !city.isEmpty { return "\(country), \(city)" }
     return country
+  }
+
+  private var placeText: String {
+    guard let cc = model.publicCountry else { return "—" }
+    if let city = model.publicCity, !city.isEmpty { return city }
+    return Format.country(cc)
   }
 
   private func column<V: View>(_ label: String, width: CGFloat, @ViewBuilder value: () -> V) -> some View {
@@ -684,7 +702,7 @@ struct ConnectButton: View {
       .background {
         ZStack {
           if on {
-            shape.fill(.ultraThinMaterial)
+            shape.fill(p.raised.opacity(0.92))
             shape.fill(p.accent.opacity(0.16))
           } else {
             shape.fill(LinearGradient(colors: [p.connectFill, p.connectFill.opacity(0.88)], startPoint: .top, endPoint: .bottom))

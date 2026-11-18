@@ -200,9 +200,9 @@ struct ServerPanel: View {
   // MARK: Regions
 
   private var regionRow: some View {
-    HStack(spacing: m(8)) {
+    HStack(spacing: m(6)) {
       ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: m(8)) {
+        HStack(spacing: m(6)) {
           if let cc = countryFilter {
             chip(title: Format.country(cc), selected: true, flag: cc, trailing: "xmark") { countryFilter = nil }
               .accessibilityIdentifier("region.country")
@@ -216,7 +216,14 @@ struct ServerPanel: View {
             }
           }
         }
-        .padding(.horizontal, m(12))
+        .padding(.leading, m(12))
+        .padding(.trailing, m(10))
+      }
+      .mask {
+        HStack(spacing: 0) {
+          Color.black
+          LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing).frame(width: m(10))
+        }
       }
       chip(title: L("sheet.fastest"), selected: false, icon: "bolt.fill") { selectFastest() }
         .accessibilityIdentifier("region.fastest")
@@ -233,12 +240,12 @@ struct ServerPanel: View {
         if let flag = flag { RoundFlag(cc: flag, diameter: m(18)) }
         if let icon = icon { Image(systemName: icon).font(.system(size: m(12), weight: .semibold)) }
         Text(title)
-          .font(m.font(13.5, selected ? .semibold : .medium))
+          .font(m.font(13, selected ? .semibold : .medium))
           .lineLimit(1)
         if let trailing = trailing { Image(systemName: trailing).font(.system(size: m(10), weight: .bold)) }
       }
       .foregroundStyle(selected ? p.text : p.text2)
-      .padding(.horizontal, m(13))
+      .padding(.horizontal, m(11))
       .frame(height: m(34))
       .background(selected ? p.selected : p.raised, in: Capsule())
       .overlay(Capsule().strokeBorder(selected ? p.strokeStrong : p.stroke, lineWidth: 1))

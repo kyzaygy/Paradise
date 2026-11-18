@@ -393,7 +393,7 @@ private struct SpaceLayers: View {
 
   var body: some View {
     let p = Palette.current
-    let blend: BlendMode = p.isLight ? .normal : .plusLighter
+    // plain alpha blending: the layers are sparse, and blend modes would cost an extra pass on every frame
     return ZStack(alignment: .topLeading) {
       if let textures = textures {
         Image(uiImage: textures.stars)
@@ -402,14 +402,11 @@ private struct SpaceLayers: View {
           .offset(x: tilt.width * 3, y: tilt.height * 3)
           .opacity(min(1, intro * 1.6))
         disc(textures.far, side: radius * 2, degrees: t * 1.4, opacity: min(1, intro * 1.4) * 0.95, shift: 6)
-          .blendMode(blend)
         disc(textures.near, side: radius * 1.2, degrees: t * 3.2, opacity: min(1, intro * 1.4), shift: 9)
-          .blendMode(blend)
       }
       Canvas { context, _ in
         draw(&context, palette: p)
       }
-      .blendMode(blend)
     }
     .frame(width: size.width, height: size.height)
     .allowsHitTesting(false)
@@ -590,7 +587,7 @@ struct NodeChip: View {
       .padding(.leading, m(8))
       .padding(.trailing, m(11))
       .frame(height: m(36))
-      .glass(shape, tint: active ? p.selected.opacity(0.75) : p.glass, stroke: active ? p.strokeStrong : p.stroke)
+      .glass(shape, tint: active ? p.selected.opacity(0.94) : nil, stroke: active ? p.strokeStrong : p.stroke)
       .shadow(color: connected ? p.accent.opacity(0.5) : .clear, radius: m(10))
       .scaleEffect(active ? 1.06 : 1)
       .animation(.spring(response: 0.35, dampingFraction: 0.7), value: active)
