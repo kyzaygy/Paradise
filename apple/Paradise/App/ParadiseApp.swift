@@ -66,38 +66,21 @@ struct RootView: View {
   init() {}
 
   var body: some View {
-    GeometryReader { _ in
-      ZStack(alignment: .topLeading) {
-        Theme.space.ignoresSafeArea()
-        Group {
-          switch model.tab {
-          case .home: HomeView()
-          case .config: ConfigTab().padding(.leading, TabRail.width)
-          case .data: DataTab().padding(.leading, TabRail.width)
-          case .settings: SettingsTab().padding(.leading, TabRail.width)
+    ZStack(alignment: .top) {
+      DS.background.ignoresSafeArea()
+      HomeView()
+      if let banner = model.banner {
+        BannerView(banner: banner) { model.banner = nil }
+          .padding(.top, 8)
+          .transition(.move(edge: .top).combined(with: .opacity))
+          .task(id: banner.id) {
+            try? await Task.sleep(nanoseconds: banner.action == nil ? 5_000_000_000 : 8_000_000_000)
+            if model.banner?.id == banner.id { withAnimation { model.banner = nil } }
           }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        if !(model.tab == .home && model.railHidden) {
-          TabRail()
-            .padding(.top, model.tab == .home ? 124 : 64)
-            .transition(.move(edge: .leading).combined(with: .opacity))
-        }
-        if let banner = model.banner {
-          BannerView(banner: banner) { model.banner = nil }
-            .padding(.top, 8)
-            .frame(maxWidth: .infinity)
-            .transition(.move(edge: .top).combined(with: .opacity))
-            .task(id: banner.id) {
-              try? await Task.sleep(nanoseconds: banner.action == nil ? 5_000_000_000 : 8_000_000_000)
-              if model.banner?.id == banner.id { withAnimation { model.banner = nil } }
-            }
-            .zIndex(10)
-        }
+          .zIndex(10)
       }
     }
     .animation(.spring(response: 0.35, dampingFraction: 0.9), value: model.banner)
-    .animation(.spring(response: 0.35, dampingFraction: 0.9), value: model.railHidden)
     .sheet(item: $model.sheet) { sheet in
       Group {
         switch sheet {
@@ -106,6 +89,7 @@ struct RootView: View {
         case .export: ExportView()
         case .diagnostics: DiagnosticsView()
         case .notifications: NotificationsView()
+        case .controlCenter: ControlCenterView()
         case .preview(let code): ImportPreviewView(code: code)
         }
       }
@@ -114,52 +98,5 @@ struct RootView: View {
       .environmentObject(prefs)
       .preferredColorScheme(.dark)
     }
-  }
-}
-
-/// The left rail with the four sections.
-struct TabRail: View {
-  static let width: CGFloat = 60
-  @EnvironmentObject private var model: AppModel
-
-  var body: some View {
-    VStack(spacing: 6) {
-      ForEach(AppModel.Tab.allCases) { tab in
-        Button {
-          guard model.tab != tab else { return }
-          Haptics.selection()
-          withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { model.tab = tab }
-        } label: {
-          VStack(spacing: 3) {
-            Image(systemName: tab.icon)
-              .font(.system(size: 17, weight: .semibold))
-              .frame(width: 40, height: 34)
-              .background {
-                if model.tab == tab {
-                  RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Theme.glow.opacity(0.22))
-                    .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Theme.glow.opacity(0.55), lineWidth: 1))
-                    .shadow(color: Theme.glow.opacity(0.55), radius: 8)
-                }
-              }
-            Text(tab.title)
-              .font(.system(size: 9, weight: .semibold, design: .rounded))
-              .lineLimit(1)
-              .minimumScaleFactor(0.7)
-          }
-          .foregroundStyle(model.tab == tab ? Color.white : Theme.dim)
-          .frame(width: 52)
-          .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(tab.title)
-        .accessibilityAddTraits(model.tab == tab ? .isSelected : [])
-      }
-    }
-    .padding(.vertical, 10)
-    .frame(width: 56)
-    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-    .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(Color.white.opacity(0.10), lineWidth: 1))
-    .padding(.leading, 4)
   }
 }

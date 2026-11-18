@@ -1,7 +1,8 @@
 import SwiftUI
 import UIKit
 
-/// "Frost" visual language: graphite surfaces, one silver accent, rounded type (matches the app icon).
+/// Monochrome visual language of the home screen (see DS): near-black surfaces, light-grey accent.
+/// Color carries meaning only for latency (green) and for warnings and errors.
 enum Theme {
   static func dynamic(light: UInt32, dark: UInt32) -> Color {
     Color(UIColor { trait in
@@ -9,51 +10,33 @@ enum Theme {
     })
   }
 
-  static let canvas = dynamic(light: 0xEDEFF2, dark: 0x0F1115)
-  static let surface = dynamic(light: 0xFFFFFF, dark: 0x191C22)
-  static let surfaceRaised = dynamic(light: 0xE2E5EA, dark: 0x23272F)
-  static let hairline = dynamic(light: 0xD3D8DE, dark: 0x2B3039)
-  static let accent = dynamic(light: 0x3A414E, dark: 0xE3E7EE)
-  static let accentSoft = dynamic(light: 0xE0E3E8, dark: 0x262A32)
-  static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x14171C)
-  static let warning = dynamic(light: 0xA86A12, dark: 0xF0B44C)
-  static let danger = dynamic(light: 0xC23B3B, dark: 0xFF6E6E)
-  static let muted = dynamic(light: 0x626A76, dark: 0x8F96A2)
+  static let canvas = dynamic(light: 0xEDEEF0, dark: 0x0B0C0E)
+  static let surface = dynamic(light: 0xFFFFFF, dark: 0x131416)
+  static let surfaceRaised = dynamic(light: 0xE3E4E7, dark: 0x1B1C1F)
+  static let hairline = dynamic(light: 0xD4D5D9, dark: 0x26272A)
+  static let accent = dynamic(light: 0x2A2B30, dark: 0xDADAE2)
+  static let accentSoft = dynamic(light: 0xE1E2E6, dark: 0x1D1E21)
+  static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x121216)
+  static let warning = dynamic(light: 0x9A6A1C, dark: 0xE0B05A)
+  static let danger = dynamic(light: 0xB83A3A, dark: 0xE57373)
+  static let muted = dynamic(light: 0x5F6066, dark: 0x95969A)
 
-  // Galaxy palette (dark, used across the redesigned screens)
-  static let space = Color(UIColor(hex: 0x05060D))
-  static let spaceRaised = Color(UIColor(hex: 0x0D0F1C))
-  static let glow = Color(UIColor(hex: 0x8C7BFF))
-  static let glowWarm = Color(UIColor(hex: 0xFFB36B))
-  static let glowCool = Color(UIColor(hex: 0x63D3FF))
-  static let good = Color(UIColor(hex: 0x4BE3A0))
-  static let fair = Color(UIColor(hex: 0xF5C451))
-  static let poor = Color(UIColor(hex: 0xFF6B7A))
-  static let dim = Color(UIColor(hex: 0x8A90A8))
+  // Dark palette of the redesigned screens
+  static let space = Color(UIColor(hex: 0x0B0C0E))
+  static let spaceRaised = Color(UIColor(hex: 0x131416))
+  static let glow = Color(UIColor(hex: 0xE4E5E7))
+  static let glowCool = Color(UIColor(hex: 0xB5B6BA))
+  static let good = Color(UIColor(hex: 0x96D0A0))
+  static let fair = Color(UIColor(hex: 0xE0B05A))
+  static let poor = Color(UIColor(hex: 0xE57373))
+  static let dim = Color(UIColor(hex: 0x8E8F93))
   static let line = Color.white.opacity(0.08)
 
-  /// Latency color: green under 150 ms, yellow under 400 ms, red above.
-  static func latencyColor(_ ms: Int64?) -> Color {
-    guard let ms = ms else { return dim }
-    if ms < 150 { return good }
-    if ms < 400 { return fair }
-    return poor
-  }
-
-  /// Signal bars (0…4) for a latency value.
-  static func bars(_ ms: Int64?) -> Int {
-    guard let ms = ms else { return 0 }
-    if ms < 120 { return 4 }
-    if ms < 250 { return 3 }
-    if ms < 500 { return 2 }
-    return 1
-  }
-
-  static func title(_ style: Font.TextStyle = .title2) -> Font { .system(style, design: .rounded).weight(.bold) }
-  static func label(_ style: Font.TextStyle = .body) -> Font { .system(style, design: .rounded).weight(.semibold) }
+  static func title(_ style: Font.TextStyle = .title2) -> Font { .system(style).weight(.bold) }
+  static func label(_ style: Font.TextStyle = .body) -> Font { .system(style).weight(.semibold) }
   static let mono = Font.system(.footnote, design: .monospaced)
 
-  static let radius: CGFloat = 20
+  static let radius: CGFloat = 15
 }
 
 extension UIColor {
@@ -110,7 +93,7 @@ struct LatencyBadge: View {
     case .ms(let ms):
       Text(LF("latency.ms", ms))
         .font(.system(.caption, design: .rounded).weight(.semibold))
-        .foregroundStyle(ms < 300 ? Theme.accent : (ms < 800 ? Theme.warning : Theme.danger))
+        .foregroundStyle(Theme.good)
     case .failed:
       Image(systemName: "exclamationmark.triangle.fill")
         .font(.caption)
@@ -122,36 +105,6 @@ struct LatencyBadge: View {
   }
 }
 
-struct SignalBars: View {
-  var bars: Int
-  var color: Color
-
-  var body: some View {
-    HStack(alignment: .bottom, spacing: 1.5) {
-      ForEach(0..<4, id: \.self) { i in
-        RoundedRectangle(cornerRadius: 1)
-          .fill(i < bars ? color : Color.white.opacity(0.18))
-          .frame(width: 2.5, height: 4 + CGFloat(i) * 2.5)
-      }
-    }
-    .accessibilityHidden(true)
-  }
-}
-
-/// Glass card used on the dark screens.
-struct GlassCard<Content: View>: View {
-  var padding: CGFloat = 14
-  @ViewBuilder var content: Content
-
-  var body: some View {
-    content
-      .padding(padding)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-      .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(Theme.line, lineWidth: 1))
-  }
-}
-
 struct BannerView: View {
   let banner: AppModel.Banner
   var dismiss: () -> Void
@@ -159,7 +112,7 @@ struct BannerView: View {
   var body: some View {
     HStack(alignment: .center, spacing: 10) {
       Image(systemName: banner.isError ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
-        .foregroundStyle(banner.isError ? Theme.danger : Theme.good)
+        .foregroundStyle(banner.isError ? Theme.danger : Theme.accent)
       Text(banner.text)
         .font(.subheadline)
         .frame(maxWidth: .infinity, alignment: .leading)

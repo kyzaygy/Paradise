@@ -41,7 +41,8 @@ type Compiled struct {
 	Final          string
 	Hosts          map[string]any
 	DNSServers     []any
-	Hijack         bool // send the device DNS into Xray's DNS module
+	DNSDirect      []string // plain-IP DNS servers queried directly (no #proxy)
+	Hijack         bool     // send the device DNS into Xray's DNS module
 	Excluded       []string
 	Included       []string
 	IPv6           *bool
@@ -52,6 +53,7 @@ type Compiled struct {
 	GeoCodes       []string
 	Sets           []string
 	UpdateURL      string
+	UpdateMinutes  int // update-url … interval=N
 	GeoIPURL       string
 	GeoSiteURL     string
 }
@@ -273,17 +275,22 @@ func Compile(c *Config, o Options) *Compiled {
 
 	compileDNS(c, out)
 
-	for _, key := range []string{"tun-excluded-routes", "tun-included-routes"} {
+	seenRoute := map[string]bool{}
+	for _, key := range []string{"tun-excluded-routes", "bypass-tun", "tun-included-routes"} {
 		for _, v := range List(c.General[key]) {
 			cidr, ok := NormalizeCIDR(v)
 			if !ok {
 				out.Warnings = append(out.Warnings, Warning{Line: c.Lines[key], Code: WarnInvalid, Text: v})
 				continue
 			}
-			if key == "tun-excluded-routes" {
-				out.Excluded = append(out.Excluded, cidr)
-			} else {
+			if seenRoute[key[:3]+cidr] {
+				continue
+			}
+			seenRoute[key[:3]+cidr] = true
+			if key == "tun-included-routes" {
 				out.Included = append(out.Included, cidr)
+			} else {
+				out.Excluded = append(out.Excluded, cidr)
 			}
 		}
 	}
@@ -294,7 +301,7 @@ func Compile(c *Config, o Options) *Compiled {
 			out.Warnings = append(out.Warnings, Warning{Line: c.Lines["ipv6"], Code: WarnInvalid, Text: v})
 		}
 	}
-	out.UpdateURL = httpsURL(c.General["update-url"])
+	out.UpdateURL, out.UpdateMinutes = updateURL(c.General["update-url"])
 	out.GeoIPURL = httpsURL(c.General["geoip-url"])
 	out.GeoSiteURL = httpsURL(c.General["geosite-url"])
 	out.MissingGeo = keys(missingGeo)
@@ -305,21 +312,69 @@ func Compile(c *Config, o Options) *Compiled {
 	return out
 }
 
+// dnsServer maps a Shadowrocket DNS entry to Xray. Without "#proxy" servers are queried
+// directly (Shadowrocket semantics); "#proxy" sends the query through the proxy.
+// plainIP is set for direct UDP servers that need a routing rule.
+func dnsServer(raw string) (server string, plainIP string, code string) {
+	v := strings.TrimSpace(raw)
+	viaProxy := false
+	if i := strings.Index(v, "#"); i >= 0 {
+		viaProxy = strings.EqualFold(strings.TrimSpace(v[i+1:]), "proxy")
+		v = strings.TrimSpace(v[:i])
+	}
+	low := strings.ToLower(v)
+	switch {
+	case v == "":
+		return "", "", WarnInvalid
+	case low == "system":
+		return "localhost", "", ""
+	case net.ParseIP(strings.Trim(v, "[]")) != nil:
+		if viaProxy {
+			return strings.Trim(v, "[]"), "", ""
+		}
+		return strings.Trim(v, "[]"), strings.Trim(v, "[]"), ""
+	case strings.HasPrefix(low, "https://"):
+		if viaProxy {
+			return v, "", ""
+		}
+		return "https+local://" + v[len("https://"):], "", ""
+	case strings.HasPrefix(low, "quic://"):
+		return "quic+local://" + v[len("quic://"):], "", ""
+	case strings.HasPrefix(low, "tcp://"):
+		if viaProxy {
+			return v, "", ""
+		}
+		return "tcp+local://" + v[len("tcp://"):], "", ""
+	case strings.HasPrefix(low, "https+local://"), strings.HasPrefix(low, "quic+local://"), strings.HasPrefix(low, "tcp+local://"):
+		return v, "", ""
+	}
+	if host, port, err := net.SplitHostPort(v); err == nil && net.ParseIP(host) != nil && port != "" {
+		if viaProxy {
+			return v, "", ""
+		}
+		return v, host, ""
+	}
+	// tls:// (DNS over TLS) and anything else has no Xray client
+	return "", "", WarnUnsupportedDNS
+}
+
 func compileDNS(c *Config, out *Compiled) {
 	var servers []any
+	system := false
 	for _, key := range []string{"dns-server", "fallback-dns-server"} {
 		for _, v := range List(c.General[key]) {
-			low := strings.ToLower(v)
-			switch {
-			case low == "system":
-			case net.ParseIP(v) != nil:
-				servers = append(servers, v)
-			case strings.HasPrefix(low, "https://"), strings.HasPrefix(low, "https+local://"), strings.HasPrefix(low, "tcp://"),
-				strings.HasPrefix(low, "tcp+local://"), strings.HasPrefix(low, "quic+local://"):
-				servers = append(servers, v)
-			default:
-				out.Warnings = append(out.Warnings, Warning{Line: c.Lines[key], Code: WarnUnsupportedDNS, Text: v})
+			srv, plain, code := dnsServer(v)
+			if code != "" {
+				out.Warnings = append(out.Warnings, Warning{Line: c.Lines[key], Code: code, Text: v})
+				continue
 			}
+			if srv == "localhost" {
+				system = true
+			}
+			if plain != "" {
+				out.DNSDirect = append(out.DNSDirect, plain)
+			}
+			servers = append(servers, srv)
 		}
 	}
 	hosts := map[string]any{}
@@ -332,11 +387,15 @@ func compileDNS(c *Config, out *Compiled) {
 			key = "regexp:" + wildcardRegex(key)
 		}
 		if strings.HasPrefix(strings.ToLower(h.Value), "server:") {
-			addr := strings.TrimSpace(h.Value[len("server:"):])
-			if strings.EqualFold(addr, "system") || addr == "" {
+			srv, plain, code := dnsServer(h.Value[len("server:"):])
+			if code != "" {
+				out.Warnings = append(out.Warnings, Warning{Line: h.Line, Code: code, Text: h.Value})
 				continue
 			}
-			perDomain = append(perDomain, map[string]any{"address": addr, "domains": []any{hostDomain(key)}})
+			if plain != "" {
+				out.DNSDirect = append(out.DNSDirect, plain)
+			}
+			perDomain = append(perDomain, map[string]any{"address": srv, "domains": []any{hostDomain(key)}})
 			continue
 		}
 		hosts[key] = h.Value
@@ -344,10 +403,37 @@ func compileDNS(c *Config, out *Compiled) {
 	if len(hosts) > 0 {
 		out.Hosts = hosts
 	}
-	if len(perDomain) > 0 || len(servers) > 0 || len(hosts) > 0 {
+	onlySystem := system && len(servers) == 1
+	if len(perDomain) > 0 || (len(servers) > 0 && !onlySystem) || len(hosts) > 0 {
 		out.Hijack = true
 		out.DNSServers = append(perDomain, servers...)
 	}
+}
+
+// updateURL reads "https://… interval=60 strict=true".
+func updateURL(v string) (string, int) {
+	fields := strings.Fields(v)
+	if len(fields) == 0 {
+		return "", 0
+	}
+	u := httpsURL(fields[0])
+	minutes := 0
+	for _, f := range fields[1:] {
+		if k, val, ok := strings.Cut(f, "="); ok && strings.EqualFold(k, "interval") {
+			n := 0
+			for _, r := range val {
+				if r < '0' || r > '9' {
+					n = 0
+					break
+				}
+				n = n*10 + int(r-'0')
+			}
+			if n >= 5 && n <= 10080 {
+				minutes = n
+			}
+		}
+	}
+	return u, minutes
 }
 
 func hostDomain(key string) string {

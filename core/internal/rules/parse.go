@@ -85,7 +85,7 @@ type Config struct {
 const MaxTextBytes = 2 << 20
 
 var knownGeneral = map[string]bool{
-	"bypass-system": true, "skip-proxy": true, "tun-excluded-routes": true, "tun-included-routes": true,
+	"bypass-system": true, "skip-proxy": true, "tun-excluded-routes": true, "tun-included-routes": true, "bypass-tun": true,
 	"dns-server": true, "fallback-dns-server": true, "ipv6": true, "update-url": true,
 	"geoip-url": true, "geosite-url": true, "domain-strategy": true,
 }

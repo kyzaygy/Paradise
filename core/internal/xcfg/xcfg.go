@@ -142,6 +142,10 @@ func tuneOutbound(ob object, s model.Settings, frag *model.Fragment, iface strin
 	if stream == nil {
 		stream = object{}
 	}
+	// Xray 26 refuses configs that still carry the removed allowInsecure flag
+	if tls, ok := stream["tlsSettings"].(map[string]any); ok {
+		delete(tls, "allowInsecure")
+	}
 	network, _ := stream["network"].(string)
 	protocol, _ := ob["protocol"].(string)
 	udp := protocol == "hysteria" || protocol == "wireguard" || network == "hysteria" || network == "kcp" || network == "mkcp"
@@ -301,6 +305,13 @@ func base(srv model.Server, o Options, tunnel bool) (object, string, int, error)
 	case s.Mode == "direct" && tunnel:
 		pre = append(pre, object{"type": "field", "network": "tcp,udp", "outboundTag": "direct"})
 	case s.Mode == "config" && o.Rules != nil && tunnel:
+		if hijack {
+			// queries of Xray's own DNS client: direct servers first, the rest through the proxy
+			if len(o.Rules.DNSDirect) > 0 {
+				pre = append(pre, object{"type": "field", "inboundTag": []any{"dns-internal"}, "ip": toAny(o.Rules.DNSDirect), "outboundTag": "direct"})
+			}
+			pre = append(pre, object{"type": "field", "inboundTag": []any{"dns-internal"}, "outboundTag": proxyTag})
+		}
 		for _, r := range o.Rules.Rules {
 			rule := object{"type": "field"}
 			for k, v := range r {

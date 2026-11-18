@@ -55,6 +55,7 @@ type Engine struct {
 	probeSlots  chan struct{}
 
 	dir       string
+	subUA     string // copy of Settings.SubUserAgent, read without the document lock
 	bigClient *http.Client
 	places    map[string]place.Place // server key → detected location
 	geoMu     sync.Mutex
@@ -82,6 +83,7 @@ func New(dir string, key []byte, dev Device, prober Prober) (*Engine, error) {
 	e := &Engine{doc: doc, store: st, client: sub.NewClient(), device: dev, prober: prober, now: time.Now, probeSlots: make(chan struct{}, 4),
 		dir: dir, bigClient: &http.Client{Timeout: 3 * time.Minute}, places: map[string]place.Place{}, geoCache: map[string][]string{}}
 	e.probeCtx, e.probeCancel = context.WithCancel(context.Background())
+	e.subUA = doc.Settings.SubUserAgent
 	changed := false
 	if doc.HWID == "" {
 		doc.HWID = randomHex(16)
@@ -249,7 +251,13 @@ func (e *Engine) dispatch(method string, args []byte) (any, error) {
 			return nil
 		})
 	case "updateSettings":
-		return e.mutate(func(d *model.Document) error { return applySettingsPatch(&d.Settings, args) })
+		return e.mutate(func(d *model.Document) error {
+			if err := applySettingsPatch(&d.Settings, args); err != nil {
+				return err
+			}
+			e.subUA = d.Settings.SubUserAgent
+			return nil
+		})
 	case "resetSettings":
 		return e.mutate(func(d *model.Document) error {
 			active := d.Settings.ActiveConfig
@@ -459,5 +467,9 @@ func (e *Engine) userAgent() string {
 }
 
 func (e *Engine) deviceHeaders(sendHWID bool, hwid string) sub.Device {
-	return sub.Device{HWID: hwid, OS: e.device.Platform, OSVersion: e.device.OSVersion, Model: e.device.Model, Locale: e.device.Locale, UserAgent: e.userAgent(), SendHWID: sendHWID}
+	ua := e.userAgent()
+	if custom := e.subUA; custom != "" {
+		ua = custom
+	}
+	return sub.Device{HWID: hwid, OS: e.device.Platform, OSVersion: e.device.OSVersion, Model: e.device.Model, Locale: e.device.Locale, UserAgent: ua, SendHWID: sendHWID}
 }

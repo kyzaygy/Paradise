@@ -386,6 +386,11 @@ func (e *Engine) dispatchExtra(method string, args []byte) (any, bool, error) {
 		}
 		out, err := e.exportServers(in.Format, in.SubscriptionID)
 		return out, true, err
+	case "locateServers":
+		out, err := e.locateServers()
+		return out, true, err
+	case "updateDueConfigs":
+		return e.updateDueConfigs(), true, nil
 	case "deleteAllServers":
 		out, err := e.mutate(func(d *model.Document) error {
 			d.Subscriptions = nil
@@ -525,6 +530,10 @@ func (e *Engine) updateConfig(id string) (SaveResult, error) {
 	}
 	url, text := c.URL, c.Text
 	e.mu.Unlock()
+	if url == "" {
+		_, comp := e.compile(text)
+		url = comp.UpdateURL
+	}
 	if url != "" {
 		b, err := e.downloadText(url, rules.MaxTextBytes)
 		if err == nil && !looksLikeRuleConfig(string(b)) {
@@ -619,4 +628,33 @@ func (e *Engine) applyProvidedRouting(subID string, links []string) {
 			logx.Warn("config", "provided routing skipped: %s", apperr.From(err).Detail)
 		}
 	}
+}
+
+// updateDueConfigs refreshes remote configs whose interval (update-url … interval=N, default 24 h) has passed.
+func (e *Engine) updateDueConfigs() State {
+	e.mu.Lock()
+	now := e.now()
+	var due []string
+	for _, c := range e.doc.Configs {
+		_, comp := e.compile(c.Text)
+		if c.URL == "" && comp.UpdateURL == "" {
+			continue
+		}
+		every := 24 * time.Hour
+		if comp.UpdateMinutes > 0 {
+			every = time.Duration(comp.UpdateMinutes) * time.Minute
+		}
+		if now.Sub(c.UpdatedAt) >= every {
+			due = append(due, c.ID)
+		}
+	}
+	e.mu.Unlock()
+	for _, id := range due {
+		if _, err := e.updateConfig(id); err != nil {
+			logx.Warn("config", "update failed: %s", apperr.From(err).Code)
+		}
+	}
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.stateLocked()
 }

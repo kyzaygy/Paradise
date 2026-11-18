@@ -129,11 +129,12 @@ func happText(p map[string]any) (string, string) {
 	}
 	var b strings.Builder
 	fmt.Fprintf(&b, "# %s\n# Imported from a routing link. Edit freely.\n\n[General]\n", name)
+	// Happ's "remote DNS" goes through the tunnel, hence #proxy
 	var dns []string
 	if d := happString(p["RemoteDNSDomain"]); strings.HasPrefix(strings.ToLower(d), "https://") {
-		dns = append(dns, d)
+		dns = append(dns, d+"#proxy")
 	} else if ip := happString(p["RemoteDNSIP"]); net.ParseIP(ip) != nil {
-		dns = append(dns, ip)
+		dns = append(dns, ip+"#proxy")
 	}
 	if len(dns) > 0 {
 		fmt.Fprintf(&b, "dns-server = %s\n", strings.Join(dns, ", "))

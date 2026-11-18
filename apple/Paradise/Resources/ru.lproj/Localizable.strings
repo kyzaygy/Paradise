@@ -8,7 +8,7 @@
 "common.save" = "Сохранить";
 
 /* Status */
-"status.connected" = "Защищено";
+"status.connected" = "Подключено";
 "status.connecting" = "Подключаемся…";
 "status.disconnected" = "Не подключено";
 "status.disconnecting" = "Отключаемся…";
@@ -16,9 +16,7 @@
 
 /* Home */
 "home.add" = "Добавить";
-"home.settings" = "Настройки";
 "home.offline" = "Нет подключения к интернету";
-"home.tap_to_connect" = "Нажмите, чтобы подключиться";
 "home.choose_server" = "Выберите сервер";
 "home.a11y.connect" = "Подключить VPN";
 "home.a11y.disconnect" = "Отключить VPN";
@@ -83,7 +81,6 @@
 
 "latency.ms" = "%lld мс";
 "latency.failed" = "Нет ответа";
-"probe.vpn_active" = "Отключите VPN, чтобы проверить задержку: иначе проверка пойдёт через уже работающий туннель.";
 
 /* Connection */
 "connect.dropped_rules" = "Правил маршрутизации пропущено: %ld (нужны базы geoip/geosite, их пока нет в приложении).";
@@ -91,7 +88,6 @@
 
 /* Transfer */
 "transfer.share" = "Поделиться";
-"transfer.receive" = "Получить";
 "transfer.imported" = "Профиль получен, добавлено источников: %ld.";
 "transfer.imported_duplicates" = "Уже были: %ld.";
 
@@ -154,12 +150,8 @@
 "preview.failure_hint" = "Попросите отправить код ещё раз: файлом или ссылкой.";
 
 /* Settings */
-"settings.title" = "Настройки";
-"settings.mode" = "Режим";
-"settings.mode_footer" = "«Правила из подписки» использует маршрутизацию провайдера, если подписка в формате Xray JSON. В остальных случаях весь трафик идёт через VPN, локальная сеть — напрямую.";
 "settings.kill_switch" = "Строгий режим (kill switch)";
 "settings.kill_switch_footer" = "Пока VPN включён, трафик не уходит мимо туннеля. Известные ограничения iOS: при включённом режиме может не обновляться приложение из App Store и задерживаться пуши по Wi‑Fi.";
-"settings.subscriptions" = "Подписки";
 "settings.auto_refresh" = "Обновлять при запуске";
 "settings.send_hwid" = "Отправлять данные устройства";
 "settings.send_hwid_footer" = "Провайдеры с ограничением устройств требуют идентификатор (x-hwid). Мы отправляем его только серверу подписки.";
@@ -167,10 +159,7 @@
 "settings.about" = "О приложении";
 "settings.version" = "Версия";
 "settings.licenses" = "Лицензии";
-"settings.diagnostics" = "Диагностика туннеля";
-"settings.language" = "Язык интерфейса — как в системе (русский или английский).";
 "settings.reset" = "Удалить все данные";
-"settings.reset_confirm" = "Удалить все подписки и настройки с этого устройства?";
 "settings.privacy" = "Paradise не собирает аналитику и не отправляет данные на свои серверы. Подписки хранятся на устройстве в зашифрованном виде.";
 
 /* Errors */
@@ -268,8 +257,6 @@
 "appearance.parallax" = "Параллакс при наклоне";
 "appearance.ping" = "Пинг на галактике";
 "appearance.probe_launch" = "Проверять серверы при запуске";
-"badge.fragment" = "ФРАГ";
-"badge.profile" = "JSON";
 "common.add" = "Добавить";
 "common.off" = "Выкл.";
 "common.on" = "Вкл.";
@@ -352,11 +339,9 @@
 "home.ip" = "Ваш IP";
 "home.location" = "Локация";
 "home.more" = "Ещё";
-"home.no_servers" = "Нет серверов";
 "home.protocol" = "Протокол";
 "home.refresh" = "Обновить подписки";
 "home.subscriptions" = "Подписки";
-"home.tap_star" = "Нажмите на звезду, чтобы подключиться";
 "import.duplicates" = "Дубликатов пропущено: %d.";
 "import.replaced" = "Заменено: %d.";
 "import.routing" = "Профиль маршрутизации добавлен в «Конфиг»";
@@ -488,3 +473,21 @@
 "update.modules" = "Модули";
 "update.now" = "Обновить сейчас";
 "update.subscription" = "Подписка";
+
+/* Home screen */
+"action.connect" = "Подключить";
+"action.disconnect" = "Отключить";
+"protocol.auto" = "Авто";
+"table.country" = "Страна";
+"table.route" = "Маршрут";
+"table.ping" = "Пинг";
+"table.ping_asc" = "Пинг: сначала быстрые";
+"table.ping_desc" = "Пинг: сначала медленные";
+"route.info" = "Маршрут показывает, как идёт подключение к серверу: протокол и, если провайдер её публикует, скорость канала.";
+"sheet.testing" = "Измеряем пинг…";
+"demo.notice" = "Демо-режим: примерные серверы, без сетевых запросов.";
+"settings.sub_ua" = "User-Agent подписки";
+"settings.sub_ua_placeholder" = "По умолчанию";
+"settings.sub_ua_footer" = "Некоторые провайдеры отдают разный список серверов в зависимости от приложения. Оставьте пустым, чтобы использовать значение по умолчанию.";
+"settings.locate_servers" = "Определять локацию серверов";
+"settings.locate_servers_footer" = "Определяет страну и город серверов, в названии которых их нет. Адреса серверов отправляются в ipinfo.io (или ipwho.is); результат хранится 30 дней.";

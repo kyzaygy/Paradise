@@ -168,6 +168,14 @@ struct SettingsTab: View {
 }
 
 /// Settings binding helper shared by the subviews.
+extension SubscriptionUpdateView {
+  private func saveUserAgent() {
+    let value = userAgent.trimmingCharacters(in: .whitespacesAndNewlines)
+    userAgent = value
+    Task { await model.updateSettings(["subUserAgent": value]) }
+  }
+}
+
 struct SettingBinding {
   static func make<T>(_ model: AppModel, _ path: WritableKeyPath<CoreSettings, T>, _ key: String, hint: Bool = true) -> Binding<T> {
     Binding(
@@ -564,6 +572,7 @@ struct UDPSettingsView: View {
 
 struct SubscriptionUpdateView: View {
   @EnvironmentObject private var model: AppModel
+  @State private var userAgent = ""
 
   var body: some View {
     Form {
@@ -602,9 +611,32 @@ struct SubscriptionUpdateView: View {
       } footer: {
         Text(L("settings.send_hwid_footer"))
       }
+      Section {
+        TextField(L("settings.sub_ua_placeholder"), text: $userAgent)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled()
+          .submitLabel(.done)
+          .onSubmit { saveUserAgent() }
+        if userAgent != model.state.settings.subUserAgent {
+          Button(L("common.save")) { saveUserAgent() }
+        }
+      } header: {
+        Text(L("settings.sub_ua"))
+      } footer: {
+        Text(L("settings.sub_ua_footer"))
+      }
+      Section {
+        Toggle(L("settings.locate_servers"), isOn: SettingBinding.make(model, \.locateServers, "locateServers", hint: false))
+      } footer: {
+        Text(L("settings.locate_servers_footer"))
+      }
     }
     .scrollContentBackground(.hidden)
     .background(Theme.space.ignoresSafeArea())
+    .onAppear { userAgent = model.state.settings.subUserAgent }
+    .onChange(of: model.state.settings.locateServers) { on in
+      if on { model.locateServers() }
+    }
     .navigationTitle(L("update.subscription"))
     .navigationBarTitleDisplayMode(.inline)
   }

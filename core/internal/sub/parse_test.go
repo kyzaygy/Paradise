@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	vlessReality = "vless://11111111-2222-3333-4444-555555555555@example.com:443?type=tcp&security=reality&pbk=PUBKEY&sid=ab12&sni=www.microsoft.com&fp=chrome&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20Germany"
+	vlessReality = "vless://11111111-2222-3333-4444-555555555555@example.com:443?type=tcp&security=reality&pbk=Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw&sid=ab12&sni=www.microsoft.com&fp=chrome&flow=xtls-rprx-vision#%F0%9F%87%A9%F0%9F%87%AA%20Germany"
 	vlessXHTTP   = "vless://11111111-2222-3333-4444-555555555555@x.example.com:443?type=xhttp&security=tls&sni=x.example.com&path=%2Fapi&mode=packet-up&alpn=h2,http/1.1#XHTTP"
 	trojanWS     = "trojan://secret@t.example.com:8443?type=ws&path=%2Fws&host=cdn.example.com#Trojan"
 )
@@ -57,7 +57,7 @@ func TestRealityFields(t *testing.T) {
 		t.Fatal(err)
 	}
 	s := string(srv.Outbound)
-	for _, want := range []string{`"publicKey":"PUBKEY"`, `"shortId":"ab12"`, `"flow":"xtls-rprx-vision"`, `"serverName":"www.microsoft.com"`} {
+	for _, want := range []string{`"publicKey":"Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw"`, `"shortId":"ab12"`, `"flow":"xtls-rprx-vision"`, `"serverName":"www.microsoft.com"`} {
 		if !strings.Contains(s, want) {
 			t.Fatalf("missing %s in %s", want, s)
 		}

@@ -131,6 +131,9 @@ type Settings struct {
 	GeoIPURL          string `json:"geoipUrl"`
 	GeoSiteURL        string `json:"geositeUrl"`
 	AutoUpdateConfigs bool   `json:"autoUpdateConfigs"`
+
+	SubUserAgent  string `json:"subUserAgent"`  // "" = Paradise
+	LocateServers bool   `json:"locateServers"` // look up country/city of server IPs
 }
 
 // Geo database presets.
@@ -150,6 +153,7 @@ func DefaultSettings() Settings {
 		FragmentPackets: "tlshello", FragmentLength: "100-200", FragmentInterval: "10-20",
 		LogLevel: "warning", AutoDeleteLogs: true, AutoRename: true,
 		GeoIPURL: GeoIPLoyalsoldier, GeoSiteURL: GeoSiteLoyalsoldier, AutoUpdateConfigs: true,
+		LocateServers: true,
 	}
 }
 
@@ -231,18 +235,30 @@ func (s *Settings) Normalize() {
 	if !validHTTPS(s.GeoSiteURL) {
 		s.GeoSiteURL = d.GeoSiteURL
 	}
+	s.SubUserAgent = strings.TrimSpace(s.SubUserAgent)
+	if len(s.SubUserAgent) > 200 || strings.ContainsAny(s.SubUserAgent, "\r\n") {
+		s.SubUserAgent = ""
+	}
 }
 
 // Document is everything persisted by the core.
 type Document struct {
-	Version       int            `json:"version"`
-	HWID          string         `json:"hwid"`
-	Subscriptions []Subscription `json:"subscriptions"`
-	Favorites     []string       `json:"favorites"`             // server keys
-	Selected      string         `json:"selected"`              // server id
-	SelectedKey   string         `json:"selectedKey,omitempty"` // fallback after refresh or transfer
-	Settings      Settings       `json:"settings"`
-	Configs       []RuleConfig   `json:"configs,omitempty"`
+	Version       int                `json:"version"`
+	HWID          string             `json:"hwid"`
+	Subscriptions []Subscription     `json:"subscriptions"`
+	Favorites     []string           `json:"favorites"`             // server keys
+	Selected      string             `json:"selected"`              // server id
+	SelectedKey   string             `json:"selectedKey,omitempty"` // fallback after refresh or transfer
+	Settings      Settings           `json:"settings"`
+	Configs       []RuleConfig       `json:"configs,omitempty"`
+	Places        map[string]Located `json:"places,omitempty"` // server address → looked-up location
+}
+
+// Located is a cached IP geolocation of a server address.
+type Located struct {
+	CC   string    `json:"cc,omitempty"`
+	City string    `json:"city,omitempty"`
+	At   time.Time `json:"at"`
 }
 
 // FindConfig looks a routing config up by id.

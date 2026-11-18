@@ -93,15 +93,10 @@ func parseHysteria2(raw string) (model.Server, error) {
 	if err != nil {
 		return invalid("bad query")
 	}
-	for _, key := range []string{"insecure", "allowInsecure"} {
-		if q.Has(key) {
-			if v, err := strconv.ParseBool(q.Get(key)); err == nil && v {
-				return invalid("insecure TLS is not supported by Xray hysteria")
-			}
-		}
-	}
-	if q.Get("pinSHA256") != "" {
-		return invalid("pinSHA256 is not supported")
+	// insecure=1 has no equivalent in Xray 26: the certificate is verified, or pinned with pinSHA256 / pcs.
+	pins := defaultString(q.Get("pinSHA256"), q.Get("pcs"))
+	if pins != "" && !validCertPins(pins) {
+		return invalid("pinSHA256 must be a SHA-256 hash")
 	}
 	if s := q.Get("security"); s != "" && s != "tls" {
 		return invalid("only TLS is supported")
@@ -128,6 +123,12 @@ func parseHysteria2(raw string) (model.Server, error) {
 		auth = q.Get("auth")
 	}
 	tls := object{"serverName": defaultString(q.Get("sni"), u.Hostname())}
+	if pins != "" {
+		tls["pinnedPeerCertSha256"] = pins
+	}
+	if vcn := q.Get("vcn"); vcn != "" {
+		tls["verifyPeerCertByName"] = vcn
+	}
 	if alpn := q.Get("alpn"); alpn != "" {
 		tls["alpn"] = strings.Split(alpn, ",")
 	}

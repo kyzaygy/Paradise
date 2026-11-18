@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -50,6 +51,19 @@ func Parse(data []byte, subscriptionID string) (Parsed, error) {
 	s := strings.TrimSpace(strings.TrimPrefix(string(data), "\ufeff"))
 	if looksLikeHTML(s) {
 		return p, apperr.New(apperr.HTMLResponse, "")
+	}
+	if IsWireGuardConf(s) {
+		p.Format = "wireguard"
+		servers, warnings, err := ParseWireGuardConf(s)
+		p.Warnings = warnings
+		if err != nil {
+			return p, apperr.New(apperr.EmptySubscription, err.Error())
+		}
+		for _, srv := range servers {
+			srv.ID = model.ServerID(subscriptionID, srv.Key)
+			p.Servers = append(p.Servers, srv)
+		}
+		return p, nil
 	}
 	s = stripBodyMetadata(s, p.Headers)
 	if !strings.HasPrefix(s, "{") && !strings.HasPrefix(s, "[") && !strings.Contains(s, "://") {
@@ -370,11 +384,18 @@ func parseURI(raw string) (model.Server, error) {
 	settings := object{}
 	switch protocol {
 	case "vless":
-		if credential == "" {
-			return model.Server{}, errors.New("empty VLESS id")
+		if err := validVLESSID(credential); err != nil {
+			return model.Server{}, err
 		}
-		user := object{"id": credential, "encryption": defaultString(q.Get("encryption"), "none")}
+		enc := defaultString(q.Get("encryption"), "none")
+		if enc != "none" && !strings.HasPrefix(enc, "mlkem768x25519plus.") {
+			return model.Server{}, fmt.Errorf("vless: unsupported encryption %q", enc)
+		}
+		user := object{"id": credential, "encryption": enc}
 		if flow := q.Get("flow"); flow != "" {
+			if flow != "xtls-rprx-vision" && flow != "xtls-rprx-vision-udp443" {
+				return model.Server{}, fmt.Errorf("vless: unsupported flow %q", flow)
+			}
 			user["flow"] = flow
 		}
 		settings["vnext"] = []any{object{"address": u.Hostname(), "port": port, "users": []any{user}}}
@@ -418,7 +439,13 @@ func streamFromQuery(q url.Values) (object, error) {
 	security := strings.ToLower(defaultString(q.Get("security"), "none"))
 	stream["security"] = security
 	sni := defaultString(q.Get("sni"), q.Get("serverName"))
-	fp := defaultString(q.Get("fp"), "chrome")
+	fp := strings.ToLower(defaultString(q.Get("fp"), "chrome"))
+	if !validFingerprint(fp) {
+		return nil, fmt.Errorf("unknown TLS fingerprint %q", fp)
+	}
+	if sni != "" && !validHostName(sni) {
+		return nil, fmt.Errorf("invalid sni %q", sni)
+	}
 	switch security {
 	case "none":
 	case "tls":
@@ -429,8 +456,15 @@ func streamFromQuery(q url.Values) (object, error) {
 		if alpn := q.Get("alpn"); alpn != "" {
 			tls["alpn"] = strings.Split(alpn, ",")
 		}
-		if q.Get("allowInsecure") == "1" || q.Get("insecure") == "1" {
-			tls["allowInsecure"] = true
+		// Xray 26 removed allowInsecure; certificate pinning (pcs) and name checks (vcn) replace it.
+		if pcs := q.Get("pcs"); pcs != "" {
+			if !validCertPins(pcs) {
+				return nil, errors.New("tls: pcs must be SHA-256 hashes (64 hex characters)")
+			}
+			tls["pinnedPeerCertSha256"] = pcs
+		}
+		if vcn := q.Get("vcn"); vcn != "" {
+			tls["verifyPeerCertByName"] = vcn
 		}
 		stream["tlsSettings"] = tls
 	case "reality":
@@ -438,10 +472,21 @@ func streamFromQuery(q url.Values) (object, error) {
 		if key == "" {
 			return nil, errors.New("reality: missing pbk")
 		}
+		if !validRealityKey(key) {
+			return nil, errors.New("reality: pbk must be a 32-byte base64url key")
+		}
 		if sni == "" {
 			return nil, errors.New("reality: missing sni")
 		}
-		r := object{"fingerprint": fp, "serverName": sni, "publicKey": key, "shortId": q.Get("sid"), "spiderX": q.Get("spx")}
+		sid := q.Get("sid")
+		if !validShortID(sid) {
+			return nil, errors.New("reality: sid must be up to 16 hex characters, even length")
+		}
+		spx := q.Get("spx")
+		if spx != "" && !strings.HasPrefix(spx, "/") {
+			return nil, errors.New("reality: spx must start with /")
+		}
+		r := object{"fingerprint": fp, "serverName": sni, "publicKey": key, "shortId": sid, "spiderX": spx}
 		if pqv := q.Get("pqv"); pqv != "" {
 			r["mldsa65Verify"] = pqv
 		}
@@ -559,4 +604,70 @@ func parseShadowsocks(raw string) (model.Server, error) {
 	port, _ := strconv.Atoi(u.Port())
 	name, _ := url.PathUnescape(fragment)
 	return ServerFromOutbound(name, object{"protocol": "shadowsocks", "settings": object{"servers": []any{object{"address": u.Hostname(), "port": port, "method": method, "password": password}}}})
+}
+
+var uuidRe = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+
+// validVLESSID accepts a UUID or (as Xray does) any other string of 1–30 bytes mapped to a UUID.
+func validVLESSID(id string) error {
+	switch {
+	case id == "":
+		return errors.New("vless: empty id")
+	case uuidRe.MatchString(id):
+		return nil
+	case len(id) <= 30 && !strings.ContainsAny(id, " \t"):
+		return nil
+	}
+	return errors.New("vless: id is not a UUID")
+}
+
+var presetFingerprints = map[string]bool{"chrome": true, "firefox": true, "safari": true, "ios": true, "android": true, "edge": true,
+	"360": true, "qq": true, "random": true, "randomized": true, "randomizednoalpn": true, "unsafe": true}
+
+func validFingerprint(fp string) bool {
+	return presetFingerprints[fp] || (strings.HasPrefix(fp, "hello") && len(fp) < 40)
+}
+
+func validRealityKey(k string) bool {
+	for _, enc := range []*base64.Encoding{base64.RawURLEncoding, base64.URLEncoding, base64.RawStdEncoding, base64.StdEncoding} {
+		if b, err := enc.DecodeString(k); err == nil && len(b) == 32 {
+			return true
+		}
+	}
+	return false
+}
+
+func validShortID(sid string) bool {
+	if len(sid) > 16 || len(sid)%2 != 0 {
+		return false
+	}
+	for _, r := range sid {
+		if !(r >= '0' && r <= '9' || r >= 'a' && r <= 'f' || r >= 'A' && r <= 'F') {
+			return false
+		}
+	}
+	return true
+}
+
+func validHostName(h string) bool {
+	if len(h) > 253 || strings.ContainsAny(h, " /\\@:?#") {
+		return net.ParseIP(strings.Trim(h, "[]")) != nil
+	}
+	return h != ""
+}
+
+// validCertPins checks a comma-separated list of SHA-256 hashes (hex, colons allowed).
+func validCertPins(v string) bool {
+	for _, part := range strings.Split(v, ",") {
+		h := strings.ReplaceAll(strings.TrimSpace(part), ":", "")
+		if len(h) != 64 {
+			return false
+		}
+		for _, r := range h {
+			if !(r >= '0' && r <= '9' || r >= 'a' && r <= 'f' || r >= 'A' && r <= 'F') {
+				return false
+			}
+		}
+	}
+	return true
 }

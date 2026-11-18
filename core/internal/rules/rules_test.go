@@ -101,6 +101,9 @@ func TestParseAndCompile(t *testing.T) {
 	if !out.Hijack || len(out.DNSServers) != 3 || out.Hosts["router.local"] != "192.168.1.1" {
 		t.Errorf("dns %v %v %v", out.Hijack, out.DNSServers, out.Hosts)
 	}
+	if out.DNSServers[1] != "https+local://1.1.1.1/dns-query" || len(out.DNSDirect) != 2 { // 8.8.8.8 and the [Host] server
+		t.Errorf("dns mapping %v direct %v", out.DNSServers, out.DNSDirect)
+	}
 	if out.IPv6 == nil || *out.IPv6 {
 		t.Errorf("ipv6")
 	}
@@ -172,5 +175,73 @@ func TestRoutingLink(t *testing.T) {
 	off, err := ParseRoutingLink("happ://routing/off")
 	if err != nil || !off.Off {
 		t.Fatal("off")
+	}
+}
+
+// simple.conf from the user (zeklop/shadowrocket-configs), trimmed to what matters.
+const simpleConf = `# Shadowrocket: 2026-11-18 00:46:41
+[General]
+bypass-system = true
+skip-proxy = 127.0.0.1, 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, captive.apple.com
+bypass-tun = 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.0.2.0/24, 192.88.99.0/24, 192.168.0.0/16, 198.18.0.0/15, 198.51.100.0/24, 203.0.113.0/24, 224.0.0.0/4, 255.255.255.255/32
+dns-server = quic://dns11.quad9.net, tls://common.dot.dns.yandex.net
+fallback-dns-server = https://dns.google/dns-query#proxy, https://cloudflare-dns.com/dns-query#proxy, system
+update-url = https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/simple.conf interval=60 strict=true
+
+[Rule]
+RULE-SET,https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/REJECT.list,REJECT
+RULE-SET,https://raw.githubusercontent.com/zeklop/shadowrocket-configs/main/RUSSIA.list,DIRECT
+DOMAIN-SUFFIX,ru,DIRECT
+#GEOIP,RU,DIRECT
+FINAL,PROXY
+
+[URL Rewrite]
+'^https://(www.)?yandex.ru' 'https://ya.ru' 302
+`
+
+func TestSimpleConf(t *testing.T) {
+	c := Parse(simpleConf)
+	sets := func(u string) ([]string, bool) {
+		if strings.HasSuffix(u, "REJECT.list") {
+			return []string{"DOMAIN-SUFFIX,doubleclick.net", "DOMAIN-KEYWORD,adservice"}, true
+		}
+		return []string{"DOMAIN-SUFFIX,vk.com", "DOMAIN-SUFFIX,ozon.ru", "IP-CIDR,95.142.192.0/20,no-resolve"}, true
+	}
+	out := Compile(c, Options{Sets: sets})
+	if len(out.Excluded) != 14 || out.Excluded[11] != "203.0.113.0/24" {
+		t.Fatalf("bypass-tun: %v", out.Excluded)
+	}
+	want := []any{"quic+local://dns11.quad9.net", "https://dns.google/dns-query", "https://cloudflare-dns.com/dns-query", "localhost"}
+	if len(out.DNSServers) != len(want) {
+		t.Fatalf("dns %v", out.DNSServers)
+	}
+	for i := range want {
+		if out.DNSServers[i] != want[i] {
+			t.Fatalf("dns %v", out.DNSServers)
+		}
+	}
+	if !out.Hijack || out.UpdateMinutes != 60 || !strings.HasSuffix(out.UpdateURL, "simple.conf") {
+		t.Fatalf("hijack %v update %q %d", out.Hijack, out.UpdateURL, out.UpdateMinutes)
+	}
+	dotWarned := false
+	for _, w := range out.Warnings {
+		if w.Code == WarnUnsupportedDNS && strings.HasPrefix(w.Text, "tls://") {
+			dotWarned = true
+		} else {
+			t.Errorf("unexpected warning %v", w)
+		}
+	}
+	if !dotWarned {
+		t.Error("DoT must be reported")
+	}
+	ign := strings.Join(c.Ignored, ",")
+	if !strings.Contains(ign, "[URL Rewrite]") {
+		t.Errorf("ignored %v", c.Ignored)
+	}
+	b, _ := json.Marshal(out.Rules)
+	for _, s := range []string{`"domain:doubleclick.net","keyword:adservice"],"outboundTag":"block"`, `"domain:vk.com","domain:ozon.ru"],"outboundTag":"direct"`, `"95.142.192.0/20"`, `"domain:ru"`, `{"network":"tcp,udp","outboundTag":"proxy"}`} {
+		if !strings.Contains(string(b), s) {
+			t.Errorf("missing %s in %s", s, b)
+		}
 	}
 }

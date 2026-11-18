@@ -111,3 +111,79 @@ func TestExportRoundTrip(t *testing.T) {
 		}
 	}
 }
+
+func TestVLESSValidation(t *testing.T) {
+	base := "vless://11111111-2222-3333-4444-555555555555@example.com:443?type=tcp&security=reality&pbk=Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw&sid=ab12&sni=www.microsoft.com&fp=chrome&flow=xtls-rprx-vision#R"
+	if _, err := ParseURI(base); err != nil {
+		t.Fatal(err)
+	}
+	bad := map[string]string{
+		"pbk":  strings.Replace(base, "pbk=Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw", "pbk=short", 1),
+		"sid":  strings.Replace(base, "sid=ab12", "sid=xyz", 1),
+		"odd":  strings.Replace(base, "sid=ab12", "sid=abc", 1),
+		"flow": strings.Replace(base, "flow=xtls-rprx-vision", "flow=xtls-rprx-direct", 1),
+		"fp":   strings.Replace(base, "fp=chrome", "fp=netscape", 1),
+		"id":   strings.Replace(base, "11111111-2222-3333-4444-555555555555", "this-is-a-very-long-identifier-that-is-not-a-uuid", 1),
+		"enc":  strings.Replace(base, "type=tcp", "type=tcp&encryption=aes-128-gcm", 1),
+		"spx":  strings.Replace(base, "fp=chrome", "fp=chrome&spx=abc", 1),
+	}
+	for name, link := range bad {
+		if _, err := ParseURI(link); err == nil {
+			t.Errorf("%s accepted", name)
+		}
+	}
+	short := strings.Replace(base, "11111111-2222-3333-4444-555555555555", "my-custom-id", 1)
+	if _, err := ParseURI(short); err != nil {
+		t.Errorf("short id rejected: %v", err)
+	}
+}
+
+func TestWireGuardConf(t *testing.T) {
+	key := base64.StdEncoding.EncodeToString(make([]byte, 32))
+	conf := "# Name = Germany Frankfurt\n[Interface]\nPrivateKey = " + key + "\nAddress = 10.8.0.2/32, fd00::2/128\nDNS = 1.1.1.1\nMTU = 1280\n\n[Peer]\nPublicKey = " + key + "\nPresharedKey = " + key + "\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = de.example.com:51820\nPersistentKeepalive = 25\n"
+	if !IsWireGuardConf(conf) {
+		t.Fatal("not detected")
+	}
+	p, err := Parse([]byte(conf), "s")
+	if err != nil || len(p.Servers) != 1 || p.Format != "wireguard" {
+		t.Fatalf("%+v %v", p, err)
+	}
+	srv := p.Servers[0]
+	if srv.Name != "Germany Frankfurt" || srv.Address != "de.example.com" || srv.Port != 51820 || srv.Protocol != "wireguard" {
+		t.Fatalf("%+v", srv)
+	}
+	out := string(srv.Outbound)
+	for _, want := range []string{`"keepAlive":25`, `"mtu":1280`, `"allowedIPs":["0.0.0.0/0","::/0"]`, `"preSharedKey"`, `"10.8.0.2/32"`} {
+		if !strings.Contains(out, want) {
+			t.Errorf("missing %s in %s", want, out)
+		}
+	}
+	if _, err := Parse([]byte(strings.Replace(conf, "Endpoint = de.example.com:51820", "Endpoint = nope", 1)), "s"); err == nil {
+		t.Error("bad endpoint accepted")
+	}
+	if l, ok := ToURI(srv); !ok || !strings.HasPrefix(l, "wireguard://") {
+		t.Errorf("export %v", l)
+	}
+}
+
+func TestCertPinning(t *testing.T) {
+	pin := strings.Repeat("ab", 32)
+	srv, err := ParseURI("trojan://pw@t.example.com:443?security=tls&sni=t.example.com&allowInsecure=1&pcs=" + pin + "&vcn=t.example.com#T")
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := string(srv.Outbound)
+	if strings.Contains(out, "allowInsecure") || !strings.Contains(out, `"pinnedPeerCertSha256":"`+pin+`"`) || !strings.Contains(out, `"verifyPeerCertByName":"t.example.com"`) {
+		t.Fatalf("%s", out)
+	}
+	hy, err := ParseURI("hysteria2://pass@h.example.com:443?sni=h.example.com&pinSHA256=" + pin + "#H")
+	if err != nil || !strings.Contains(string(hy.Outbound), "pinnedPeerCertSha256") {
+		t.Fatalf("%v %s", err, hy.Outbound)
+	}
+	if _, err := ParseURI("trojan://pw@t.example.com:443?security=tls&pcs=nothex#T"); err == nil {
+		t.Fatal("bad pin accepted")
+	}
+	if l, ok := ToURI(srv); !ok || !strings.Contains(l, "pcs="+pin) {
+		t.Fatalf("export %s", l)
+	}
+}

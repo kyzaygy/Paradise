@@ -51,6 +51,8 @@ struct CoreServer: Codable, Identifiable, Hashable {
   var region: String?
   var desc: String?
   var fragment: Bool?
+  var bandwidth: String?
+  var label: String?
 
   var detail: String {
     var parts = [`protocol`.uppercased()]
@@ -98,6 +100,8 @@ struct CoreSettings: Codable, Hashable {
   var geoipUrl: String = ""
   var geositeUrl: String = ""
   var autoUpdateConfigs: Bool = true
+  var subUserAgent: String = ""
+  var locateServers: Bool = true
 
   init() {}
 
@@ -142,6 +146,8 @@ struct CoreSettings: Codable, Hashable {
     geoipUrl = v(.geoipUrl, d.geoipUrl)
     geositeUrl = v(.geositeUrl, d.geositeUrl)
     autoUpdateConfigs = v(.autoUpdateConfigs, d.autoUpdateConfigs)
+    subUserAgent = v(.subUserAgent, d.subUserAgent)
+    locateServers = v(.locateServers, d.locateServers)
   }
 }
 
@@ -394,6 +400,7 @@ enum Core {
   private(set) static var isOpen = false
 
   static var dataDirectory: URL {
+    if Demo.scenario != nil { return Demo.directory }
     let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
     return base.appendingPathComponent("Paradise", isDirectory: true)
   }

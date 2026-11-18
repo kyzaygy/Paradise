@@ -31,3 +31,22 @@ func TestDetect(t *testing.T) {
 		t.Fatalf("info: %+v", c)
 	}
 }
+
+func TestBandwidthAndRemainder(t *testing.T) {
+	for in, want := range map[string]string{"🇩🇪 Frankfurt · 10 Gbps": "10 Gbps", "NL 10G": "10 Gbps", "Fast 500 Mbit/s": "500 Mbps", "Канал 1 Гбит/с": "1 Gbps", "5G network": "", "Germany": ""} {
+		if got := Bandwidth(in); got != want {
+			t.Errorf("%q: %q want %q", in, got, want)
+		}
+	}
+	for _, c := range []struct{ name, cc, city, want string }{
+		{"🇩🇪 Germany Premium #2", "DE", "", "Premium #2"},
+		{"Нидерланды", "NL", "", ""},
+		{"🇳🇱 Amsterdam", "NL", "Amsterdam", ""},
+		{"US-New York | Streaming", "US", "New York", "Streaming"},
+		{"[DE] Frankfurt 2", "DE", "Frankfurt", ""},
+	} {
+		if got := Remainder(c.name, c.cc, c.city); got != c.want {
+			t.Errorf("%q: %q want %q", c.name, got, c.want)
+		}
+	}
+}

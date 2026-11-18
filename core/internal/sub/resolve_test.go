@@ -123,7 +123,8 @@ func TestHysteria2(t *testing.T) {
 	if err != nil || !strings.Contains(string(srv.Outbound), "udphop") {
 		t.Fatalf("%v %s", err, srv.Outbound)
 	}
-	if _, err := ParseURI("hysteria2://pass@h.example.com:443?insecure=1"); err == nil {
-		t.Fatal("insecure must be rejected")
+	// Xray 26 has no insecure mode: the flag is dropped and the certificate is verified
+	if srv, err := ParseURI("hysteria2://pass@h.example.com:443?insecure=1"); err != nil || strings.Contains(string(srv.Outbound), "nsecure") {
+		t.Fatalf("insecure=1 handling: %v %s", err, srv.Outbound)
 	}
 }

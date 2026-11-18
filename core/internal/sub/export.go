@@ -81,6 +81,7 @@ func ToURI(srv model.Server) (string, bool) {
 		if sni := str(tls["serverName"]); sni != "" {
 			q.Set("sni", sni)
 		}
+		setIf(q, "pinSHA256", str(tls["pinnedPeerCertSha256"]))
 		if alpn, ok := tls["alpn"].([]any); ok && len(alpn) > 0 {
 			q.Set("alpn", joinAny(alpn))
 		}
@@ -155,9 +156,8 @@ func streamQuery(stream object) url.Values {
 		if alpn, ok := t["alpn"].([]any); ok && len(alpn) > 0 {
 			q.Set("alpn", joinAny(alpn))
 		}
-		if b, _ := t["allowInsecure"].(bool); b {
-			q.Set("allowInsecure", "1")
-		}
+		setIf(q, "pcs", str(t["pinnedPeerCertSha256"]))
+		setIf(q, "vcn", str(t["verifyPeerCertByName"]))
 	case "reality":
 		r := obj(stream["realitySettings"])
 		setIf(q, "sni", str(r["serverName"]))

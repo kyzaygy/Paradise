@@ -8,18 +8,16 @@
 "common.save" = "Save";
 
 /* Status */
-"status.connected" = "Protected";
+"status.connected" = "Connected";
 "status.connecting" = "Connecting…";
-"status.disconnected" = "Not connected";
+"status.disconnected" = "Not Connected";
 "status.disconnecting" = "Disconnecting…";
 "status.reasserting" = "Reconnecting…";
 
 /* Home */
 "home.add" = "Add";
-"home.settings" = "Settings";
 "home.offline" = "No internet connection";
-"home.tap_to_connect" = "Tap to connect";
-"home.choose_server" = "Choose a server";
+"home.choose_server" = "Select a server";
 "home.a11y.connect" = "Connect VPN";
 "home.a11y.disconnect" = "Disconnect VPN";
 "home.a11y.servers" = "Open the server list";
@@ -83,7 +81,6 @@
 
 "latency.ms" = "%lld ms";
 "latency.failed" = "No response";
-"probe.vpn_active" = "Disconnect the VPN to test latency, otherwise the test would run through the active tunnel.";
 
 /* Connection */
 "connect.dropped_rules" = "Routing rules skipped: %ld (they need geoip/geosite databases, which the app doesn't ship yet).";
@@ -91,7 +88,6 @@
 
 /* Transfer */
 "transfer.share" = "Share";
-"transfer.receive" = "Receive";
 "transfer.imported" = "Profile received, sources added: %ld.";
 "transfer.imported_duplicates" = "Already present: %ld.";
 
@@ -154,12 +150,8 @@
 "preview.failure_hint" = "Ask for the code again, as a file or a link.";
 
 /* Settings */
-"settings.title" = "Settings";
-"settings.mode" = "Mode";
-"settings.mode_footer" = "“Subscription rules” uses your provider's routing when the subscription is Xray JSON. Otherwise all traffic goes through the VPN and the local network stays direct.";
 "settings.kill_switch" = "Strict mode (kill switch)";
 "settings.kill_switch_footer" = "While the VPN is on, no traffic leaves outside the tunnel. Known iOS limitations: App Store updates of this app may fail and push notifications over Wi‑Fi may be delayed.";
-"settings.subscriptions" = "Subscriptions";
 "settings.auto_refresh" = "Update on launch";
 "settings.send_hwid" = "Send device info";
 "settings.send_hwid_footer" = "Providers with device limits need a device ID (x-hwid). It's only sent to the subscription server.";
@@ -167,10 +159,7 @@
 "settings.about" = "About";
 "settings.version" = "Version";
 "settings.licenses" = "Licenses";
-"settings.diagnostics" = "Tunnel diagnostics";
-"settings.language" = "The interface language follows the system (English or Russian).";
 "settings.reset" = "Delete all data";
-"settings.reset_confirm" = "Delete all subscriptions and settings from this device?";
 "settings.privacy" = "Paradise collects no analytics and sends no data to its own servers. Subscriptions are stored encrypted on the device.";
 
 /* Errors */
@@ -268,8 +257,6 @@
 "appearance.parallax" = "Parallax on tilt";
 "appearance.ping" = "Ping on the galaxy";
 "appearance.probe_launch" = "Test servers on launch";
-"badge.fragment" = "FRAG";
-"badge.profile" = "JSON";
 "common.add" = "Add";
 "common.off" = "Off";
 "common.on" = "On";
@@ -352,11 +339,9 @@
 "home.ip" = "Your IP";
 "home.location" = "Location";
 "home.more" = "More";
-"home.no_servers" = "No servers";
 "home.protocol" = "Protocol";
 "home.refresh" = "Update subscriptions";
 "home.subscriptions" = "Subscriptions";
-"home.tap_star" = "Tap the star to connect";
 "import.duplicates" = "Duplicates skipped: %d.";
 "import.replaced" = "Replaced: %d.";
 "import.routing" = "Routing profile added to Config";
@@ -488,3 +473,21 @@
 "update.modules" = "Modules";
 "update.now" = "Update now";
 "update.subscription" = "Subscription";
+
+/* Home screen */
+"action.connect" = "Connect";
+"action.disconnect" = "Disconnect";
+"protocol.auto" = "Auto";
+"table.country" = "Country";
+"table.route" = "Route";
+"table.ping" = "Ping";
+"table.ping_asc" = "Ping, fastest first";
+"table.ping_desc" = "Ping, slowest first";
+"route.info" = "Route shows how the server is reached: the protocol and, when the provider publishes it, the link speed.";
+"sheet.testing" = "Measuring ping…";
+"demo.notice" = "Demo mode: sample servers, no network requests.";
+"settings.sub_ua" = "Subscription User-Agent";
+"settings.sub_ua_placeholder" = "Default";
+"settings.sub_ua_footer" = "Some providers return a different server list depending on the app. Leave empty to use the default.";
+"settings.locate_servers" = "Detect server locations";
+"settings.locate_servers_footer" = "Looks up the country and city of servers whose names don't say it. Server addresses are sent to ipinfo.io (or ipwho.is); results are kept for 30 days.";

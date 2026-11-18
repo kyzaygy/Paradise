@@ -7,7 +7,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.2.0'
+    MARKETING_VERSION: '0.3.0'
     CURRENT_PROJECT_VERSION: '1'
     CODE_SIGNING_ALLOWED: 'NO'
     CODE_SIGNING_REQUIRED: 'NO'
@@ -105,9 +105,25 @@ targets:
     dependencies:
       - framework: Frameworks/PDCore.xcframework
         embed: false
+  ParadiseUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kyzaygy.paradise.uitests
+        GENERATE_INFOPLIST_FILE: 'YES'
+        TEST_TARGET_NAME: Paradise
+    dependencies:
+      - target: Paradise
 schemes:
   Paradise:
     build:
       targets:
         Paradise: all
         PacketTunnel: all
+    test:
+      config: Debug
+      targets:
+        - ParadiseUITests

@@ -22,11 +22,13 @@ final class AppPrefs: ObservableObject {
   @Published var trustedSSIDs: [String] { didSet { defaults.set(trustedSSIDs, forKey: "pref.trustedSSIDs") } }
   @Published var probeOnLaunch: Bool { didSet { defaults.set(probeOnLaunch, forKey: "pref.probeOnLaunch") } }
   @Published var seenNotices: [String] { didSet { defaults.set(seenNotices, forKey: "pref.seenNotices") } }
+  /// "auto" or a protocol family shown on the home screen (Protocol column).
+  @Published var protocolFilter: String { didSet { defaults.set(protocolFilter, forKey: "pref.protocolFilter") } }
 
   private init() {
     let d = UserDefaults.standard
     func bool(_ key: String, _ fallback: Bool) -> Bool { d.object(forKey: key) as? Bool ?? fallback }
-    language = d.string(forKey: "pref.language") ?? "system"
+    language = d.string(forKey: "pref.language") ?? Localization.defaultLanguage
     haptics = bool("pref.haptics", true)
     autorotate = bool("pref.autorotate", false)
     thirdPartyKeyboard = bool("pref.keyboard", true)
@@ -40,10 +42,11 @@ final class AppPrefs: ObservableObject {
     trustedSSIDs = d.stringArray(forKey: "pref.trustedSSIDs") ?? []
     probeOnLaunch = bool("pref.probeOnLaunch", true)
     seenNotices = d.stringArray(forKey: "pref.seenNotices") ?? []
+    protocolFilter = d.string(forKey: "pref.protocolFilter") ?? "auto"
   }
 
   func resetUI() {
-    language = "system"
+    language = Localization.defaultLanguage
     haptics = true
     autorotate = false
     thirdPartyKeyboard = true
@@ -53,6 +56,7 @@ final class AppPrefs: ObservableObject {
     parallax = true
     showPing = true
     probeOnLaunch = true
+    protocolFilter = "auto"
   }
 }
 
@@ -79,9 +83,10 @@ enum Haptics {
   }
 }
 
-/// In-app language override: "system", "ru" or "en".
+/// In-app language override: "system", "ru" or "en". English is the default (the design is in English).
 enum Localization {
-  private static var bundle: Bundle = load(UserDefaults.standard.string(forKey: "pref.language") ?? "system")
+  static let defaultLanguage = "en"
+  private static var bundle: Bundle = load(UserDefaults.standard.string(forKey: "pref.language") ?? defaultLanguage)
 
   private static func load(_ language: String) -> Bundle {
     guard language != "system",
@@ -97,7 +102,7 @@ enum Localization {
   }
 
   static var locale: Locale {
-    let lang = UserDefaults.standard.string(forKey: "pref.language") ?? "system"
+    let lang = UserDefaults.standard.string(forKey: "pref.language") ?? defaultLanguage
     return lang == "system" ? Locale.current : Locale(identifier: lang)
   }
 }

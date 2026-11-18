@@ -39,6 +39,8 @@ type PublicServer struct {
 	Region         string `json:"region,omitempty"`
 	Desc           string `json:"desc,omitempty"`
 	Fragment       bool   `json:"fragment,omitempty"`
+	Bandwidth      string `json:"bandwidth,omitempty"`
+	Label          string `json:"label,omitempty"` // name without flag, country and city
 }
 
 // PublicCountry is a country present in the user's servers.
@@ -74,12 +76,13 @@ func (e *Engine) stateLocked() State {
 		}
 		st.Subscriptions = append(st.Subscriptions, ps)
 		for _, srv := range s.Servers {
-			loc := e.locate(srv)
+			loc := e.placeOf(srv)
 			ps := PublicServer{
 				ID: srv.ID, Key: srv.Key, SubscriptionID: s.ID, Name: srv.Name, Protocol: srv.Protocol,
 				Address: srv.Address, Port: srv.Port, Network: srv.Network, Security: srv.Security,
 				Favorite: d.IsFavorite(srv.Key), FullProfile: len(srv.Profile) > 0,
 				Country: loc.Code, City: loc.City, Desc: srv.Desc, Fragment: srv.Fragment != nil,
+				Bandwidth: place.Bandwidth(srv.Name + " " + srv.Desc), Label: place.Remainder(srv.Name, loc.Code, loc.City),
 			}
 			if c, ok := place.Info(loc.Code); ok {
 				ps.Region = c.Region
@@ -101,8 +104,25 @@ func (e *Engine) stateLocked() State {
 	for i := range d.Configs {
 		st.Configs = append(st.Configs, publicConfig(d, &d.Configs[i]))
 	}
-	if _, srv := d.ResolveSelected(); srv != nil {
-		st.Selected = srv.ID
-	}
+	st.Selected = explicitSelection(d)
 	return st
+}
+
+// explicitSelection is the server the user picked (by id, or by key after a refresh); "" when none.
+func explicitSelection(d *model.Document) string {
+	if d.Selected != "" {
+		if _, srv := d.FindServer(d.Selected); srv != nil {
+			return srv.ID
+		}
+	}
+	if d.SelectedKey != "" {
+		for _, s := range d.Subscriptions {
+			for _, srv := range s.Servers {
+				if srv.Key == d.SelectedKey {
+					return srv.ID
+				}
+			}
+		}
+	}
+	return ""
 }

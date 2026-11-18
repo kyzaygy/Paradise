@@ -2,133 +2,198 @@ import NetworkExtension
 import SwiftUI
 import UIKit
 
+/// Positions on screen, derived from the mock: the top block follows the status bar,
+/// the panel and action bar follow the bottom edge, the map takes what is left.
+struct HomeLayout {
+  let width: CGFloat
+  let height: CGFloat
+  let s: RefScale
+  let topOffset: CGFloat
+  let bottomAnchor: CGFloat
+
+  init(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat) {
+    width = size.width
+    height = size.height
+    s = RefScale(width: size.width)
+    topOffset = safeTop - DS.Geo.refStatusBarBottom * s.u
+    bottomAnchor = size.height - max(DS.Geo.refBottomGap * s.u, safeBottom + 8)
+  }
+
+  /// y of a reference coordinate in the top block
+  func top(_ y: CGFloat) -> CGFloat { topOffset + y * s.u }
+  /// y of a reference coordinate in the bottom block (anchored to the action bar)
+  func bottom(_ y: CGFloat) -> CGFloat { bottomAnchor - (DS.Geo.actionBarBottom - y) * s.u }
+
+  var mapTop: CGFloat { top(DS.Geo.infoBottom) }
+  var standardPanelTop: CGFloat { bottom(DS.Geo.panelTop) }
+  var collapsedPanelTop: CGFloat { bottom(DS.Geo.actionBarTop) - s(76) }
+  var fullPanelTop: CGFloat { top(DS.Geo.infoBottom) + s(6) }
+
+  func panelTop(_ detent: ServerPanel.Detent) -> CGFloat {
+    switch detent {
+    case .collapsed: return collapsedPanelTop
+    case .standard: return standardPanelTop
+    case .full: return fullPanelTop
+    }
+  }
+}
+
 struct HomeView: View {
   @EnvironmentObject private var model: AppModel
   @EnvironmentObject private var vpn: VPNController
   @EnvironmentObject private var prefs: AppPrefs
-  @State private var sheet: ServerSheet.Detent = .peek
-  @State private var sheetFilterCC: String?
+  @State private var detent: ServerPanel.Detent = Demo.initialDetent
+  @GestureState private var panelDrag: CGFloat = 0
+  @State private var countryFilter: String?
 
   init() {}
 
-  private var connectedCC: String? {
-    guard vpn.isConnected else { return nil }
-    return model.state.servers.first { $0.id == vpn.connectedServerID }?.cc
-  }
-
   var body: some View {
     GeometryReader { geo in
-      ZStack(alignment: .top) {
-        backdrop
-        if model.loading {
-          ProgressView().tint(.white).frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if model.storageBroken {
-          storageNotice.padding(.top, 120).padding(.horizontal, 20).padding(.leading, TabRail.width)
+      let insets = Self.insets(geo.safeAreaInsets)
+      // phone proportions; on iPad and in landscape the screen becomes a centered column
+      let column = CGSize(width: min(geo.size.width, max(320, geo.size.height * 0.57)), height: geo.size.height)
+      let layout = HomeLayout(size: column, safeTop: insets.top, safeBottom: insets.bottom)
+      let s = layout.s
+      let panelTop = min(layout.collapsedPanelTop, max(layout.fullPanelTop, layout.panelTop(detent) + panelDrag))
+      ZStack(alignment: .topLeading) {
+        DS.background
+        if model.storageBroken {
+          storageNotice.padding(.horizontal, s(31)).offset(y: layout.top(260))
         } else {
-          GalaxyView(
-            nodes: model.countryNodes,
-            selectedCC: model.state.selectedServer?.cc,
-            connectedCC: connectedCC,
-            status: vpn.status,
-            busy: vpn.busy,
-            showPing: prefs.showPing,
-            animate: prefs.galaxyMotion,
-            parallaxEnabled: prefs.parallax,
-            onCore: { Task { await model.toggleConnection() } },
-            onCountry: { node in Task { await model.connect(country: node) } },
-            onCountryMenu: { node in
-              sheetFilterCC = node.cc
-              withAnimation(.spring(response: 0.4, dampingFraction: 0.88)) { sheet = .full }
-            }
-          )
-          .padding(.top, 120)
-          .padding(.bottom, sheet == .hidden ? 70 : (sheet == .peek ? ServerSheet.peekHeight - 40 : geo.size.height * 0.45))
-          .animation(.spring(response: 0.45, dampingFraction: 0.9), value: sheet)
-          .onChange(of: sheet) { value in model.railHidden = value == .full }
-          .onDisappear { model.railHidden = false }
-          if model.state.servers.isEmpty { emptyOverlay.padding(.top, geo.size.height * 0.28) }
-          statusLine
-            .padding(.top, 118)
+          NetworkMapView(nodes: model.countryNodes, highlighted: highlightedCC, connected: vpn.isConnected,
+                         animate: prefs.galaxyMotion && model.demo == nil, parallax: prefs.parallax, s: s,
+                         onNode: { node in Task { await model.connect(country: node) } },
+                         onNodeList: { node in
+                           countryFilter = node.cc
+                           detent = .full
+                         })
+            .frame(width: layout.width, height: max(0, layout.standardPanelTop - layout.mapTop))
+            .offset(y: layout.mapTop)
+          if model.state.servers.isEmpty && !model.loading {
+            emptyHint(s).frame(width: layout.width).offset(y: layout.mapTop + s(150))
+          }
         }
-        VStack(spacing: 12) {
-          header
-          infoRow
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 6)
-        if !model.loading && !model.storageBroken {
-          ServerSheet(detent: $sheet, filterCC: $sheetFilterCC, height: geo.size.height, bottomInset: geo.safeAreaInsets.bottom)
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .ignoresSafeArea(edges: .bottom)
+        header(layout)
+        StatusCard(s: s, onSelect: { detent = .full })
+          .frame(width: s(DS.Geo.card.width), height: s(DS.Geo.card.height))
+          .offset(x: s(DS.Geo.card.minX), y: layout.top(DS.Geo.card.minY))
+        InfoRow(s: s)
+          .frame(width: layout.width, height: s(44), alignment: .topLeading)
+          .offset(y: layout.top(DS.Geo.infoLabelTop - 4))
+        ServerPanel(detent: $detent, countryFilter: $countryFilter, layout: layout, panelTop: panelTop)
+          .frame(width: layout.width - s(DS.Geo.panelInset * 2), height: max(0, layout.height - panelTop), alignment: .top)
+          .offset(x: s(DS.Geo.panelInset), y: panelTop)
+          .simultaneousGesture(panelGesture(layout), including: .all)
+        ActionBar(s: s)
+          .frame(width: layout.width, height: s(DS.Geo.actionBarBottom - DS.Geo.actionBarTop), alignment: .topLeading)
+          .offset(y: layout.bottom(DS.Geo.actionBarTop))
+        if model.loading {
+          ProgressView().tint(.white).frame(width: layout.width, height: layout.height)
         }
       }
-    }
-  }
-
-  private var backdrop: some View {
-    ZStack {
-      Theme.space
-      RadialGradient(colors: [Theme.glow.opacity(0.18), .clear], center: .init(x: 0.5, y: 0.42), startRadius: 10, endRadius: 420)
-      RadialGradient(colors: [Theme.glowCool.opacity(0.08), .clear], center: .init(x: 0.85, y: 0.15), startRadius: 0, endRadius: 260)
+      .frame(width: layout.width, height: layout.height, alignment: .topLeading)
+      .frame(width: geo.size.width, height: geo.size.height)
+      .animation(.spring(response: 0.42, dampingFraction: 0.88), value: detent)
     }
     .ignoresSafeArea()
   }
 
+  /// Safe-area insets of the window (they don't change while the keyboard is up), else the reader's.
+  static func insets(_ proxy: EdgeInsets) -> (top: CGFloat, bottom: CGFloat) {
+    let windows = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.flatMap(\.windows)
+    if let window = windows.first(where: \.isKeyWindow) ?? windows.first, window.safeAreaInsets.top > 0 {
+      return (window.safeAreaInsets.top, window.safeAreaInsets.bottom)
+    }
+    return (proxy.top, proxy.bottom)
+  }
+
+  private var highlightedCC: String? { model.currentServer?.cc }
+
+  private func panelGesture(_ layout: HomeLayout) -> some Gesture {
+    DragGesture(minimumDistance: 10)
+      .updating($panelDrag) { v, state, _ in
+        // only vertical drags that start on the handle area move the panel
+        guard abs(v.translation.height) > abs(v.translation.width), v.startLocation.y < layout.s(70) else { return }
+        state = v.translation.height
+      }
+      .onEnded { v in
+        guard abs(v.translation.height) > abs(v.translation.width), v.startLocation.y < layout.s(70) else { return }
+        let current = layout.panelTop(detent) + v.translation.height + (v.predictedEndTranslation.height - v.translation.height) * 0.25
+        let candidates: [ServerPanel.Detent] = [.full, .standard, .collapsed]
+        let next = candidates.min { abs(layout.panelTop($0) - current) < abs(layout.panelTop($1) - current) } ?? .standard
+        if next != detent { Haptics.selection() }
+        detent = next
+      }
+  }
+
   // MARK: Header
 
-  private var header: some View {
-    HStack(spacing: 10) {
-      Image("Logo")
-        .resizable()
-        .frame(width: 34, height: 34)
-        .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 9, style: .continuous).strokeBorder(Color.white.opacity(0.15), lineWidth: 1))
+  private func header(_ layout: HomeLayout) -> some View {
+    let s = layout.s
+    let cy = layout.top(DS.Geo.headerCenterY)
+    return ZStack(alignment: .topLeading) {
+      GlobeLogo(diameter: s(DS.Geo.logoDiameter))
+        .offset(x: s(DS.Geo.logoCenterX - DS.Geo.logoDiameter / 2), y: cy - s(DS.Geo.logoDiameter / 2))
         .onLongPressGesture(minimumDuration: 0.8) { model.sheet = .diagnostics }
-        .accessibilityHidden(true)
       Text("Paradise")
-        .font(.system(size: 22, weight: .bold, design: .rounded))
-        .foregroundStyle(.white)
+        .font(s.font(DS.Size.title, .semibold))
+        .foregroundStyle(DS.textPrimary)
+        .fixedSize()
+        .frame(height: s(24))
+        .offset(x: s(DS.Geo.titleX), y: cy - s(12.5))
         .accessibilityAddTraits(.isHeader)
       Text("Pro")
-        .font(.system(size: 11, weight: .heavy, design: .rounded))
-        .foregroundStyle(Color.black.opacity(0.8))
-        .padding(.horizontal, 7)
-        .padding(.vertical, 3)
-        .background(LinearGradient(colors: [Theme.glowWarm, Color(UIColor(hex: 0xFFD98F))], startPoint: .leading, endPoint: .trailing), in: Capsule())
+        .font(s.font(DS.Size.badge, .medium))
+        .foregroundStyle(DS.textBadge)
+        .frame(width: s(DS.Geo.badgeSize.width), height: s(DS.Geo.badgeSize.height))
+        .background(DS.badge, in: Capsule())
+        .offset(x: s(DS.Geo.badgeX), y: cy - s(DS.Geo.badgeSize.height / 2))
         .accessibilityHidden(true)
-      Spacer()
       Button { model.sheet = .notifications } label: {
-        Image(systemName: "bell")
-          .font(.system(size: 17, weight: .semibold))
-          .foregroundStyle(.white)
-          .frame(width: 40, height: 40)
-          .background(.ultraThinMaterial, in: Circle())
-          .overlay(alignment: .topTrailing) {
-            if model.unseenNotices > 0 {
-              Circle().fill(Theme.poor).frame(width: 9, height: 9).offset(x: -6, y: 6)
-            }
+        ZStack(alignment: .topTrailing) {
+          Image(systemName: "bell")
+            .font(.system(size: s(19), weight: .regular))
+            .foregroundStyle(DS.textPrimary)
+          if model.unseenNotices > 0 {
+            Circle().fill(DS.textPrimary).frame(width: s(5), height: s(5)).offset(x: s(2), y: s(-1))
           }
+        }
+        .frame(width: s(40), height: s(40))
+        .contentShape(Rectangle())
       }
+      .buttonStyle(.plain)
+      .offset(x: s(DS.Geo.bellCenterX - 20), y: cy - s(20.5))
       .accessibilityLabel(L("notices.title"))
-      Menu {
-        Button { model.sheet = .add } label: { Label(L("home.add"), systemImage: "plus") }
-        Button { Task { await pasteFromClipboard() } } label: { Label(L("empty.paste"), systemImage: "doc.on.clipboard") }
-        Button { model.sheet = .export } label: { Label(L("transfer.share"), systemImage: "square.and.arrow.up") }
-        Divider()
-        Button { Task { await model.refreshAll() } } label: { Label(L("home.refresh"), systemImage: "arrow.clockwise") }
-        Button { model.probe(model.state.servers) } label: { Label(L("servers.test"), systemImage: "speedometer") }
-        Button { model.sheet = .subscriptions } label: { Label(L("home.subscriptions"), systemImage: "tray.full") }
-        Divider()
-        Button { model.sheet = .diagnostics } label: { Label(L("diag.title"), systemImage: "stethoscope") }
-      } label: {
-        Image(systemName: "ellipsis")
-          .font(.system(size: 17, weight: .bold))
-          .foregroundStyle(.white)
-          .frame(width: 40, height: 40)
-          .background(.ultraThinMaterial, in: Circle())
-      }
-      .accessibilityLabel(L("home.more"))
+      .accessibilityIdentifier("header.bell")
+      moreMenu(s)
+        .offset(x: s(DS.Geo.menuCenterX - 20), y: cy - s(20))
     }
+  }
+
+  private func moreMenu(_ s: RefScale) -> some View {
+    Menu {
+      Button { model.sheet = .add } label: { Label(L("home.add"), systemImage: "plus") }
+      Button { Task { await pasteFromClipboard() } } label: { Label(L("empty.paste"), systemImage: "doc.on.clipboard") }
+      Button { model.sheet = .export } label: { Label(L("transfer.share"), systemImage: "square.and.arrow.up") }
+      Divider()
+      Button { Task { await model.refreshAll() } } label: { Label(L("home.refresh"), systemImage: "arrow.clockwise") }
+      Button { model.probe(model.state.servers) } label: { Label(L("servers.test"), systemImage: "speedometer") }
+      Button { model.sheet = .subscriptions } label: { Label(L("home.subscriptions"), systemImage: "tray.full") }
+      Divider()
+      Button { model.openControlCenter(.settings) } label: { Label(L("tab.settings"), systemImage: "slider.horizontal.3") }
+      Button { model.sheet = .diagnostics } label: { Label(L("diag.title"), systemImage: "stethoscope") }
+    } label: {
+      HStack(spacing: s(3.5)) {
+        ForEach(0..<3, id: \.self) { _ in
+          Circle().stroke(DS.textPrimary.opacity(0.85), lineWidth: s(1.4)).frame(width: s(5), height: s(5))
+        }
+      }
+      .frame(width: s(40), height: s(40))
+      .contentShape(Rectangle())
+    }
+    .accessibilityLabel(L("home.more"))
+    .accessibilityIdentifier("header.menu")
   }
 
   private func pasteFromClipboard() async {
@@ -139,145 +204,381 @@ struct HomeView: View {
     _ = await model.importInput(text)
   }
 
-  // MARK: Info row
-
-  private var protocolText: String {
-    guard let s = model.state.selectedServer else { return "—" }
-    var parts = [s.protocol == "hysteria2" ? "HY2" : s.protocol.uppercased()]
-    if s.security == "reality" { parts.append("Reality") } else if s.network != "tcp" { parts.append(s.network.uppercased()) }
-    return parts.joined(separator: " · ")
-  }
-
-  private var infoRow: some View {
-    HStack(spacing: 0) {
-      infoCell(title: L("home.ip"), value: model.publicIP ?? "—", icon: "network")
-      divider
-      infoCell(title: L("home.location"), value: model.publicCountry.map { "\(Format.flag($0)) \(Format.country($0))" } ?? "—", icon: "location.fill")
-      divider
-      infoCell(title: L("home.protocol"), value: protocolText, icon: "shield.lefthalf.filled")
-    }
-    .padding(.vertical, 10)
-    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-    .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.line, lineWidth: 1))
-  }
-
-  private var divider: some View {
-    Rectangle().fill(Theme.line).frame(width: 1, height: 28)
-  }
-
-  private func infoCell(title: String, value: String, icon: String) -> some View {
-    VStack(spacing: 3) {
-      HStack(spacing: 4) {
-        Image(systemName: icon).font(.system(size: 9, weight: .bold))
-        Text(title).font(.system(size: 10, weight: .semibold, design: .rounded))
-      }
-      .foregroundStyle(Theme.dim)
-      Text(value)
-        .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
-        .foregroundStyle(.white)
-        .lineLimit(1)
-        .minimumScaleFactor(0.7)
-    }
-    .frame(maxWidth: .infinity)
-    .padding(.horizontal, 4)
-    .accessibilityElement(children: .combine)
-  }
-
-  // MARK: Status
-
-  private var statusLine: some View {
-    TimelineView(.periodic(from: .now, by: 1)) { context in
-      HStack(spacing: 8) {
-        Circle().fill(statusColor).frame(width: 7, height: 7).shadow(color: statusColor, radius: 4)
-        Text(statusText(now: context.date))
-          .font(.system(size: 13, weight: .semibold, design: .rounded).monospacedDigit())
-          .foregroundStyle(.white)
-        if vpn.isConnected, model.rateDown + model.rateUp > 0 {
-          Text("↓ \(Format.rate(model.rateDown))  ↑ \(Format.rate(model.rateUp))")
-            .font(.system(size: 11, weight: .medium, design: .rounded).monospacedDigit())
-            .foregroundStyle(Theme.dim)
+  private func emptyHint(_ s: RefScale) -> some View {
+    VStack(spacing: s(12)) {
+      Text(L("empty.title")).font(s.font(17, .semibold)).foregroundStyle(DS.textPrimary)
+      Text(L("empty.body")).font(s.font(13)).foregroundStyle(DS.textSecondary).multilineTextAlignment(.center)
+      HStack(spacing: s(10)) {
+        Button { Task { await pasteFromClipboard() } } label: {
+          Label(L("empty.paste"), systemImage: "doc.on.clipboard").font(s.font(13, .semibold))
+            .frame(maxWidth: .infinity, minHeight: s(40))
+            .foregroundStyle(DS.connectText)
+            .background(DS.connectFill, in: RoundedRectangle(cornerRadius: s(11), style: .continuous))
+        }
+        Button { model.sheet = .add } label: {
+          Label(L("empty.other"), systemImage: "qrcode.viewfinder").font(s.font(13, .semibold))
+            .frame(maxWidth: .infinity, minHeight: s(40))
+            .foregroundStyle(DS.textPrimary)
+            .background(DS.squareButton, in: RoundedRectangle(cornerRadius: s(11), style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: s(11), style: .continuous).strokeBorder(DS.squareBorder))
         }
       }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 6)
-      .background(.ultraThinMaterial, in: Capsule())
+      .buttonStyle(.plain)
     }
-    .accessibilityElement(children: .combine)
-  }
-
-  private var statusColor: Color {
-    switch vpn.status {
-    case .connected, .reasserting: return Theme.good
-    case .connecting, .disconnecting: return Theme.glowCool
-    default: return Theme.dim
-    }
-  }
-
-  private func statusText(now: Date) -> String {
-    switch vpn.status {
-    case .connected, .reasserting:
-      let name = model.state.servers.first { $0.id == vpn.connectedServerID }?.name ?? ""
-      let time = vpn.connectedDate.map { Format.duration(since: $0, now: now) } ?? ""
-      return [L("status.connected"), time, name].filter { !$0.isEmpty }.joined(separator: " · ")
-    case .connecting: return L("status.connecting")
-    case .disconnecting: return L("status.disconnecting")
-    default: return model.state.servers.isEmpty ? L("home.no_servers") : L("home.tap_star")
-    }
-  }
-
-  private var emptyOverlay: some View {
-    VStack(spacing: 12) {
-      Text(L("empty.title")).font(Theme.title(.title3)).foregroundStyle(.white).multilineTextAlignment(.center)
-      Text(L("empty.body")).font(.subheadline).foregroundStyle(Theme.dim).multilineTextAlignment(.center)
-      HStack(spacing: 10) {
-        Button { Task { await pasteFromClipboard() } } label: { Label(L("empty.paste"), systemImage: "doc.on.clipboard") }
-          .buttonStyle(GlowButtonStyle())
-        Button { model.sheet = .add } label: { Label(L("empty.other"), systemImage: "qrcode.viewfinder") }
-          .buttonStyle(GlowButtonStyle(prominent: false))
-      }
-    }
-    .padding(18)
-    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-    .padding(.horizontal, 24)
-    .padding(.leading, TabRail.width)
+    .padding(s(18))
+    .background(DS.card, in: RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous))
+    .overlay(RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous).strokeBorder(DS.cardBorder))
+    .padding(.horizontal, s(60))
   }
 
   private var storageNotice: some View {
-    GlassCard {
-      VStack(alignment: .leading, spacing: 12) {
-        Text(L("storage.title")).font(Theme.label(.headline)).foregroundStyle(.white)
-        Text(L("storage.body")).font(.subheadline).foregroundStyle(Theme.dim)
-        if let e = Core.openError as? CoreError {
-          Text("\(e.code) \(e.detail ?? "")").font(Theme.mono).foregroundStyle(Theme.dim)
-        }
-        Button { model.sheet = .diagnostics } label: { Text(L("diag.title")) }
-          .buttonStyle(GlowButtonStyle(prominent: false))
-        Button(role: .destructive) { Task { await model.eraseAndRestart() } } label: { Text(L("storage.reset")) }
-          .buttonStyle(GlowButtonStyle(prominent: false))
+    VStack(alignment: .leading, spacing: 12) {
+      Text(L("storage.title")).font(.headline).foregroundStyle(DS.textPrimary)
+      Text(L("storage.body")).font(.subheadline).foregroundStyle(DS.textSecondary)
+      if let e = Core.openError as? CoreError {
+        Text("\(e.code) \(e.detail ?? "")").font(Theme.mono).foregroundStyle(DS.textSecondary)
       }
+      Button(L("diag.title")) { model.sheet = .diagnostics }
+      Button(L("storage.reset"), role: .destructive) { Task { await model.eraseAndRestart() } }
+    }
+    .padding(16)
+    .background(DS.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+  }
+}
+
+// MARK: - Status card
+
+struct StatusCard: View {
+  let s: RefScale
+  var onSelect: () -> Void
+  @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var vpn: VPNController
+
+  var body: some View {
+    ZStack(alignment: .leading) {
+      RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous).fill(DS.card)
+      RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous).strokeBorder(DS.cardBorder, lineWidth: 1)
+      Button(action: onSelect) {
+        HStack(spacing: 0) {
+          Color.clear.frame(width: s(DS.Geo.statusTextX - DS.Geo.card.minX))
+          TimelineView(.periodic(from: .now, by: 1)) { context in
+            VStack(alignment: .leading, spacing: s(5)) {
+              Text(title)
+                .font(s.font(DS.Size.statusTitle, .semibold))
+                .foregroundStyle(DS.textPrimary)
+                .lineLimit(1)
+                .accessibilityIdentifier("status.title")
+              Text(subtitle(now: context.date))
+                .font(s.font(DS.Size.statusSubtitle).monospacedDigit())
+                .foregroundStyle(DS.textSecondary)
+                .lineLimit(1)
+                .accessibilityIdentifier("status.subtitle")
+            }
+          }
+          Spacer(minLength: s(8))
+          if vpn.isConnected, model.rateDown + model.rateUp > 0 {
+            VStack(alignment: .trailing, spacing: s(3)) {
+              Text("↓ \(Format.rate(model.rateDown))")
+              Text("↑ \(Format.rate(model.rateUp))")
+            }
+            .font(s.font(11).monospacedDigit())
+            .foregroundStyle(DS.textLabel)
+            .padding(.trailing, s(14))
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("status.rates")
+          }
+          Image(systemName: "chevron.right")
+            .font(.system(size: s(13), weight: .semibold))
+            .foregroundStyle(DS.iconLight)
+            .padding(.trailing, s(DS.Geo.card.maxX - DS.Geo.chevronCenterX - 3.5))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityHint(L("home.a11y.servers"))
+      PowerButton(s: s)
+        .offset(x: s(DS.Geo.powerCenter.x - DS.Geo.card.minX - DS.Geo.powerDiameter / 2))
+    }
+    .accessibilityElement(children: .contain)
+  }
+
+  private var server: CoreServer? { model.currentServer }
+
+  private var title: String {
+    switch vpn.status {
+    case .connected: return L("status.connected")
+    case .reasserting: return L("status.reasserting")
+    case .connecting: return L("status.connecting")
+    case .disconnecting: return L("status.disconnecting")
+    default: return L("status.disconnected")
+    }
+  }
+
+  private func subtitle(now: Date) -> String {
+    let place = server.map { ServerText.place($0) } ?? ""
+    switch vpn.status {
+    case .connected, .reasserting:
+      let time = vpn.connectedDate.map { Format.duration(since: $0, now: now) } ?? ""
+      return [place, time].filter { !$0.isEmpty }.joined(separator: " · ")
+    case .connecting, .disconnecting:
+      return place
+    default:
+      if !model.online { return L("home.offline") }
+      return server == nil ? L("home.choose_server") : place
     }
   }
 }
 
-struct GlowButtonStyle: ButtonStyle {
-  var prominent = true
-  @Environment(\.isEnabled) private var enabled
+struct PowerButton: View {
+  let s: RefScale
+  @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var vpn: VPNController
 
-  func makeBody(configuration: Configuration) -> some View {
-    configuration.label
-      .font(Theme.label(.subheadline))
-      .padding(.horizontal, 14)
-      .frame(minHeight: 44)
-      .frame(maxWidth: .infinity)
-      .foregroundStyle(prominent ? Color.black.opacity(0.85) : .white)
-      .background {
-        if prominent {
-          RoundedRectangle(cornerRadius: 14, style: .continuous)
-            .fill(LinearGradient(colors: [Theme.glowCool, Theme.glow], startPoint: .leading, endPoint: .trailing))
+  var body: some View {
+    Button { Task { await model.toggleConnection() } } label: {
+      ZStack {
+        Circle().fill(vpn.isConnected ? Color.white.opacity(0.12) : DS.powerFill)
+        Circle().strokeBorder(DS.powerRing.opacity(vpn.isConnected ? 1 : 0.55), lineWidth: s(1.6))
+        if vpn.status == .connecting || vpn.status == .disconnecting {
+          ProgressView().tint(DS.textPrimary).scaleEffect(s.u * 1.1)
         } else {
-          RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.08))
+          Image(systemName: "power")
+            .font(.system(size: s(17), weight: .regular))
+            .foregroundStyle(DS.textPrimary)
         }
       }
-      .opacity(enabled ? (configuration.isPressed ? 0.75 : 1) : 0.4)
+      .frame(width: s(DS.Geo.powerDiameter), height: s(DS.Geo.powerDiameter))
+      .shadow(color: vpn.isConnected ? Color.white.opacity(0.35) : .clear, radius: s(10))
+      .contentShape(Circle())
+    }
+    .buttonStyle(.plain)
+    .disabled(vpn.busy && vpn.status != .connecting)
+    .accessibilityLabel(vpn.isActive ? L("home.a11y.disconnect") : L("home.a11y.connect"))
+    .accessibilityIdentifier("action.power")
+  }
+}
+
+// MARK: - Your IP / Location / Protocol
+
+struct InfoRow: View {
+  let s: RefScale
+  @EnvironmentObject private var model: AppModel
+
+  var body: some View {
+    ZStack(alignment: .topLeading) {
+      column(L("home.ip"), x: DS.Geo.infoColumns[0]) {
+        Text(model.publicIP ?? "—").font(s.font(DS.Size.infoValue).monospacedDigit()).foregroundStyle(DS.textValue)
+          .lineLimit(1).minimumScaleFactor(0.55)
+          .frame(maxWidth: s(DS.Geo.infoDividers[0] - DS.Geo.infoColumns[0] - 10), alignment: .leading)
+          .accessibilityIdentifier("info.ip")
+      }
+      divider(x: DS.Geo.infoDividers[0])
+      column(L("home.location"), x: DS.Geo.infoColumns[1] - 1) {
+        HStack(spacing: s(8)) {
+          if let cc = model.publicCountry { RoundFlag(cc: cc, diameter: s(DS.Geo.infoFlagDiameter)) }
+          Text(locationText).font(s.font(DS.Size.infoValue)).foregroundStyle(DS.textValue).lineLimit(1).minimumScaleFactor(0.8)
+            .accessibilityIdentifier("info.location")
+        }
+        .frame(maxWidth: s(DS.Geo.infoDividers[1] - DS.Geo.infoColumns[1] - 8), alignment: .leading)
+      }
+      divider(x: DS.Geo.infoDividers[1])
+      ProtocolMenu(s: s)
+        .offset(x: s(DS.Geo.infoColumns[2]))
+    }
+    .accessibilityElement(children: .contain)
+  }
+
+  private var locationText: String {
+    guard let cc = model.publicCountry else { return "—" }
+    let country = Format.country(cc)
+    if let city = model.publicCity, !city.isEmpty { return "\(country), \(city)" }
+    return country
+  }
+
+  private func column<V: View>(_ label: String, x: CGFloat, @ViewBuilder value: () -> V) -> some View {
+    VStack(alignment: .leading, spacing: s(8)) {
+      Text(label).font(s.font(DS.Size.infoLabel)).foregroundStyle(DS.textLabel)
+      value()
+    }
+    .fixedSize(horizontal: false, vertical: true)
+    .offset(x: s(x))
+  }
+
+  private func divider(x: CGFloat) -> some View {
+    Rectangle().fill(DS.infoDivider)
+      .frame(width: 1, height: s(DS.Geo.infoDividerSpan.upperBound - DS.Geo.infoDividerSpan.lowerBound))
+      .offset(x: s(x), y: s(DS.Geo.infoDividerSpan.lowerBound - DS.Geo.infoLabelTop + 4))
+  }
+}
+
+struct ProtocolMenu: View {
+  let s: RefScale
+  @EnvironmentObject private var model: AppModel
+
+  var body: some View {
+    Menu {
+      Picker(L("home.protocol"), selection: Binding(get: { model.protocolFilter }, set: { model.setProtocolFilter($0) })) {
+        Text(L("protocol.auto")).tag("auto")
+        ForEach(model.availableProtocols, id: \.self) { family in
+          Text(ServerText.familyName(family)).tag(family)
+        }
+      }
+    } label: {
+      HStack(alignment: .top, spacing: 0) {
+        VStack(alignment: .leading, spacing: s(8)) {
+          Text(L("home.protocol")).font(s.font(DS.Size.infoLabel)).foregroundStyle(DS.textLabel)
+          Text(model.protocolDisplay).font(s.font(DS.Size.infoValue)).foregroundStyle(DS.textValue).lineLimit(1)
+        }
+        Spacer(minLength: 0)
+        Image(systemName: "chevron.down")
+          .font(.system(size: s(10), weight: .semibold))
+          .foregroundStyle(DS.iconLight)
+          .padding(.top, s(11))
+          .padding(.trailing, s(DS.refWidth - 600))
+      }
+      .frame(width: s(DS.refWidth - DS.Geo.infoColumns[2]), alignment: .leading)
+      .contentShape(Rectangle())
+    }
+    .accessibilityLabel("\(L("home.protocol")): \(model.protocolDisplay)")
+    .accessibilityIdentifier("info.protocol")
+  }
+}
+
+// MARK: - Action bar
+
+struct ActionBar: View {
+  let s: RefScale
+  @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var vpn: VPNController
+
+  var body: some View {
+    ZStack(alignment: .topLeading) {
+      square(icon: "slider.horizontal.3", x: 36) { model.openControlCenter(.settings) }
+        .accessibilityLabel(L("tab.settings"))
+        .accessibilityIdentifier("action.settings")
+      Button { Task { await model.toggleConnection() } } label: {
+        HStack(spacing: s(15)) {
+          if vpn.status == .connecting || vpn.status == .disconnecting {
+            ProgressView().tint(DS.connectText).scaleEffect(s.u)
+          } else {
+            Image(systemName: "power").font(.system(size: s(19), weight: .medium))
+          }
+          Text(connectTitle).font(s.font(DS.Size.connect, .semibold))
+        }
+        .foregroundStyle(DS.connectText)
+        .frame(width: s(403), height: s(51))
+        .background(DS.connectFill, in: RoundedRectangle(cornerRadius: s(12), style: .continuous))
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(PressableStyle())
+      .disabled(vpn.busy && vpn.status != .connecting)
+      .accessibilityIdentifier("action.connect")
+      .offset(x: s(118), y: s(2))
+      square(icon: favorite ? "star.fill" : "star", x: 547) {
+        Task { await model.toggleFavoriteSelected() }
+      }
+      .disabled(model.currentServer == nil)
+      .accessibilityLabel(favorite ? L("servers.unfavorite") : L("servers.favorite"))
+      .accessibilityIdentifier("action.favorite")
+    }
+  }
+
+  private var favorite: Bool { model.currentServer?.favorite ?? false }
+
+  private var connectTitle: String {
+    switch vpn.status {
+    case .connected, .reasserting: return L("action.disconnect")
+    case .connecting: return L("status.connecting")
+    case .disconnecting: return L("status.disconnecting")
+    default: return L("action.connect")
+    }
+  }
+
+  private func square(icon: String, x: CGFloat, action: @escaping () -> Void) -> some View {
+    Button(action: action) {
+      Image(systemName: icon)
+        .font(.system(size: s(18), weight: .regular))
+        .foregroundStyle(DS.iconLight)
+        .frame(width: s(56), height: s(53))
+        .background(DS.squareButton, in: RoundedRectangle(cornerRadius: s(12), style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: s(12), style: .continuous).strokeBorder(DS.squareBorder, lineWidth: 1))
+        .contentShape(Rectangle())
+    }
+    .buttonStyle(PressableStyle())
+    .offset(x: s(x))
+  }
+}
+
+struct PressableStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .opacity(configuration.isPressed ? 0.75 : 1)
+      .scaleEffect(configuration.isPressed ? 0.98 : 1)
+  }
+}
+
+/// Text shown for servers: country and city instead of the provider's raw name.
+enum ServerText {
+  static func family(_ s: CoreServer) -> String {
+    switch s.protocol {
+    case "vless": return s.security == "reality" ? "vless-reality" : "vless"
+    case "hysteria", "hysteria2": return "hysteria2"
+    default: return s.protocol
+    }
+  }
+
+  static func familyName(_ family: String) -> String {
+    switch family {
+    case "wireguard": return "WireGuard"
+    case "vless-reality": return "VLESS Reality"
+    case "vless": return "VLESS"
+    case "vmess": return "VMess"
+    case "trojan": return "Trojan"
+    case "shadowsocks": return "Shadowsocks"
+    case "hysteria2": return "Hysteria2"
+    case "socks": return "SOCKS5"
+    case "http": return "HTTP"
+    default: return family.uppercased()
+    }
+  }
+
+  static func chip(_ s: CoreServer) -> String {
+    switch s.protocol {
+    case "wireguard": return "WG"
+    case "hysteria", "hysteria2": return "HY2"
+    case "shadowsocks": return "SS"
+    case "vmess": return "VMess"
+    case "trojan": return "Trojan"
+    case "socks": return "SOCKS"
+    default: return s.protocol.uppercased()
+    }
+  }
+
+  /// Second route chip: published link speed, otherwise the transport.
+  static func secondChip(_ s: CoreServer) -> String? {
+    if let b = s.bandwidth, !b.isEmpty { return b }
+    switch s.security {
+    case "reality": return "Reality"
+    case "tls": return s.network == "tcp" ? "TLS" : s.network.uppercased()
+    default: return s.network == "tcp" || s.network == "udp" ? nil : s.network.uppercased()
+    }
+  }
+
+  static func title(_ s: CoreServer) -> String {
+    if let cc = s.cc, !cc.isEmpty { return Format.country(cc) }
+    return s.name
+  }
+
+  static func subtitle(_ s: CoreServer) -> String {
+    if let city = s.city, !city.isEmpty { return city }
+    if let label = s.label, !label.isEmpty { return label }
+    if (s.cc ?? "").isEmpty { return s.address }
+    return ""
+  }
+
+  static func place(_ s: CoreServer) -> String {
+    let sub = subtitle(s)
+    return sub.isEmpty ? title(s) : "\(title(s)), \(sub)"
   }
 }

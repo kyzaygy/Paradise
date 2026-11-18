@@ -256,6 +256,34 @@ final class VPNController: ObservableObject {
     return try? JSONDecoder().decode(TunnelLogs.self, from: data)
   }
 
+  // MARK: Demo (simulator screenshots, no Network Extension)
+
+  func demoSet(_ newStatus: NEVPNStatus, serverID: String = "", since: Date? = nil) {
+    status = newStatus
+    connectedServerID = serverID
+    connectedDate = newStatus == .connected ? (since ?? Date()) : nil
+  }
+
+  func demoConnect(serverID: String) async {
+    guard !busy else { return }
+    busy = true
+    attempt += 1
+    let current = attempt
+    demoSet(.connecting, serverID: serverID)
+    try? await Task.sleep(nanoseconds: 1_200_000_000)
+    busy = false
+    guard current == attempt else { return }
+    demoSet(.connected, serverID: serverID)
+  }
+
+  func demoDisconnect() async {
+    attempt += 1
+    let id = connectedServerID
+    demoSet(.disconnecting, serverID: id)
+    try? await Task.sleep(nanoseconds: 400_000_000)
+    demoSet(.disconnected)
+  }
+
   /// Checks that VPN preferences can be read (permission/entitlement problems show up here).
   func preferencesCheck() async -> (Bool, String) {
     do {

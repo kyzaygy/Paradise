@@ -178,3 +178,28 @@ func TestCountriesInState(t *testing.T) {
 		t.Fatalf("%+v %+v", s.Countries, s.Servers)
 	}
 }
+
+func TestLocateServers(t *testing.T) {
+	v := newEnv(t)
+	geo := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"country":"NL","city":"Amsterdam"}`))
+	}))
+	defer geo.Close()
+	saved := geoEndpoints
+	geoEndpoints = geoEndpoints[:1]
+	geoEndpoints[0] = func(ip string) (string, func([]byte) (string, string)) {
+		return geo.URL + "/" + ip, func(b []byte) (string, string) {
+			var x struct{ Country, City string }
+			_ = json.Unmarshal(b, &x)
+			return x.Country, x.City
+		}
+	}
+	defer func() { geoEndpoints = saved }()
+	v.call("importText", map[string]any{"text": "trojan://pw@203.0.113.10:443?security=tls#%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B%2010G"})
+	var s State
+	_ = json.Unmarshal(v.call("locateServers", map[string]any{}), &s)
+	srv := s.Servers[0]
+	if srv.Country != "NL" || srv.City != "Amsterdam" || srv.Bandwidth != "10 Gbps" || srv.Label != "" {
+		t.Fatalf("%+v", srv)
+	}
+}

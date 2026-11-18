@@ -8,24 +8,8 @@ import UserNotifications
 
 @MainActor
 final class AppModel: ObservableObject {
-  enum Tab: String, CaseIterable, Identifiable {
-    case home, config, data, settings
-    var id: String { rawValue }
-
-    var icon: String {
-      switch self {
-      case .home: return "sparkles"
-      case .config: return "slider.horizontal.3"
-      case .data: return "cylinder.split.1x2"
-      case .settings: return "gearshape"
-      }
-    }
-
-    var title: String { L("tab.\(rawValue)") }
-  }
-
   enum Sheet: Identifiable {
-    case subscriptions, add, export, diagnostics, notifications
+    case subscriptions, add, export, diagnostics, notifications, controlCenter
     case preview(String)
 
     var id: String {
@@ -35,6 +19,7 @@ final class AppModel: ObservableObject {
       case .export: return "export"
       case .diagnostics: return "diagnostics"
       case .notifications: return "notifications"
+      case .controlCenter: return "controlCenter"
       case .preview(let code): return "preview-\(code.hashValue)"
       }
     }
@@ -70,7 +55,7 @@ final class AppModel: ObservableObject {
     var link: String?
   }
 
-  /// A country on the galaxy: aggregated servers and the best latency.
+  /// A country on the map: aggregated servers and the best latency.
   struct CountryNode: Identifiable, Equatable {
     var cc: String
     var region: String
@@ -89,12 +74,13 @@ final class AppModel: ObservableObject {
   @Published var refreshing = false
   @Published var probing = false
   @Published var sheet: Sheet?
-  @Published var tab: Tab = .home
-  @Published var railHidden = false
+  @Published var controlSection: ControlCenterView.Section = .settings
+  @Published var scrollTarget: String?
   @Published var storageBroken = false
   @Published var online = true
   @Published var publicIP: String?
   @Published var publicCountry: String?
+  @Published var publicCity: String?
   @Published var traffic: TrafficStats?
   @Published var rateUp: Double = 0
   @Published var rateDown: Double = 0
@@ -102,6 +88,9 @@ final class AppModel: ObservableObject {
 
   let vpn = VPNController()
   let prefs = AppPrefs.shared
+  /// Screenshot scenario from the `-ParadiseDemo` launch argument (nil in normal use).
+  let demo = Demo.scenario
+  private var locateTask: Task<Void, Never>?
   private let monitor = NWPathMonitor()
   private var probeTask: Task<Void, Never>?
   private var statsTask: Task<Void, Never>?
@@ -134,6 +123,7 @@ final class AppModel: ObservableObject {
       .sink { [weak self] status in
         Task { @MainActor in self?.vpnStatusChanged(status) }
       }
+    if let demo = demo { Demo.resetData(for: demo) }
     let opened = await Task.detached(priority: .userInitiated) { Result { try Core.open() } }.value
     do {
       try opened.get()
@@ -147,6 +137,12 @@ final class AppModel: ObservableObject {
       loading = false
       return
     }
+    if let demo = demo {
+      await Demo.load(demo, into: self)
+      lastStatus = vpn.status
+      loading = false
+      return
+    }
     await reload()
     await vpn.load()
     lastStatus = vpn.status
@@ -154,6 +150,7 @@ final class AppModel: ObservableObject {
     AppLog.info("app", "ready: \(state.subscriptions.count) subscriptions, \(state.servers.count) servers, vpn \(VPNController.name(vpn.status))")
     refreshIPInfo()
     if vpn.isConnected { startStatsPolling() }
+    locateServers()
     if state.settings.autoRefresh, state.subscriptions.contains(where: { $0.remote }) {
       await refreshAll(silent: true)
     }
@@ -178,7 +175,7 @@ final class AppModel: ObservableObject {
   }
 
   func becameActive() {
-    guard started, !loading else { return }
+    guard started, !loading, demo == nil else { return }
     refreshIPInfo()
     if vpn.isConnected { startStatsPolling() }
     checkPasteboard()
@@ -228,7 +225,7 @@ final class AppModel: ObservableObject {
       case "routing":
         info(L("import.routing"))
       case "ruleconfig":
-        info(L("import.ruleconfig"), actionTitle: L("tab.config")) { [weak self] in self?.tab = .config }
+        info(L("import.ruleconfig"), actionTitle: L("tab.config")) { [weak self] in self?.openControlCenter(.config) }
       default:
         var message = LF("import.added", result.added)
         if let replaced = result.replaced, replaced > 0 { message += " " + LF("import.replaced", replaced) }
@@ -237,6 +234,7 @@ final class AppModel: ObservableObject {
         info(message)
         let fresh = state.servers.filter { latency[$0.id] == nil }
         if !fresh.isEmpty { probe(fresh) }
+        locateServers()
       }
       Haptics.success()
       return true
@@ -302,8 +300,20 @@ final class AppModel: ObservableObject {
       }
       let fresh = state.servers.filter { latency[$0.id] == nil }
       if !fresh.isEmpty { probe(fresh) }
+      locateServers()
     } catch {
       if !silent { show(error) }
+    }
+  }
+
+  /// Looks up the country and city of servers whose names don't say them (cached by the core).
+  func locateServers() {
+    guard demo == nil, state.settings.locateServers, !state.servers.isEmpty, locateTask == nil else { return }
+    locateTask = Task { [weak self] in
+      let next: CoreState? = try? await Core.call("locateServers")
+      guard let self = self else { return }
+      if let next = next { self.state = next }
+      self.locateTask = nil
     }
   }
 
@@ -334,6 +344,23 @@ final class AppModel: ObservableObject {
     do { state = try await Core.call("setFavorite", ["key": server.key, "favorite": !server.favorite]) } catch { show(error) }
   }
 
+  /// The server the home screen talks about: the connected one while the tunnel is up, else the selected one.
+  var currentServer: CoreServer? {
+    if vpn.isActive, let s = state.servers.first(where: { $0.id == vpn.connectedServerID }) { return s }
+    return state.selectedServer
+  }
+
+  /// Star in the action bar.
+  func toggleFavoriteSelected() async {
+    guard let server = currentServer else { return }
+    await toggleFavorite(server)
+  }
+
+  func openControlCenter(_ section: ControlCenterView.Section) {
+    controlSection = section
+    sheet = .controlCenter
+  }
+
   func select(_ server: CoreServer) async {
     let previous = state.selected
     Haptics.selection()
@@ -353,6 +380,10 @@ final class AppModel: ObservableObject {
   }
 
   func probe(_ servers: [CoreServer]) {
+    if demo != nil {
+      Demo.applyLatency(to: self, servers: servers)
+      return
+    }
     probeTask?.cancel()
     let ids = Array(servers.prefix(300).map(\.id))
     guard !ids.isEmpty else { return }
@@ -410,12 +441,54 @@ final class AppModel: ObservableObject {
     }.min { $0.1 < $1.1 }?.0
   }
 
-  /// Countries for the galaxy, in subscription order.
+  // MARK: Protocol filter
+
+  /// Protocol families present in the servers ("wireguard", "vless-reality", …), in list order.
+  var availableProtocols: [String] {
+    var seen = Set<String>(), out: [String] = []
+    for s in state.servers {
+      let f = ServerText.family(s)
+      if seen.insert(f).inserted { out.append(f) }
+    }
+    return out
+  }
+
+  /// "auto" or one family; a family that is no longer present means "auto".
+  var protocolFilter: String {
+    availableProtocols.contains(prefs.protocolFilter) ? prefs.protocolFilter : "auto"
+  }
+
+  func setProtocolFilter(_ family: String) {
+    guard family != prefs.protocolFilter else { return }
+    Haptics.selection()
+    prefs.protocolFilter = family
+    objectWillChange.send()
+  }
+
+  /// Servers shown in the list and on the map (after the protocol filter).
+  var visibleServers: [CoreServer] {
+    let filter = protocolFilter
+    guard filter != "auto" else { return state.servers }
+    return state.servers.filter { ServerText.family($0) == filter }
+  }
+
+  /// Value of the Protocol column: the protocol in use, the filter, or the only protocol present.
+  var protocolDisplay: String {
+    if vpn.isActive, let s = state.servers.first(where: { $0.id == vpn.connectedServerID }) { return ServerText.familyName(ServerText.family(s)) }
+    let filter = protocolFilter
+    if filter != "auto" { return ServerText.familyName(filter) }
+    if let s = state.selectedServer { return ServerText.familyName(ServerText.family(s)) }
+    let families = availableProtocols
+    if families.count == 1 { return ServerText.familyName(families[0]) }
+    return L("protocol.auto")
+  }
+
+  /// Countries on the map, in subscription order (only countries with visible servers).
   var countryNodes: [CountryNode] {
     var byCC: [String: [CoreServer]] = [:]
-    for s in state.servers { byCC[s.cc ?? "", default: []].append(s) }
-    return state.countries.map { c in
-      let servers = byCC[c.cc] ?? []
+    for s in visibleServers { byCC[s.cc ?? "", default: []].append(s) }
+    return state.countries.compactMap { c in
+      guard let servers = byCC[c.cc], !servers.isEmpty else { return nil }
       let values = servers.compactMap { latency[$0.id]?.value }
       let testing = servers.contains { latency[$0.id] == .testing }
       return CountryNode(cc: c.cc, region: c.region, lat: c.lat, lon: c.lon, servers: servers, best: values.min(), testing: testing)
@@ -441,17 +514,35 @@ final class AppModel: ObservableObject {
 
   func disconnect() async {
     userDisconnecting = true
-    await vpn.disconnect()
+    if demo != nil {
+      await vpn.demoDisconnect()
+    } else {
+      await vpn.disconnect()
+    }
     Haptics.tap()
   }
 
+  /// The server Connect uses: the selected one, else the fastest visible, else the first visible.
+  var connectTarget: CoreServer? {
+    state.selectedServer ?? fastest(in: visibleServers) ?? visibleServers.first ?? state.servers.first
+  }
+
   func connect() async {
-    guard !state.servers.isEmpty else {
+    guard let target = connectTarget else {
       sheet = .add
       return
     }
+    if state.selected != target.id {
+      do { state = try await Core.call("select", ["id": target.id]) } catch { show(error); return }
+    }
+    if demo != nil {
+      userDisconnecting = false
+      await vpn.demoConnect(serverID: target.id)
+      Haptics.success()
+      return
+    }
     do {
-      let tunnel: TunnelConfig = try await Core.call("tunnelConfig", ["id": state.selected])
+      let tunnel: TunnelConfig = try await Core.call("tunnelConfig", ["id": target.id])
       await reload()
       if tunnel.droppedRules > 0 { info(LF("connect.dropped_rules", tunnel.droppedRules)) }
       if let missing = tunnel.missingGeo, !missing.isEmpty {
@@ -471,6 +562,10 @@ final class AppModel: ObservableObject {
   private func vpnStatusChanged(_ status: NEVPNStatus) {
     defer { lastStatus = status }
     guard status != lastStatus else { return }
+    if demo != nil {
+      Demo.statusChanged(status, model: self)
+      return
+    }
     switch status {
     case .connected:
       startStatsPolling()
@@ -501,33 +596,53 @@ final class AppModel: ObservableObject {
   // MARK: Public IP
 
   func refreshIPInfo(delay: Double = 0) {
+    guard demo == nil else { return }
     ipTask?.cancel()
     ipTask = Task { [weak self] in
       if delay > 0 { try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000)) }
       guard !Task.isCancelled else { return }
-      let info = await Self.fetchTrace()
+      let info = await Self.fetchPublicIP()
       guard !Task.isCancelled else { return }
       self?.publicIP = info?.ip
       self?.publicCountry = info?.country
+      self?.publicCity = info?.city
     }
   }
 
-  /// Reads the public IP and country from Cloudflare's trace endpoint (no account, no tracking ID).
-  nonisolated static func fetchTrace() async -> (ip: String, country: String)? {
-    guard let url = URL(string: "https://www.cloudflare.com/cdn-cgi/trace") else { return nil }
-    var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 8)
-    request.setValue("Paradise", forHTTPHeaderField: "User-Agent")
+  struct PublicIPInfo: Equatable {
+    var ip: String
+    var country: String?
+    var city: String?
+  }
+
+  /// Public IP with country and city (ipinfo.io), falling back to Cloudflare's trace (country only).
+  nonisolated static func fetchPublicIP() async -> PublicIPInfo? {
     let config = URLSessionConfiguration.ephemeral
     config.timeoutIntervalForRequest = 8
+    config.requestCachePolicy = .reloadIgnoringLocalCacheData
     let session = URLSession(configuration: config)
     defer { session.finishTasksAndInvalidate() }
-    guard let response = try? await session.data(for: request), let text = String(data: response.0, encoding: .utf8) else { return nil }
+    func get(_ link: String) async -> Data? {
+      guard let url = URL(string: link) else { return nil }
+      var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 8)
+      request.setValue("Paradise", forHTTPHeaderField: "User-Agent")
+      request.setValue("application/json", forHTTPHeaderField: "Accept")
+      guard let reply = try? await session.data(for: request), (reply.1 as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+      return reply.0
+    }
+    struct IPInfo: Decodable { var ip: String?; var country: String?; var city: String? }
+    if let data = await get("https://ipinfo.io/json"), let v = try? JSONDecoder().decode(IPInfo.self, from: data),
+       let ip = v.ip, !ip.isEmpty {
+      let cc = v.country?.uppercased()
+      return PublicIPInfo(ip: ip, country: cc?.count == 2 ? cc : nil, city: v.city?.isEmpty == false ? v.city : nil)
+    }
+    guard let data = await get("https://www.cloudflare.com/cdn-cgi/trace"), let text = String(data: data, encoding: .utf8) else { return nil }
     var ip = "", loc = ""
     for line in text.split(separator: "\n") {
       if line.hasPrefix("ip=") { ip = String(line.dropFirst(3)) }
       if line.hasPrefix("loc=") { loc = String(line.dropFirst(4)) }
     }
-    return ip.isEmpty ? nil : (ip, loc)
+    return ip.isEmpty ? nil : PublicIPInfo(ip: ip, country: loc.count == 2 ? loc : nil, city: nil)
   }
 
   // MARK: Traffic statistics
@@ -578,6 +693,7 @@ final class AppModel: ObservableObject {
 
   var notices: [Notice] {
     var out: [Notice] = []
+    if demo != nil { out.append(Demo.notice) }
     let now = Date().timeIntervalSince1970
     for sub in state.subscriptions {
       let name = sub.displayName

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	linkA = "vless://11111111-2222-3333-4444-555555555555@a.example.com:443?type=tcp&security=reality&pbk=K&sid=1&sni=www.example.com#A"
+	linkA = "vless://11111111-2222-3333-4444-555555555555@a.example.com:443?type=tcp&security=reality&pbk=Z84J2IelR9ch3k8VtlVhhs5ycBUlXA7wHBWcBrjqnAw&sid=01&sni=www.example.com#A"
 	linkB = "trojan://pw@b.example.com:443?type=ws&path=%2Fw#B"
 )
 
@@ -118,8 +118,8 @@ func TestAddSubscriptionAndPersistence(t *testing.T) {
 	}
 	// reopen from disk
 	v.open()
-	if s := v.state(); len(s.Servers) != 2 || s.Selected == "" {
-		t.Fatalf("reloaded state %+v", s)
+	if s := v.state(); len(s.Servers) != 2 || s.Selected != "" {
+		t.Fatalf("reloaded state %+v (nothing was selected explicitly)", s)
 	}
 	// wrong key
 	bad := make([]byte, 32)
