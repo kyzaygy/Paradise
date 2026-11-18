@@ -1,0 +1,589 @@
+Command line invocation:
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild test-without-building -project /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj -scheme Paradise -destination "platform=iOS Simulator,id=F4A9ECEC-0EF3-479B-B307-1869E34D8E0D" -derivedDataPath /Users/runner/work/Paradise/Paradise/build/SimData -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -maximum-test-execution-time-allowance 300 -resultBundlePath /Users/runner/work/Paradise/Paradise/build/UITests.xcresult
+
+Writing result bundle at path:
+	/Users/runner/work/Paradise/Paradise/build/UITests.xcresult
+
+Testing started
+2026-11-18 14:34:23.956175+0000 ParadiseUITests-Runner[42586:122170] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'All tests' started at 2026-11-18 14:34:47.301.
+Test Suite 'ParadiseUITests.xctest' started at 2026-11-18 14:34:47.305.
+Test Suite 'ParadiseUITests' started at 2026-11-18 14:34:47.306.
+Test Case '-[ParadiseUITests.ParadiseUITests test1HomeScreenFunctions]' started.
+    t =     0.01s Start Test at 2026-11-18 14:34:47.315
+    t =     0.14s Set Up
+    t =     0.33s Open com.kyzaygy.paradise
+    t =     0.34s     Launch com.kyzaygy.paradise
+2026-11-18 14:34:54.766 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-18 14:34:54.766 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    21.27s         Setting up automation session
+    t =    27.08s         Wait for com.kyzaygy.paradise to idle
+    t =    31.57s Waiting 30.0s for "status.title" Any to exist
+    t =    32.61s     Checking `Expect predicate `existsNoRetry == 1` for object "status.title" Any`
+    t =    32.61s         Checking existence of `"status.title" Any`
+    t =    33.36s Waiting 15.0s for "row.DE" Any to exist
+    t =    34.37s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    34.37s         Checking existence of `"row.DE" Any`
+    t =    35.65s initial state
+    t =    35.65s     Find the "status.title" Any
+    t =    36.19s     Find the "status.subtitle" Any
+    t =    36.70s     Find the "info.ip" Any
+    t =    37.36s     Find the "info.location" Any
+    t =    38.13s     Find the "info.protocol" Any
+    t =    38.93s     Checking existence of `"node.DE" Any`
+    t =    39.00s     Checking existence of `"node.GB" Any`
+    t =    39.10s     Checking existence of `"node.NL" Any`
+    t =    39.48s     Checking existence of `"node.FR" Any`
+    t =    39.70s     Checking existence of `"node.US" Any`
+    t =    39.95s     Checking existence of `"node.CA" Any`
+    t =    40.09s     Checking existence of `"node.RU" Any`
+    t =    40.24s     Checking existence of `"node.TR" Any`
+    t =    40.43s     Checking existence of `"node.BR" Any`
+    t =    40.57s     Checking existence of `"node.SG" Any`
+    t =    40.86s     Checking existence of `"node.AU" Any`
+    t =    41.06s     Find the "node.DE" Any
+    t =    41.16s     Find the "row.DE" Any
+    t =    42.25s     Find the "row.DE" Any
+    t =    43.52s     Find the "row.DE" Any
+    t =    44.63s     Find the "row.DE" Any
+    t =    45.74s     Find the "row.DE" Any
+    t =    46.99s     Find the "row.DE" Any
+    t =    48.17s     Find the "row.NL" Any
+    t =    49.37s     Find the "row.DE" Any
+    t =    50.40s selection sync: row, map node, status card
+    t =    50.42s     Tap "row.NL" Any
+    t =    50.42s         Wait for com.kyzaygy.paradise to idle
+    t =    50.43s         Find the "row.NL" Any
+    t =    51.67s         Check for interrupting elements affecting "row.NL" Button
+    t =    52.13s         Synthesize event
+    t =    52.66s         Wait for com.kyzaygy.paradise to idle
+    t =    53.78s     Checking `Expect predicate `isSelected == 1` for object "row.NL" Any`
+    t =    53.79s         Find the "row.NL" Any
+    t =    55.68s     Checking `Expect predicate `isSelected == 1` for object "node.NL" Any`
+    t =    55.68s         Find the "node.NL" Any
+    t =    56.81s     Checking `Expect predicate `label == "Netherlands, Amsterdam"` for object "status.subtitle" Any`
+    t =    56.82s         Find the "status.subtitle" Any
+    t =    57.43s Fastest selects the lowest ping
+    t =    57.43s     Tap "region.fastest" Any
+    t =    57.43s         Wait for com.kyzaygy.paradise to idle
+    t =    57.45s         Find the "region.fastest" Any
+    t =    57.72s         Check for interrupting elements affecting "region.fastest" Button
+    t =    58.06s         Synthesize event
+    t =    58.43s         Wait for com.kyzaygy.paradise to idle
+    t =    59.59s     Checking `Expect predicate `isSelected == 1` for object "row.DE" Any`
+    t =    59.59s         Find the "row.DE" Any
+    t =    62.15s     Checking `Expect predicate `label == "Germany, Frankfurt"` for object "status.subtitle" Any`
+    t =    62.15s         Find the "status.subtitle" Any
+    t =    62.68s connect, timer, IP and location, disconnect
+    t =    62.68s     Tap "action.connect" Any
+    t =    62.68s         Wait for com.kyzaygy.paradise to idle
+    t =    62.69s         Find the "action.connect" Any
+    t =    62.97s         Check for interrupting elements affecting "action.connect" Button
+    t =    63.25s         Synthesize event
+    t =    63.59s         Wait for com.kyzaygy.paradise to idle
+    t =    64.68s     Checking `Expect predicate `label == "Connected"` for object "status.title" Any`
+    t =    64.68s         Find the "status.title" Any
+    t =    67.68s     Checking `Expect predicate `label CONTAINS "Germany, Frankfurt"` for object "status.subtitle" Any`
+    t =    67.68s         Find the "status.subtitle" Any
+    t =    68.53s     Find the "status.subtitle" Any
+    t =    71.14s     Find the "status.subtitle" Any
+    t =    72.71s     Checking `Expect predicate `label CONTAINS "203.0.113."` for object "info.ip" Any`
+    t =    72.71s         Find the "info.ip" Any
+    t =    74.41s     Checking `Expect predicate `label == "Germany, Frankfurt"` for object "info.location" Any`
+    t =    74.41s         Find the "info.location" Any
+    t =    74.98s     Waiting 4.0s for "status.rates" Any to exist
+    t =    75.98s         Checking `Expect predicate `existsNoRetry == 1` for object "status.rates" Any`
+    t =    75.99s             Checking existence of `"status.rates" Any`
+    t =    76.57s     Find the "action.connect" Any
+    t =    76.88s     Tap "action.connect" Any
+    t =    76.88s         Wait for com.kyzaygy.paradise to idle
+    t =    76.91s         Find the "action.connect" Any
+    t =    77.30s         Check for interrupting elements affecting "action.connect" Button
+    t =    77.56s         Synthesize event
+    t =    77.89s         Wait for com.kyzaygy.paradise to idle
+    t =    78.97s     Checking `Expect predicate `label == "Not Connected"` for object "status.title" Any`
+    t =    78.97s         Find the "status.title" Any
+    t =    80.78s     Checking `Expect predicate `label == "212.109.219.74"` for object "info.ip" Any`
+    t =    80.78s         Find the "info.ip" Any
+    t =    81.31s a map node switches the tunnel
+    t =    81.32s     Tap "action.connect" Any
+    t =    81.32s         Wait for com.kyzaygy.paradise to idle
+    t =    81.33s         Find the "action.connect" Any
+    t =    81.61s         Check for interrupting elements affecting "action.connect" Button
+    t =    81.86s         Synthesize event
+    t =    82.19s         Wait for com.kyzaygy.paradise to idle
+    t =    83.27s     Checking `Expect predicate `label == "Connected"` for object "status.title" Any`
+    t =    83.27s         Find the "status.title" Any
+    t =    84.70s     Find the "node.GB" Any
+    t =    85.27s     Tap "node.GB" Button
+    t =    85.27s         Wait for com.kyzaygy.paradise to idle
+    t =    85.32s         Find the "node.GB" Button
+    t =    85.65s         Check for interrupting elements affecting "node.GB" Button
+    t =    85.98s         Synthesize event
+    t =    86.33s         Wait for com.kyzaygy.paradise to idle
+    t =    87.53s     Checking `Expect predicate `label CONTAINS "United Kingdom, London"` for object "status.subtitle" Any`
+    t =    87.54s         Find the "status.subtitle" Any
+    t =    90.81s     Checking `Expect predicate `isSelected == 1` for object "node.GB" Any`
+    t =    90.82s         Find the "node.GB" Any
+    t =    91.06s     Tap "action.connect" Any
+    t =    91.06s         Wait for com.kyzaygy.paradise to idle
+    t =    91.08s         Find the "action.connect" Any
+    t =    91.55s         Check for interrupting elements affecting "action.connect" Button
+    t =    91.95s         Synthesize event
+    t =    92.29s         Wait for com.kyzaygy.paradise to idle
+    t =    93.40s     Checking `Expect predicate `label == "Not Connected"` for object "status.title" Any`
+    t =    93.40s         Find the "status.title" Any
+    t =    94.02s country list from a map node
+    t =    94.02s     Press "node.US" Any for 1.2 seconds
+    t =    94.02s         Wait for com.kyzaygy.paradise to idle
+    t =    94.03s         Find the "node.US" Any
+    t =    94.14s         Check for interrupting elements affecting "node.US" Button
+    t =    94.45s         Synthesize event
+    t =    95.98s         Wait for com.kyzaygy.paradise to idle
+    t =    97.78s     Waiting 4.0s for "Show servers" Button to exist
+    t =    98.83s         Checking `Expect predicate `existsNoRetry == 1` for object "Show servers" Button`
+    t =    98.83s             Checking existence of `"Show servers" Button`
+    t =    99.27s     Tap "Show servers" Button
+    t =    99.27s         Wait for com.kyzaygy.paradise to idle
+    t =    99.29s         Find the "Show servers" Button
+    t =    99.68s         Check for interrupting elements affecting "list.bullet" Button
+    t =    99.96s         Synthesize event
+    t =   100.33s         Wait for com.kyzaygy.paradise to idle
+    t =   101.53s     Waiting 4.0s for "region.country" Any to exist
+    t =   102.57s         Checking `Expect predicate `existsNoRetry == 1` for object "region.country" Any`
+    t =   102.57s             Checking existence of `"region.country" Any`
+    t =   103.49s     Waiting 4.0s for "row.US" Any to exist
+    t =   104.50s         Checking `Expect predicate `existsNoRetry == 1` for object "row.US" Any`
+    t =   104.50s             Checking existence of `"row.US" Any`
+    t =   105.38s     Checking existence of `"row.DE" Any`
+    t =   106.47s     Tap "region.country" Any
+    t =   106.47s         Wait for com.kyzaygy.paradise to idle
+    t =   106.49s         Find the "region.country" Any
+    t =   107.54s         Check for interrupting elements affecting "region.country" Button
+    t =   107.79s         Synthesize event
+    t =   108.13s         Wait for com.kyzaygy.paradise to idle
+    t =   108.14s     Waiting 4.0s for "row.DE" Any to exist
+    t =   109.15s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   109.15s             Checking existence of `"row.DE" Any`
+    t =   110.35s region filters
+    t =   110.35s     Tap "region.asia" Any
+    t =   110.35s         Wait for com.kyzaygy.paradise to idle
+    t =   110.36s         Find the "region.asia" Any
+    t =   111.41s         Check for interrupting elements affecting "region.asia" Button
+    t =   111.88s         Synthesize event
+    t =   112.23s         Wait for com.kyzaygy.paradise to idle
+    t =   112.31s     Waiting 4.0s for "row.SG" Any to exist
+    t =   113.31s         Checking `Expect predicate `existsNoRetry == 1` for object "row.SG" Any`
+    t =   113.31s             Checking existence of `"row.SG" Any`
+    t =   114.33s     Checking existence of `"row.DE" Any`
+    t =   115.54s     Tap "region.americas" Any
+    t =   115.54s         Wait for com.kyzaygy.paradise to idle
+    t =   115.55s         Find the "region.americas" Any
+    t =   116.50s         Check for interrupting elements affecting "region.americas" Button
+    t =   116.75s         Synthesize event
+    t =   117.12s         Wait for com.kyzaygy.paradise to idle
+    t =   117.16s     Waiting 4.0s for "row.US" Any to exist
+    t =   118.20s         Checking `Expect predicate `existsNoRetry == 1` for object "row.US" Any`
+    t =   118.20s             Checking existence of `"row.US" Any`
+    t =   119.21s     Checking existence of `"row.BR" Any`
+    t =   120.27s     Checking existence of `"row.CA" Any`
+    t =   121.35s     Checking existence of `"row.DE" Any`
+    t =   122.57s     Tap "region.europe" Any
+    t =   122.57s         Wait for com.kyzaygy.paradise to idle
+    t =   122.59s         Find the "region.europe" Any
+    t =   123.53s         Check for interrupting elements affecting "region.europe" Button
+    t =   123.78s         Synthesize event
+    t =   124.13s         Wait for com.kyzaygy.paradise to idle
+    t =   124.17s     Waiting 4.0s for "row.DE" Any to exist
+    t =   125.18s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   125.18s             Checking existence of `"row.DE" Any`
+    t =   126.20s     Checking existence of `"row.US" Any`
+    t =   127.93s     Tap "region.all" Any
+    t =   127.93s         Wait for com.kyzaygy.paradise to idle
+    t =   127.94s         Find the "region.all" Any
+    t =   128.79s         Check for interrupting elements affecting "region.all" Button
+    t =   129.05s         Synthesize event
+    t =   129.39s         Wait for com.kyzaygy.paradise to idle
+    t =   129.40s     Waiting 4.0s for "row.US" Any to exist
+    t =   130.43s         Checking `Expect predicate `existsNoRetry == 1` for object "row.US" Any`
+    t =   130.43s             Checking existence of `"row.US" Any`
+    t =   131.54s ping sort cycles ascending, descending, off
+    t =   131.55s     Tap "table.ping" Any
+    t =   131.55s         Wait for com.kyzaygy.paradise to idle
+    t =   131.55s         Find the "table.ping" Any
+    t =   131.90s         Check for interrupting elements affecting "table.ping" Button
+    t =   132.23s         Synthesize event
+    t =   132.57s         Wait for com.kyzaygy.paradise to idle
+    t =   134.08s     Waiting 4.0s for "row.DE" Any to exist
+    t =   135.10s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   135.11s             Checking existence of `"row.DE" Any`
+    t =   136.24s     Find the "row.DE" Any
+    t =   137.27s     Find the "row.NL" Any
+    t =   138.21s     Tap "table.ping" Any
+    t =   138.21s         Wait for com.kyzaygy.paradise to idle
+    t =   138.22s         Find the "table.ping" Any
+    t =   138.50s         Check for interrupting elements affecting "table.ping" Button
+    t =   138.82s         Synthesize event
+    t =   139.15s         Wait for com.kyzaygy.paradise to idle
+    t =   139.19s     Waiting 4.0s for "row.AU" Any to exist
+    t =   140.25s         Checking `Expect predicate `existsNoRetry == 1` for object "row.AU" Any`
+    t =   140.25s             Checking existence of `"row.AU" Any`
+    t =   141.14s     Find the "row.AU" Any
+    t =   142.35s     Find the "row.SG" Any
+    t =   143.25s     Tap "table.ping" Any
+    t =   143.25s         Wait for com.kyzaygy.paradise to idle
+    t =   143.26s         Find the "table.ping" Any
+    t =   143.61s         Check for interrupting elements affecting "table.ping" Button
+    t =   143.93s         Synthesize event
+    t =   144.27s         Wait for com.kyzaygy.paradise to idle
+    t =   144.34s     Waiting 4.0s for "row.DE" Any to exist
+    t =   145.46s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   145.46s             Checking existence of `"row.DE" Any`
+    t =   146.28s     Find the "row.DE" Any
+    t =   147.27s     Find the "row.NL" Any
+    t =   148.47s search
+    t =   148.47s     Tap "panel.search" Any
+    t =   148.47s         Wait for com.kyzaygy.paradise to idle
+    t =   148.49s         Find the "panel.search" Any
+    t =   148.77s         Check for interrupting elements affecting "panel.search" Button
+    t =   149.09s         Synthesize event
+    t =   149.42s         Wait for com.kyzaygy.paradise to idle
+    t =   152.10s     Waiting 4.0s for "panel.searchField" Any to exist
+    t =   153.13s         Checking `Expect predicate `existsNoRetry == 1` for object "panel.searchField" Any`
+    t =   153.14s             Checking existence of `"panel.searchField" Any`
+    t =   154.86s     Tap "panel.searchField" Any
+    t =   154.86s         Wait for com.kyzaygy.paradise to idle
+    t =   154.91s         Find the "panel.searchField" Any
+    t =   155.75s         Check for interrupting elements affecting "panel.searchField" TextField
+    t =   156.39s         Synthesize event
+    t =   156.98s         Wait for com.kyzaygy.paradise to idle
+    t =   157.06s     Type 'lon' into "panel.searchField" TextField
+    t =   157.06s         Wait for com.kyzaygy.paradise to idle
+    t =   157.73s         Find the "panel.searchField" TextField
+    t =   160.39s         Check for interrupting elements affecting "panel.searchField" TextField
+    t =   161.29s         Synthesize event
+    t =   161.58s         Wait for com.kyzaygy.paradise to idle
+    t =   162.41s     Waiting 4.0s for "row.GB" Any to exist
+    t =   163.45s         Checking `Expect predicate `existsNoRetry == 1` for object "row.GB" Any`
+    t =   163.45s             Checking existence of `"row.GB" Any`
+    t =   166.75s             Capturing element debug description
+    t =   166.76s         Checking existence of `"row.GB" Any`
+    t =   177.39s     Checking existence of `"row.DE" Any`
+Test Case '-[ParadiseUITests.ParadiseUITests test1HomeScreenFunctions]' exceeded execution time allowance of 3 minutes. The test may have hung; check Xcode's test report for additional diagnostics. If the test requires additional time, use -[XCTestCase executionTimeAllowance] or one of xcodebuild's command-line overrides.
+    t =   194.61s     Tap "panel.search" Any
+    t =   194.61s         Wait for com.kyzaygy.paradise to idle
+    t =   194.62s         Find the "panel.search" Any
+    t =   197.49s         Check for interrupting elements affecting "panel.search" Button
+    t =   198.40s         Synthesize event
+    t =   198.75s         Wait for com.kyzaygy.paradise to idle
+    t =   200.14s     Waiting 4.0s for "row.DE" Any to exist
+    t =   201.20s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   201.20s             Checking existence of `"row.DE" Any`
+    t =   204.39s             Capturing element debug description
+    t =   204.39s         Checking existence of `"row.DE" Any`
+    t =   209.30s favorites: row star and action bar star
+    t =   209.30s     Tap "row.DE" Any[0.07, 0.50]
+    t =   209.30s         Wait for com.kyzaygy.paradise to idle
+    t =   209.31s         Find the "row.DE" Any
+    t =   212.88s         Check for interrupting elements affecting "row.DE" Button
+    t =   213.58s         Synthesize event
+    t =   213.58s             Find the "row.DE" Button
+    t =   216.95s             Find the "row.DE" Button
+    t =   218.66s             Find the "row.DE" Button
+    t =   220.50s         Wait for com.kyzaygy.paradise to idle
+    t =   220.57s     Tap "tab.favorites" Any
+    t =   220.58s         Wait for com.kyzaygy.paradise to idle
+    t =   220.59s         Find the "tab.favorites" Any
+    t =   220.90s         Check for interrupting elements affecting "tab.favorites" Button
+    t =   221.52s         Synthesize event
+    t =   221.86s         Wait for com.kyzaygy.paradise to idle
+    t =   221.89s     Waiting 4.0s for "row.DE" Any to exist
+    t =   222.93s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   222.93s             Checking existence of `"row.DE" Any`
+    t =   223.89s     Checking existence of `"row.NL" Any`
+    t =   224.85s     Tap "tab.servers" Any
+    t =   224.85s         Wait for com.kyzaygy.paradise to idle
+    t =   224.86s         Find the "tab.servers" Any
+    t =   225.08s         Check for interrupting elements affecting "tab.servers" Button
+    t =   225.26s         Synthesize event
+    t =   225.60s         Wait for com.kyzaygy.paradise to idle
+    t =   225.61s     Tap "row.FR" Any
+    t =   225.61s         Wait for com.kyzaygy.paradise to idle
+    t =   225.65s         Find the "row.FR" Any
+    t =   226.82s         Check for interrupting elements affecting "row.FR" Button
+    t =   227.50s         Synthesize event
+    t =   227.95s         Wait for com.kyzaygy.paradise to idle
+    t =   229.03s     Checking `Expect predicate `isSelected == 1` for object "row.FR" Any`
+    t =   229.03s         Find the "row.FR" Any
+    t =   229.94s     Tap "action.favorite" Any
+    t =   229.94s         Wait for com.kyzaygy.paradise to idle
+    t =   229.95s         Find the "action.favorite" Any
+    t =   230.22s         Check for interrupting elements affecting "action.favorite" Button
+    t =   230.65s         Synthesize event
+    t =   230.99s         Wait for com.kyzaygy.paradise to idle
+    t =   231.00s     Tap "tab.favorites" Any
+    t =   231.00s         Wait for com.kyzaygy.paradise to idle
+    t =   231.01s         Find the "tab.favorites" Any
+    t =   231.41s         Check for interrupting elements affecting "tab.favorites" Button
+    t =   231.75s         Synthesize event
+    t =   232.09s         Wait for com.kyzaygy.paradise to idle
+    t =   232.10s     Waiting 4.0s for "row.FR" Any to exist
+    t =   233.15s         Checking `Expect predicate `existsNoRetry == 1` for object "row.FR" Any`
+    t =   233.15s             Checking existence of `"row.FR" Any`
+    t =   234.37s     Tap "tab.routes" Any
+    t =   234.37s         Wait for com.kyzaygy.paradise to idle
+    t =   234.38s         Find the "tab.routes" Any
+    t =   234.62s         Check for interrupting elements affecting "tab.routes" Button
+    t =   234.82s         Synthesize event
+    t =   235.15s         Wait for com.kyzaygy.paradise to idle
+    t =   235.22s     Waiting 4.0s for "route.all" Any to exist
+    t =   236.23s         Checking `Expect predicate `existsNoRetry == 1` for object "route.all" Any`
+    t =   236.23s             Checking existence of `"route.all" Any`
+    t =   237.22s     Checking existence of `"route.config" Any`
+    t =   239.12s     Tap "tab.servers" Any
+    t =   239.12s         Wait for com.kyzaygy.paradise to idle
+    t =   239.15s         Find the "tab.servers" Any
+    t =   239.57s         Check for interrupting elements affecting "tab.servers" Button
+    t =   239.97s         Synthesize event
+    t =   240.33s         Wait for com.kyzaygy.paradise to idle
+    t =   240.35s     Waiting 4.0s for "row.DE" Any to exist
+    t =   241.43s         Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =   241.43s             Checking existence of `"row.DE" Any`
+    t =   242.64s bell, more menu, control center
+    t =   242.65s     Tap "header.bell" Any
+    t =   242.65s         Wait for com.kyzaygy.paradise to idle
+    t =   242.65s         Find the "header.bell" Any
+    t =   242.88s         Check for interrupting elements affecting "header.bell" Button
+    t =   243.23s         Synthesize event
+    t =   243.56s         Wait for com.kyzaygy.paradise to idle
+    t =   244.90s     Waiting 5.0s for "Demo mode: sample servers, no network requests." StaticText to exist
+    t =   245.91s         Checking `Expect predicate `existsNoRetry == 1` for object "Demo mode: sample servers, no network requests." StaticText`
+    t =   245.91s             Checking existence of `"Demo mode: sample servers, no network requests." StaticText`
+    t =   246.72s     Swipe down Target Application 'com.kyzaygy.paradise'
+    t =   246.73s         Wait for com.kyzaygy.paradise to idle
+    t =   246.74s         Find the Target Application 'com.kyzaygy.paradise'
+    t =   247.33s         Check for interrupting elements affecting "Paradise" Application
+    t =   248.02s         Synthesize event
+    t =   248.44s         Wait for com.kyzaygy.paradise to idle
+    t =   250.69s     Tap "header.menu" Any
+    t =   250.69s         Wait for com.kyzaygy.paradise to idle
+    t =   250.70s         Find the "header.menu" Any
+    t =   250.86s         Check for interrupting elements affecting "header.menu" Button
+    t =   251.17s         Synthesize event
+    t =   251.52s         Wait for com.kyzaygy.paradise to idle
+    t =   252.54s     Waiting 4.0s for "Add" Button to exist
+    t =   253.54s         Checking `Expect predicate `existsNoRetry == 1` for object "Add" Button`
+    t =   253.56s             Checking existence of `"Add" Button`
+    t =   254.71s     Checking existence of `"Share" Button`
+    t =   255.57s     Checking existence of `"Diagnostics" Button`
+    t =   256.07s     Tap Target Application 'com.kyzaygy.paradise'[0.20, 0.09]
+    t =   256.07s         Wait for com.kyzaygy.paradise to idle
+    t =   256.08s         Find the Target Application 'com.kyzaygy.paradise'
+    t =   256.36s         Check for interrupting elements affecting "Paradise" Application
+    t =   256.75s         Synthesize event
+    t =   256.76s             Find the Target Application 'com.kyzaygy.paradise'
+    t =   257.11s             Find the Target Application 'com.kyzaygy.paradise'
+    t =   257.53s             Find the Target Application 'com.kyzaygy.paradise'
+    t =   258.27s         Wait for com.kyzaygy.paradise to idle
+    t =   259.81s     Waiting 4.0s for "Add" Button to not exist
+    t =   260.83s         Checking `Expect predicate `existsNoRetry == 0` for object "Add" Button`
+    t =   260.83s             Checking existence of `"Add" Button`
+    t =   261.21s     Tap "action.settings" Any
+    t =   261.21s         Wait for com.kyzaygy.paradise to idle
+    t =   261.21s         Find the "action.settings" Any
+    t =   261.55s         Check for interrupting elements affecting "action.settings" Button
+    t =   261.99s         Synthesize event
+    t =   262.33s         Wait for com.kyzaygy.paradise to idle
+    t =   264.22s     Waiting 5.0s for "Data" Button to exist
+    t =   265.29s         Checking `Expect predicate `existsNoRetry == 1` for object "Data" Button`
+    t =   265.29s             Checking existence of `"Data" Button`
+    t =   266.87s     Find the "Data" Button
+    t =   267.57s     Tap "Data" Button
+    t =   267.57s         Wait for com.kyzaygy.paradise to idle
+    t =   267.58s         Find the "Data" Button
+    t =   268.39s         Check for interrupting elements affecting "Data" Button
+    t =   269.08s         Synthesize event
+    t =   269.44s         Wait for com.kyzaygy.paradise to idle
+    t =   273.42s     Checking `Expect predicate `isSelected == 1` for object "Data" Button`
+    t =   273.42s         Find the "Data" Button
+    t =   274.23s Tear Down
+Test Case '-[ParadiseUITests.ParadiseUITests test1HomeScreenFunctions]' passed (275.184 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' started.
+    t =     0.00s Start Test at 2026-11-18 14:39:22.500
+    t =     0.03s Set Up
+    t =     0.03s Open com.kyzaygy.paradise
+    t =     0.03s     Launch com.kyzaygy.paradise
+    t =     0.03s         Terminate com.kyzaygy.paradise:44004
+/Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift:17: error: -[ParadiseUITests.ParadiseUITests test2FavoritesPersist] : Failed to terminate com.kyzaygy.paradise:44004: Failed to terminate com.kyzaygy.paradise:0
+    t =    60.59s Tear Down
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' failed (60.991 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test3ProtocolMenuAndLongNames]' started.
+    t =     0.00s Start Test at 2026-11-18 14:40:23.493
+    t =     0.03s Set Up
+    t =     0.03s             Open com.kyzaygy.paradise
+    t =     0.03s                 Launch com.kyzaygy.paradise
+
+
+*** If you believe this error represents a bug, please attach the result bundle at /Users/runner/work/Paradise/Paradise/build/UITests.xcresult
+
+2026-11-18 14:40:38.258300+0000 ParadiseUITests-Runner[53729:149646] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+
+Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.
+
+Test Suite 'Selected tests' started at 2026-11-18 14:40:42.669.
+Test Suite 'ParadiseUITests.xctest' started at 2026-11-18 14:40:42.672.
+Test Suite 'ParadiseUITests' started at 2026-11-18 14:40:42.674.
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' started.
+    t =     0.01s Start Test at 2026-11-18 14:40:42.686
+    t =     0.37s Set Up
+    t =     0.54s Open com.kyzaygy.paradise
+    t =     0.55s     Launch com.kyzaygy.paradise
+2026-11-18 14:40:43.240 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-18 14:40:43.240 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.24s         Setting up automation session
+    t =     5.99s         Wait for com.kyzaygy.paradise to idle
+    t =    10.58s Waiting 30.0s for "status.title" Any to exist
+    t =    11.59s     Checking `Expect predicate `existsNoRetry == 1` for object "status.title" Any`
+    t =    11.59s         Checking existence of `"status.title" Any`
+    t =    12.73s Waiting 15.0s for "row.DE" Any to exist
+    t =    13.77s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    13.77s         Checking existence of `"row.DE" Any`
+    t =    15.16s Tap "tab.favorites" Any
+    t =    15.16s     Wait for com.kyzaygy.paradise to idle
+    t =    15.17s     Find the "tab.favorites" Any
+    t =    15.54s     Check for interrupting elements affecting "tab.favorites" Button
+    t =    15.89s     Synthesize event
+    t =    16.33s     Wait for com.kyzaygy.paradise to idle
+    t =    16.38s Waiting 5.0s for "row.DE" Any to exist
+    t =    17.46s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    17.46s         Checking existence of `"row.DE" Any`
+    t =    18.75s Tear Down
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' passed (19.818 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test3ProtocolMenuAndLongNames]' started.
+    t =     0.00s Start Test at 2026-11-18 14:41:02.504
+    t =     0.03s Set Up
+    t =     0.03s Open com.kyzaygy.paradise
+    t =     0.03s     Launch com.kyzaygy.paradise
+    t =     0.03s         Terminate com.kyzaygy.paradise:53787
+2026-11-18 14:41:03.607 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-18 14:41:03.612 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     3.66s         Setting up automation session
+    t =     8.02s         Wait for com.kyzaygy.paradise to idle
+    t =    13.38s Waiting 30.0s for "status.title" Any to exist
+    t =    14.39s     Checking `Expect predicate `existsNoRetry == 1` for object "status.title" Any`
+    t =    14.39s         Checking existence of `"status.title" Any`
+    t =    15.79s Waiting 15.0s for "row.DE" Any to exist
+    t =    16.79s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    16.79s         Checking existence of `"row.DE" Any`
+    t =    18.76s Find the "row.DE" Any
+    t =    20.63s Checking existence of `"row.BA" Any`
+    t =    22.44s Find the "row.BA" Any
+    t =    23.83s Press Target Application 'com.kyzaygy.paradise'[0.50, 0.78] for 0.1 seconds, then drag to Target Application 'com.kyzaygy.paradise'[0.50, 0.50] with velocity of 500.00 pixels per second, and then hold for 0.0 seconds 
+    t =    23.83s     Wait for com.kyzaygy.paradise to idle
+    t =    23.84s     Find the Target Application 'com.kyzaygy.paradise'
+    t =    24.18s     Check for interrupting elements affecting "Paradise" Application
+    t =    24.55s     Synthesize event
+    t =    24.56s         Find the Target Application 'com.kyzaygy.paradise'
+    t =    24.86s         Find the Target Application 'com.kyzaygy.paradise'
+    t =    25.21s         Find the Target Application 'com.kyzaygy.paradise'
+    t =    25.59s         Find the Target Application 'com.kyzaygy.paradise'
+    t =    25.96s         Find the Target Application 'com.kyzaygy.paradise'
+    t =    27.12s     Wait for com.kyzaygy.paradise to idle
+    t =    28.98s Checking existence of `"row.BA" Any`
+    t =    31.10s Find the "row.BA" Any
+    t =    34.07s Find the "row.BA" Any
+    t =    36.63s Tap "info.protocol" Any
+    t =    36.63s     Wait for com.kyzaygy.paradise to idle
+    t =    36.67s     Find the "info.protocol" Any
+    t =    38.29s     Check for interrupting elements affecting "info.protocol" Button
+    t =    38.77s     Synthesize event
+    t =    39.13s     Wait for com.kyzaygy.paradise to idle
+    t =    40.20s Waiting 4.0s for "Trojan" Button to exist
+    t =    41.22s     Checking `Expect predicate `existsNoRetry == 1` for object "Trojan" Button`
+    t =    41.22s         Checking existence of `"Trojan" Button`
+    t =    42.17s Tap "Trojan" Button
+    t =    42.17s     Wait for com.kyzaygy.paradise to idle
+    t =    42.18s     Find the "Trojan" Button
+    t =    43.04s     Check for interrupting elements affecting "Trojan" Button
+    t =    43.44s     Synthesize event
+    t =    43.78s     Wait for com.kyzaygy.paradise to idle
+    t =    46.78s Checking `Expect predicate `label CONTAINS "Trojan"` for object "info.protocol" Any`
+    t =    46.78s     Find the "info.protocol" Any
+    t =    47.70s Waiting 4.0s for "row.DE" Any to exist
+    t =    48.70s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    48.70s         Checking existence of `"row.DE" Any`
+    t =    49.72s Find the "row.DE" Any
+    t =    50.99s Checking existence of `"row.NL" Any`
+    t =    52.27s Tap "info.protocol" Any
+    t =    52.27s     Wait for com.kyzaygy.paradise to idle
+    t =    52.28s     Find the "info.protocol" Any
+    t =    53.15s     Check for interrupting elements affecting "info.protocol" Button
+    t =    53.40s     Synthesize event
+    t =    53.75s     Wait for com.kyzaygy.paradise to idle
+    t =    55.07s Tap "Auto" Button
+    t =    55.07s     Wait for com.kyzaygy.paradise to idle
+    t =    55.15s     Find the "Auto" Button
+    t =    55.76s     Check for interrupting elements affecting "Auto" Button
+    t =    55.92s     Synthesize event
+    t =    56.30s     Wait for com.kyzaygy.paradise to idle
+    t =    58.31s Waiting 4.0s for "row.NL" Any to exist
+    t =    59.35s     Checking `Expect predicate `existsNoRetry == 1` for object "row.NL" Any`
+    t =    59.35s         Checking existence of `"row.NL" Any`
+    t =    61.31s Tear Down
+Test Case '-[ParadiseUITests.ParadiseUITests test3ProtocolMenuAndLongNames]' passed (63.755 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test4States]' started.
+    t =     0.00s Start Test at 2026-11-18 14:42:06.260
+    t =     0.03s Set Up
+    t =     0.03s Open com.kyzaygy.paradise
+    t =     0.03s     Launch com.kyzaygy.paradise
+    t =     0.03s         Terminate com.kyzaygy.paradise:54515
+2026-11-18 14:42:07.400 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-18 14:42:07.404 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     2.63s         Setting up automation session
+    t =     7.34s         Wait for com.kyzaygy.paradise to idle
+    t =    12.72s Waiting 30.0s for "status.title" Any to exist
+    t =    13.73s     Checking `Expect predicate `existsNoRetry == 1` for object "status.title" Any`
+    t =    13.73s         Checking existence of `"status.title" Any`
+    t =    19.85s Waiting 15.0s for "row.DE" Any to exist
+    t =    20.88s     Checking `Expect predicate `existsNoRetry == 1` for object "row.DE" Any`
+    t =    20.88s         Checking existence of `"row.DE" Any`
+    t =    24.80s Find the "status.title" Any
+    t =    28.68s Checking `Expect predicate `label CONTAINS "Netherlands, Amsterdam"` for object "status.subtitle" Any`
+    t =    28.68s     Find the "status.subtitle" Any
+    t =    33.33s Terminate com.kyzaygy.paradise:56629
+    t =    34.38s Open com.kyzaygy.paradise
+    t =    34.39s     Launch com.kyzaygy.paradise
+2026-11-18 14:42:40.967 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-18 14:42:40.967 xcodebuild[39904:115598] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    35.94s         Setting up automation session
+    t =    40.04s         Wait for com.kyzaygy.paradise to idle
+    t =    43.76s Waiting 30.0s for "status.title" Any to exist
+    t =    44.77s     Checking `Expect predicate `existsNoRetry == 1` for object "status.title" Any`
+    t =    44.77s         Checking existence of `"status.title" Any`
+    t =    45.19s Find the "status.subtitle" Any
+    t =    45.61s Waiting 4.0s for "table.empty" Any to exist
+    t =    46.63s     Checking `Expect predicate `existsNoRetry == 1` for object "table.empty" Any`
+    t =    46.63s         Checking existence of `"table.empty" Any`
+    t =    46.90s Checking existence of `"node.DE" Any`
+    t =    47.64s Tear Down
+Test Case '-[ParadiseUITests.ParadiseUITests test4States]' passed (48.398 seconds).
+Test Suite 'ParadiseUITests' passed at 2026-11-18 14:42:54.658.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.985) seconds
+Test Suite 'ParadiseUITests.xctest' passed at 2026-11-18 14:42:54.659.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.987) seconds
+Test Suite 'Selected tests' passed at 2026-11-18 14:42:54.660.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.991) seconds
+2026-11-18 14:43:58.368 xcodebuild[39904:115598] [MT] IDETestOperationsObserverDebug: 583.973 elapsed -- Testing started completed.
+2026-11-18 14:43:58.369 xcodebuild[39904:115598] [MT] IDETestOperationsObserverDebug: 0.001 sec, +0.001 sec -- start
+2026-11-18 14:43:58.369 xcodebuild[39904:115598] [MT] IDETestOperationsObserverDebug: 583.973 sec, +583.971 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/runner/work/Paradise/Paradise/build/UITests.xcresult
+
+Failing tests:
+	ParadiseUITests.test1HomeScreenFunctions()
+
+** TEST EXECUTE FAILED **
+

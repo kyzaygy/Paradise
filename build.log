@@ -1,0 +1,1058 @@
+Command line invocation:
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj -scheme Paradise -configuration Debug -destination "generic/platform=iOS Simulator" -derivedDataPath /Users/runner/work/Paradise/Paradise/build/SimData ARCHS=x86_64 ONLY_ACTIVE_ARCH=NO build-for-testing
+
+Build settings from command line:
+    ARCHS = x86_64
+    ONLY_ACTIVE_ARCH = NO
+
+2026-11-18 14:16:26.220 xcodebuild[19630:59530]  IDEDownloadableMetalToolchainCoordinator: Failed to remount the Metal Toolchain: Mount failed because of dissent: Mount is still un use. Reason: a device is (already) in use (kDAReturnBusy)
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (3 targets)
+    Target 'ParadiseUITests' in project 'Paradise'
+        ➜ Explicit dependency on target 'Paradise' in project 'Paradise'
+    Target 'Paradise' in project 'Paradise'
+        ➜ Explicit dependency on target 'PacketTunnel' in project 'Paradise'
+    Target 'PacketTunnel' in project 'Paradise' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ExecuteExternalTool /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+Build description signature: eb522a0f0167ce8f0acb9abf25a15be3
+Build description path: /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/XCBuildData/eb522a0f0167ce8f0acb9abf25a15be3.xcbuilddata
+ClangStatCache /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise-d4c063f591e2f2145956d829b1ea7350-VFS-iphonesimulator/all-product-headers.yaml
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise-d4c063f591e2f2145956d829b1ea7350-VFS-iphonesimulator/all-product-headers.yaml
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-create-build-directory /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ProductTypeInfoPlistAdditions.plist (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ProductTypeInfoPlistAdditions.plist
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/empty-ParadiseUITests.plist (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/empty-ParadiseUITests.plist
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyStaticMetadataFileList (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyMetadataFileList (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-project-headers.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-own-target-headers.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-generated-files.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-target-headers.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-non-framework-target-headers.hmap (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_const_extract_protocols.json (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftConstValuesFileList (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.LinkFileList (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-OutputFileMap.json (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-OutputFileMap.json
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest
+
+ProcessXCFramework /Users/runner/work/Paradise/Paradise/apple/Frameworks/PDCore.xcframework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PDCore.framework ios simulator
+    cd /Users/runner/work/Paradise/Paradise/apple/Paradise.xcodeproj
+    builtin-process-xcframework --xcframework /Users/runner/work/Paradise/Paradise/apple/Frameworks/PDCore.xcframework --platform ios --environment simulator --target-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyStaticMetadataFileList (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyMetadataFileList (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-project-headers.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-own-target-headers.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-generated-files.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-target-headers.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-non-framework-target-headers.hmap (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibPath-normal-x86_64.txt (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibPath-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibInstallName-normal-x86_64.txt (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibInstallName-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_const_extract_protocols.json (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftConstValuesFileList (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.LinkFileList (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-OutputFileMap.json (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyStaticMetadataFileList (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyMetadataFileList (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-project-headers.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-own-target-headers.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-generated-files.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-target-headers.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-non-framework-target-headers.hmap (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugEntryPoint-normal-x86_64.txt (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugEntryPoint-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibPath-normal-x86_64.txt (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibPath-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibInstallName-normal-x86_64.txt (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibInstallName-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_const_extract_protocols.json (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftConstValuesFileList (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.LinkFileList (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-OutputFileMap.json (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    write-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-OutputFileMap.json
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/__preview.dylib normal (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -dynamiclib -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -install_name @rpath/PacketTunnel.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_dependency_info.dat -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/__preview.dylib
+
+ProcessInfoPlistFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/Info.plist /Users/runner/work/Paradise/Paradise/apple/Support/PacketTunnel-Info.plist (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-infoPlistUtility /Users/runner/work/Paradise/Paradise/apple/Support/PacketTunnel-Info.plist -producttype com.apple.product-type.app-extension -expandbuildsettings -format binary -platform iphonesimulator -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/Info.plist
+
+SwiftDriver PacketTunnel normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-SwiftDriver -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name PacketTunnel -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketTunnel-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/SwiftShims-BW564JT7U09K45UWH62PZCT7B.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdbool-6WA5MDNA2ZFVO1SECC7WG5J1U.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ptrauth-BRC2W9RZ5EDG680JG5P9KWZWZ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdarg-6Y14SFBN9GDAP7DHYGPOVYSGV.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_AvailabilityInternal-567S5F4PMSC7CRK1AE7QF72QB.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_float-6P2IK8D029T71R97PA6TRY5IW.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stddef-A5NWENQYKO8U32E9247G9TIFZ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_SwiftConcurrencyShims-CWII0H94K0A7Q2IMVUHR3604S.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ptrcheck-DDP2R3Z6QQ2T4V624NDZRQ2M7.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation1-EFZNS5D08MRHC7N9519RUUCRJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ExtensionFoundation-30TEIUM13R2STB71VZEVTF2C0.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_limits-6L6EDRCMZT5HG32Z22DPWZXY2.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation2-80O736IVZPO8KY7TMTJXIUEQG.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdint-AI2E52SIOHGB38UENQ4C22SOU.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/sys_types-9VWP8U6UIEULOZVBCRJF2H8T.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdatomic-DUU75LV3S0PWEJ59XH880R0S5.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation3-7T47BYAXG4LJAMZ1D0XCWY7QK.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_inttypes-6Y7F3RNBVOKOLD2B33DLBH5GA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Darwin-8PR9574ORHWR766XJ8QW6P8TN.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/MachO-9BR4ATT5H3LJJVMBLY5POX512.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ObjectiveC-14KPFJG8AIKC7PWN75IQUSF18.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os_object-355DCIPCKBJYAWOX6CKEDEL54.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os_workgroup-F382UUX7H0Y2L0VPTKT0AE3W7.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Dispatch-30X3X39RH8Z28SIRP9Y4EDG2J.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreFoundation-2I7XPRTXFB5DBCIAQIPG2AY0H.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/dnssd-DI8HXSBY73ZZXEW4LD4KZO3EG.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/XPC-EFI8GW6LNKVNBVRPW4RL2LLKQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os-7JI1O6SVH0SODW28IV5HFNBSI.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Security-8N4FH1V4DUN9B71IBBCN4QRP6.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CFNetwork-82USHAJ0UXBZ7VQ3KG5Y7UXCF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Foundation-E9LUHZNM8VLW6QUKMSZXYISFJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Network-7XR35OTO4HEXCETUX5W2NQQHO.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/OSLog-15ATGPMQE86XLTU7QJOGEY6P2.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/PDCore-E5NIXPGJV1DYX9Z4K0JSJ7WL.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/NetworkExtension-3LHXQE89BWYN57K4ASHNI8DZ.pcm
+
+SwiftGeneratePch normal x86_64 Compiling\ bridging\ header (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftDriverJobDiscovery normal x86_64 Compiling bridging header (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftEmitModule normal x86_64 Emitting\ module\ for\ PacketTunnel (in target 'PacketTunnel' from project 'Paradise')
+
+EmitSwiftModule normal x86_64 (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ PacketTunnelProvider.swift /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketTunnelProvider.swift (in target 'PacketTunnel' from project 'Paradise')
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketTunnelProvider.swift (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ PacketPump.swift /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketPump.swift (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketPump.swift (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftDriverJobDiscovery normal x86_64 Emitting module for PacketTunnel (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftDriver\ Compilation\ Requirements PacketTunnel normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name PacketTunnel -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketTunnel-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources/PacketTunnel-Swift.h /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-Swift.h (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-swiftHeaderTool -arch x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-Swift.h -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources/PacketTunnel-Swift.h
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.swiftmodule
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftdoc (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.swiftdoc
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.abi.json (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/x86_64-apple-ios-simulator.abi.json
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftsourceinfo (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/unthinned (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/unthinned
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned
+
+GenerateAssetSymbols /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets --compile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 16.0 --platform iphonesimulator --bundle-identifier com.kyzaygy.paradise --generate-swift-asset-symbol-extensions NO --generate-swift-asset-symbols /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CompileAssetCatalogVariant thinned /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/actool /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets --compile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --development-region en --target-device iphone --target-device ipad --minimum-deployment-target 16.0 --platform iphonesimulator
+/* com.apple.actool.compilation-results */
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist_thinned
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned/Assets.car
+
+
+SwiftDriver Paradise normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-SwiftDriver -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Paradise -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/Paradise/Paradise-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/SwiftShims-ADPUZRRCKJKB90MEPK7DB7KEJ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ptrauth-DNULOMTPJ9EKU372PS6L7C5T3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_float-2HW8V4TZ6N7WXJ30U2O1GL15G.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdbool-D6R7FAIUC1PXOQIQ1DI09NID6.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdarg-88P9OEWXFX7M5X5DF4C6ZKDUQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_AvailabilityInternal-V3P2XU2J0D3KZXG8TBVCGCSS.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ptrcheck-1JL8V8PII8TPITACGFHV7Z7P.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_SwiftConcurrencyShims-A279AUFYO67DF6YB0FZHBMPN1.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation1-6B6UVV77OD7BJL54ESUP9K12M.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stddef-ZEVXSX3DCIC3UF1HHO2MOPVF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_limits-5TUTD83I4G6TEF13XMTVF74BP.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ExtensionFoundation-6JTKMOW41N6ET8B5Y4ZPYTL38.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation2-78KXKJYH1SWHGB2BAJ0MWQ1U4.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/DeveloperToolsSupport-2BVI29DIIXFXZO0M9VTLGOPTZ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdint-EOTAY32PLECU0OOFY74S1CEKF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_tgmath-6K0V8HHFI9SXP5P9H46MHJX5M.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_DarwinFoundation3-AW5PL2WRJ4Z9NT66VFD1OVATN.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_stdatomic-AANJP3R702GHFT86AZ240HOWC.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_intrinsics-7CLZUZ6XOP1OIKYJSM5P6XZB2.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_Builtin_inttypes-7D1UEWTCBQUYEQMK6JC01PEWL.pcm
+
+SwiftDriverJobDiscovery normal x86_64 Compiling PacketPump.swift (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/sys_types-3OPB9P1C1QGLQVHR7UQRUNRXC.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Darwin-7OM24QNF8J3A0RBN19V3YL5AT.pcm
+
+SwiftDriverJobDiscovery normal x86_64 Compiling PacketTunnelProvider.swift (in target 'PacketTunnel' from project 'Paradise')
+
+SwiftDriver\ Compilation PacketTunnel normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name PacketTunnel -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -application-extension -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/PacketTunnel/PacketTunnel-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel.debug.dylib normal (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -dynamiclib -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -filelist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.LinkFileList -install_name @rpath/PacketTunnel.debug.dylib -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/../../Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_dependency_info.dat -fapplication-extension -fobjc-link-runtime -L/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.swiftmodule @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel-linker-args.resp -ObjC -lresolv -Xlinker -alias -Xlinker _NSExtensionMain -Xlinker ___debug_main_executable_dylib_entry_point -framework PDCore -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel.debug.dylib
+
+ConstructStubExecutorLinkFileList /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-ExecutorLinkFileList-normal-x86_64.txt (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    construct-stub-executor-link-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel.debug.dylib /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-ExecutorLinkFileList-normal-x86_64.txt
+note: Using stub executor library without Swift entry point. (in target 'PacketTunnel' from project 'Paradise')
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel normal (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/../../Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibPath-normal-x86_64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_entry -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugEntryPoint-normal-x86_64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-DebugDylibInstallName-normal-x86_64.txt -Xlinker -filelist -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel-ExecutorLinkFileList-normal-x86_64.txt /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel.debug.dylib -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/simd-96ZC5R9CD8VA5BL9APO3YOZR1.pcm
+
+ExtractAppIntentsMetadata (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name PacketTunnel --sdk-root /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 16.0 --bundle-identifier com.kyzaygy.paradise.tunnel --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex --target-triple x86_64-apple-ios16.0-simulator --binary-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/PacketTunnel --dependency-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel_dependency_info.dat --stringsdata-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftFileList --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/Objects-normal/x86_64/PacketTunnel.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-11-18 14:17:26.978 appintentsmetadataprocessor[21409:64052] Starting appintentsmetadataprocessor export
+2026-11-18 14:17:27.012 appintentsmetadataprocessor[21409:64052] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+AppIntentsSSUTraining (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/Info.plist --temp-dir-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/ssu --bundle-id com.kyzaygy.paradise.tunnel --product-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex --extracted-metadata-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/Metadata.appintents --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/PacketTunnel.build/PacketTunnel.DependencyMetadataFileList --source-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex/Info.plist --archive-ssu-assets
+2026-11-18 14:17:27.093 appintentsnltrainingprocessor[21411:64055] Parsing options for appintentsnltrainingprocessor
+2026-11-18 14:17:27.094 appintentsnltrainingprocessor[21411:64055] Starting AppIntents SSU YAML Generation
+2026-11-18 14:17:27.106 appintentsnltrainingprocessor[21411:64055] No AppShortcuts found - Skipping.
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/MachO-DENCWFBQ040T98QZRS3OS5SDA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ObjectiveC-3NF6XGNLC5DCZLD8TO8RAF5WO.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os_object-8QA4OZWUU2WYXUG4H4UAUN0E2.pcm
+
+RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os_workgroup-14LKTCPGRVCCYGKBF3PRGJECR.pcm
+
+Touch /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex (in target 'PacketTunnel' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /usr/bin/touch -c /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Dispatch-7R16TFAZS8V27PB3JA64DH4LN.pcm
+
+CpResource /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Licenses.txt /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Licenses.txt (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Licenses.txt /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/__preview.dylib normal (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -dynamiclib -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -install_name @rpath/Paradise.debug.dylib -Xlinker -dead_strip -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_dependency_info.dat -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/__preview.dylib
+
+CopyStringsFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj/Localizable.strings /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/Localizable.strings (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copyStrings --validate --outputencoding binary --outfilename Localizable.strings --outdir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj -- /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/Localizable.strings
+/Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/Localizable.strings:1:1: note: detected encoding of input file as Unicode (UTF-8) (in target 'Paradise' from project 'Paradise')
+
+CopyStringsFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj/InfoPlist.strings /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/InfoPlist.strings (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copyStrings --validate --outputencoding binary --outfilename InfoPlist.strings --outdir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj -- /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/InfoPlist.strings
+/Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/ru.lproj/InfoPlist.strings:1:1: note: detected encoding of input file as Unicode (UTF-8) (in target 'Paradise' from project 'Paradise')
+
+CopyStringsFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj/Localizable.strings /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/Localizable.strings (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copyStrings --validate --outputencoding binary --outfilename Localizable.strings --outdir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj -- /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/Localizable.strings
+/Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/Localizable.strings:1:1: note: detected encoding of input file as Unicode (UTF-8) (in target 'Paradise' from project 'Paradise')
+
+CopyStringsFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj/InfoPlist.strings /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/InfoPlist.strings (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copyStrings --validate --outputencoding binary --outfilename InfoPlist.strings --outdir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj -- /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/InfoPlist.strings
+/Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/en.lproj/InfoPlist.strings:1:1: note: detected encoding of input file as Unicode (UTF-8) (in target 'Paradise' from project 'Paradise')
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreFoundation-BC1DOO2GFZ41NZO484NOWTASR.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/dnssd-DRYC1KOC9XFJXK2SOB9F5OGR9.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/XPC-3BLHHUN5F6LM6DAVXYQRCKHF9.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/os-46DG7WD4JTBP2LXZH7F51VOGV.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreGraphics-4TATKIB6ATZ30SYW90UMF5V9X.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CFNetwork-F1D6B65HXOC6068FSSVCPSCTW.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Security-60GZL66EC7L8I4Q1A2LF216W1.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreAudioTypes-8U29CMNFT1VYXATXBFV5F7R9U.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/ImageIO-23R6ETCYDMAOVIJQ2G4FLBECM.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Spatial-6ATJKYJVE9S3U3DDH3SA36R7Z.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreAudio-92ZEJT5DYIHT0KVJ7USUE160M.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Foundation-BXT7UF4BIO9ESAQZYXH2P6362.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreText-6PA5DEN7QYY9K92NIUQ2GR32C.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/UserNotifications-7FVT0RGFETGFJPWVHKP8V2HOA.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreData-EQXWBSQ4Z1CN2QLLF3K8LGPIQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Network-2VDVM485DNNMK0YAY66RG9X99.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/AppIntents-8QIOA8MYNKJBQ9Z8CA7YN25PP.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/UniformTypeIdentifiers-2VP3UOXKO6TVUB62ZZ2CEA1LG.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Accessibility-86JMD8V3123OCK42MW5FLU0DY.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/NetworkExtension-1ZYFD4VQHFCPKWNGLCWA8HXKP.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreMIDI-80E1X452AZQSFSOBE9SHUUOIH.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreSpotlight-5BQ8SURZ7ETD3W6Y6K94VGMA4.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/IOSurface-7C1EJOKBMZBR36DHUN7JXZV31.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/OSLog-4HFRH98J9P620G4IYX2DH4HKQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Symbols-9Q7H74GISDGX828XHZXNUQZUF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/AudioToolbox-2JR6NOY1N7GXVL96UQ6QVGXX3.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Metal-EVCI7BZ0F3ZWKE7JFUM5G4OJN.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/RelevanceKit-DJTL9YLHN5KLNW80B4SSNJZ9J.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/DataDetection-7269I79TPK73UEKU8FZUJCFIW.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreTransferable-D4242QT2WKOKNKBCB1AJ8YFUM.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/AVRouting-6WC9HRZKP4YORVRTTOJ52CHS5.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/UIUtilities-BPIG5OP6TVVLUJ6FCA6QDRC7G.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/FileProvider-CRG0XZRUSOJ5YJ0C8X1O7AB6I.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/_LocationEssentials-1MWICF177XGGMVL9B7X2SRLC8.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/OpenGLES-18E1XVLB8398HXTZOBWRFJH7S.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/PDCore-BLDPEOPCIDKR9KNBL5FNJMX2T.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreLocation-37JIJMN4CRMWQ3G9ELRQQHQRC.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreVideo-1T26PKMWN7HII0YYHM7YXDBYT.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreMotion-8U9O816FBGGWCIUSSJ26T807M.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreImage-EDBQR44HO342IOW5AGWKTYA9U.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/CoreMedia-CZ200Q0SAGVDXVA9MNFXNKBQF.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/QuartzCore-CITG53SFTH2NFPH196QAX7NIB.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/MediaToolbox-ATB2BCKLDNVA98VNDE8LRNP13.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/AVFAudio-C02HHNJHAMAFQQVOJLO6BDVF8.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/UIKit-9M1IME5EDIL6BSR24RH67FW9O.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/SwiftUICore-1PY3XPIEVQBXXUO9124ZQNNEQ.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/AVFoundation-DF50IMO5XZ2O0244O8GRF3YP0.pcm
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/SwiftUI-13OP2MAKLGRF43M59EJHXG72O.pcm
+
+SwiftGeneratePch normal x86_64 Compiling\ bridging\ header (in target 'Paradise' from project 'Paradise')
+
+SwiftDriverJobDiscovery normal x86_64 Compiling bridging header (in target 'Paradise' from project 'Paradise')
+
+SwiftEmitModule normal x86_64 Emitting\ module\ for\ Paradise (in target 'Paradise' from project 'Paradise')
+
+EmitSwiftModule normal x86_64 (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ Demo.swift,\ Design.swift,\ DiagnosticsView.swift,\ ExportView.swift,\ GeoView.swift,\ HomeView.swift,\ ImportPreviewView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/App/Demo.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/Design.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/DiagnosticsView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ExportView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/GeoView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/HomeView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ImportPreviewView.swift (in target 'Paradise' from project 'Paradise')
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/App/Demo.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/Design.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/DiagnosticsView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ExportView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/GeoView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/HomeView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ImportPreviewView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ AddView.swift,\ AppLog.swift,\ AppModel.swift,\ AppPrefs.swift,\ ConfigTab.swift,\ ControlCenterView.swift,\ Core.swift,\ DataTab.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/AddView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/AppLog.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/App/AppModel.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/AppPrefs.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ConfigTab.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ControlCenterView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Core.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/DataTab.swift (in target 'Paradise' from project 'Paradise')
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/AddView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/AppLog.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/App/AppModel.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+/Users/runner/work/Paradise/Paradise/apple/Paradise/App/AppModel.swift:290:26: warning: 'detectPatterns(for:completionHandler:)' was deprecated in iOS 15.0
+    UIPasteboard.general.detectPatterns(for: [.probableWebURL]) { [weak self] result in
+                         ^
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/AppPrefs.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ConfigTab.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ControlCenterView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Core.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/DataTab.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ Keychain.swift,\ NotificationsView.swift,\ ParadiseApp.swift,\ QR.swift,\ ServerPanel.swift,\ ServersView.swift,\ SettingsTab.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Keychain.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/NotificationsView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/App/ParadiseApp.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/QR.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ServerPanel.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ServersView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsTab.swift (in target 'Paradise' from project 'Paradise')
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Keychain.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/NotificationsView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/App/ParadiseApp.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/QR.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ServerPanel.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/ServersView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsTab.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+/Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsTab.swift:182:20: warning: main actor-isolated property 'state' can not be referenced from a Sendable closure
+      get: { model.state.settings[keyPath: path] },
+                   ^
+/Users/runner/work/Paradise/Paradise/apple/Paradise/App/AppModel.swift:70:18: note: property declared here
+  @Published var state = CoreState.empty
+                 ^
+
+SwiftDriverJobDiscovery normal x86_64 Emitting module for Paradise (in target 'Paradise' from project 'Paradise')
+
+SwiftDriver\ Compilation\ Requirements Paradise normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Paradise -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/Paradise/Paradise-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+LinkAssetCatalog /Users/runner/work/Paradise/Paradise/apple/Paradise/Resources/Assets.xcassets (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-linkAssetCatalog --thinned /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/thinned --thinned-dependencies /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist_unthinned --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app --plist-output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Assets.car (in target 'Paradise' from project 'Paradise')
+note: Emplaced /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/AppIcon76x76@2x~ipad.png (in target 'Paradise' from project 'Paradise')
+note: Emplaced /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/AppIcon60x60@2x.png (in target 'Paradise' from project 'Paradise')
+
+SwiftCompile normal x86_64 Compiling\ SettingsView.swift,\ Shortcuts.swift,\ SpaceView.swift,\ Strings.swift,\ Theme.swift,\ VPNController.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/App/Shortcuts.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SpaceView.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Strings.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/Theme.swift /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/VPNController.swift /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Paradise' from project 'Paradise')
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/App/Shortcuts.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SpaceView.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/Strings.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/UI/Theme.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/Paradise/Core/VPNController.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftMergeGeneratedHeaders /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/Paradise-Swift.h /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-Swift.h (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-swiftHeaderTool -arch x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-Swift.h -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/Paradise-Swift.h
+
+SwiftDriverJobDiscovery normal x86_64 Compiling Demo.swift, Design.swift, DiagnosticsView.swift, ExportView.swift, GeoView.swift, HomeView.swift, ImportPreviewView.swift (in target 'Paradise' from project 'Paradise')
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.swiftmodule
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftdoc (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.swiftdoc
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.abi.json (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/x86_64-apple-ios-simulator.abi.json
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftsourceinfo (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo
+
+SwiftDriver ParadiseUITests normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-SwiftDriver -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name ParadiseUITests -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-Swift.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal x86_64 Compiling AddView.swift, AppLog.swift, AppModel.swift, AppPrefs.swift, ConfigTab.swift, ControlCenterView.swift, Core.swift, DataTab.swift (in target 'Paradise' from project 'Paradise')
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-6WDOQSM4P3NQBM5AT8M5LOPUJ.pcm
+
+SwiftDriverJobDiscovery normal x86_64 Compiling SettingsView.swift, Shortcuts.swift, SpaceView.swift, Strings.swift, Theme.swift, VPNController.swift, GeneratedAssetSymbols.swift (in target 'Paradise' from project 'Paradise')
+
+SwiftExplicitDependencyCompileModuleFromInterface x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-2HYY816ND49RT.swiftmodule
+
+SwiftExplicitDependencyGeneratePcm x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-DCWH6X44NMBV37JRSLBUZHBPQ.pcm
+
+SwiftDriverJobDiscovery normal x86_64 Compiling Keychain.swift, NotificationsView.swift, ParadiseApp.swift, QR.swift, ServerPanel.swift, ServersView.swift, SettingsTab.swift (in target 'Paradise' from project 'Paradise')
+
+SwiftDriver\ Compilation Paradise normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Paradise -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F Frameworks -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-Swift.h -import-objc-header /Users/runner/work/Paradise/Paradise/apple/Paradise/Paradise-Bridging-Header.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise.debug.dylib normal (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -dynamiclib -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -filelist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.LinkFileList -install_name @rpath/Paradise.debug.dylib -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.swiftmodule @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise-linker-args.resp -ObjC -lresolv -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -framework PDCore -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise.debug.dylib
+
+SwiftExplicitDependencyCompileModuleFromInterface x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-10UOSP55U63QL.swiftmodule
+
+SwiftEmitModule normal x86_64 Emitting\ module\ for\ ParadiseUITests (in target 'ParadiseUITests' from project 'Paradise')
+
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftCompile normal x86_64 Compiling\ ParadiseUITests.swift /Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift (in target 'ParadiseUITests' from project 'Paradise')
+SwiftCompile normal x86_64 /Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    
+
+SwiftDriverJobDiscovery normal x86_64 Emitting module for ParadiseUITests (in target 'ParadiseUITests' from project 'Paradise')
+
+SwiftDriver\ Compilation\ Requirements ParadiseUITests normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name ParadiseUITests -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-Swift.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources/ParadiseUITests-Swift.h /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-Swift.h (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-swiftHeaderTool -arch x86_64 /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-Swift.h -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources/ParadiseUITests-Swift.h
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.swiftmodule
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftdoc (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftdoc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.swiftdoc
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.abi.json (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.abi.json /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/x86_64-apple-ios-simulator.abi.json
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftsourceinfo (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftsourceinfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo
+
+ConstructStubExecutorLinkFileList /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-ExecutorLinkFileList-normal-x86_64.txt (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    construct-stub-executor-link-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise.debug.dylib /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-ExecutorLinkFileList-normal-x86_64.txt
+note: Using stub executor library with Swift entry point. (in target 'Paradise' from project 'Paradise')
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise normal (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -FFrameworks -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibPath-normal-x86_64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-DebugDylibInstallName-normal-x86_64.txt -Xlinker -filelist -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise-ExecutorLinkFileList-normal-x86_64.txt /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise.debug.dylib -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns/PacketTunnel.appex /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks -remove-static-executable /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/PacketTunnel.appex /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns
+
+ProcessInfoPlistFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Info.plist /Users/runner/work/Paradise/Paradise/apple/Support/Paradise-Info.plist (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-infoPlistUtility /Users/runner/work/Paradise/Paradise/apple/Support/Paradise-Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/assetcatalog_generated_info.plist -scanforprivacyfile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns/PacketTunnel.appex -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Info.plist
+
+ExtractAppIntentsMetadata (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Paradise --sdk-root /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 16.0 --bundle-identifier com.kyzaygy.paradise --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app --target-triple x86_64-apple-ios16.0-simulator --binary-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise --dependency-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise_dependency_info.dat --stringsdata-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftFileList --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Objects-normal/x86_64/Paradise.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-11-18 14:18:45.037 appintentsmetadataprocessor[22664:67148] Starting appintentsmetadataprocessor export
+2026-11-18 14:18:45.357 appintentsmetadataprocessor[22664:67148] Writing Metadata.appintents
+2026-11-18 14:18:45.357 appintentsmetadataprocessor[22664:67148] Metadata root: /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Metadata.appintents
+
+CopySwiftLibs /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Paradise.debug.dylib --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Frameworks --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/SystemExtensions --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
+Ignoring --strip-bitcode because --sign was not passed
+
+ValidateEmbeddedBinary /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns/PacketTunnel.appex (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/embeddedBinaryValidationUtility /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/PlugIns/PacketTunnel.appex -info-plist-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Info.plist
+
+AppIntentsSSUTraining (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Info.plist --temp-dir-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/ssu --bundle-id com.kyzaygy.paradise --product-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app --extracted-metadata-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Metadata.appintents --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/Paradise.DependencyMetadataFileList --source-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Info.plist --archive-ssu-assets
+2026-11-18 14:18:45.483 appintentsnltrainingprocessor[22666:67155] Parsing options for appintentsnltrainingprocessor
+2026-11-18 14:18:45.485 appintentsnltrainingprocessor[22666:67155] Starting AppIntents SSU YAML Generation
+2026-11-18 14:18:45.563 appintentsnltrainingprocessor[22666:67155] Training 'Connect ${+applicationName}|Turn on ${+applicationName}' for ru
+2026-11-18 14:18:45.564 appintentsnltrainingprocessor[22666:67155] Training 'Connect ${+applicationName}|Turn on ${+applicationName}' for en
+2026-11-18 14:18:45.564 appintentsnltrainingprocessor[22666:67155] Training 'Disconnect ${+applicationName}|Turn off ${+applicationName}' for ru
+2026-11-18 14:18:45.564 appintentsnltrainingprocessor[22666:67155] Training 'Disconnect ${+applicationName}|Turn off ${+applicationName}' for en
+2026-11-18 14:18:45.564 appintentsnltrainingprocessor[22666:67155] Training 'Toggle ${+applicationName}' for ru
+2026-11-18 14:18:45.565 appintentsnltrainingprocessor[22666:67155] Training 'Toggle ${+applicationName}' for en
+2026-11-18 14:18:45.565 appintentsnltrainingprocessor[22666:67155] Training Negative Phrases '' for ru
+2026-11-18 14:18:45.566 appintentsnltrainingprocessor[22666:67155] Training Negative Phrases '' for en
+2026-11-18 14:18:45.588 appintentsnltrainingprocessor[22666:67155] Application name 'Paradise' for ru
+2026-11-18 14:18:45.590 appintentsnltrainingprocessor[22666:67155] Application name 'Paradise' for en
+2026-11-18 14:18:45.646 appintentsnltrainingprocessor[22666:67155] Generated AppIntents SSU YAML files in file:///Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/Paradise.build/ssu/
+2026-11-18 14:18:45.647 appintentsnltrainingprocessor[22666:67155] Copied AppIntents SSU YAML files to file:///Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/Metadata.appintents/
+Archiving all locales.
+[------------------------------------------------------------] 0% archiving en[🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢------------------------------] 50% archived en[🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢------------------------------] 50% archiving ru[🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢] 100% archived ru[🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢] 100% archived 2 locales/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj/nlu.appintents
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/en.lproj/nlu.appintents/2f76f765d055fb793f28df7edeb74034.version
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj/nlu.appintents
+/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app/ru.lproj/nlu.appintents/15e689d53b6173524d855a839846adfd.version
+
+
+SwiftDriverJobDiscovery normal x86_64 Compiling ParadiseUITests.swift (in target 'ParadiseUITests' from project 'Paradise')
+
+SwiftDriver\ Compilation ParadiseUITests normal x86_64 com.apple.xcode.tools.swift.compiler (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-Swift-Compilation -- /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name ParadiseUITests -Onone @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target x86_64-apple-ios16.0-simulator -g -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/runner/work/Paradise/Paradise/build/SimData/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j4 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f45c64a1807a658693f2a61704f17a36.sdkstatcache -output-file-map /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -sdk-module-cache-path /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/Paradise/Paradise/build/SimData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-generated-files.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-own-target-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-all-target-headers.hmap -Xcc -iquote -Xcc /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests-project-headers.hmap -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources-normal/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources/x86_64 -Xcc -I/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-Swift.h -working-directory /Users/runner/work/Paradise/Paradise/apple -experimental-emit-module-separately -disable-cmo
+
+RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app
+
+Validate /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-validationUtility /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app -shallow-bundle -infoplist-subpath Info.plist
+
+Touch /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app (in target 'Paradise' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /usr/bin/touch -c /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/Paradise.app
+
+ProcessInfoPlistFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Info.plist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/empty-ParadiseUITests.plist (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-infoPlistUtility /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/empty-ParadiseUITests.plist -producttype com.apple.product-type.bundle.ui-testing -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ProductTypeInfoPlistAdditions.plist -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Info.plist
+
+Ld /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/ParadiseUITests normal (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target x86_64-apple-ios16.0-simulator -bundle -isysroot /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -L/Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -filelist /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.swiftmodule @/Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests-linker-args.resp -ObjC -lresolv -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport -o /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/ParadiseUITests
+
+ExtractAppIntentsMetadata (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name ParadiseUITests --sdk-root /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 16.0 --bundle-identifier com.kyzaygy.paradise.uitests --output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest --target-triple x86_64-apple-ios16.0-simulator --binary-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/ParadiseUITests --dependency-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests_dependency_info.dat --stringsdata-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftFileList --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/Objects-normal/x86_64/ParadiseUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-11-18 14:18:48.519 appintentsmetadataprocessor[22848:67580] Starting appintentsmetadataprocessor export
+2026-11-18 14:18:48.523 appintentsmetadataprocessor[22848:67580] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+CopySwiftLibs /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/ParadiseUITests --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Frameworks --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/PlugIns --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/SystemExtensions --scan-folder /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
+Ignoring --strip-bitcode because --sign was not passed
+
+AppIntentsSSUTraining (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Info.plist --temp-dir-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ssu --bundle-id com.kyzaygy.paradise.uitests --product-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest --extracted-metadata-path /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Metadata.appintents --metadata-file-list /Users/runner/work/Paradise/Paradise/build/SimData/Build/Intermediates.noindex/Paradise.build/Debug-iphonesimulator/ParadiseUITests.build/ParadiseUITests.DependencyMetadataFileList --source-file /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Info.plist --archive-ssu-assets
+2026-11-18 14:18:48.559 appintentsnltrainingprocessor[22853:67589] Parsing options for appintentsnltrainingprocessor
+2026-11-18 14:18:48.559 appintentsnltrainingprocessor[22853:67589] Starting AppIntents SSU YAML Generation
+2026-11-18 14:18:48.560 appintentsnltrainingprocessor[22853:67589] No AppShortcuts found - Skipping.
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PkgInfo /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/PkgInfo /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app
+
+CopyAndPreserveArchs /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/ParadiseUITests-Runner (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/XCTRunner -output /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/ParadiseUITests-Runner -extract x86_64
+
+CopyPlistFile /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Info.plist /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copyPlist --validate --convert xml1 --macro-expansion WRAPPEDPRODUCTNAME ParadiseUITests-Runner --macro-expansion WRAPPEDPRODUCTBUNDLEIDENTIFIER com.kyzaygy.paradise.uitests.xctrunner --macro-expansion TESTPRODUCTNAME ParadiseUITests --macro-expansion TESTPRODUCTBUNDLEIDENTIFIER com.kyzaygy.paradise.uitests --copy-value UIDeviceFamily /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest/Info.plist --outdir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app -- /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Xcode/Agents/XCTRunner.app/Info.plist
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/libXCTestSwiftSupport.dylib /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+MkDir /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /bin/mkdir -p /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCUnit.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCUnit.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCUIAutomation.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCUIAutomation.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCTestSupport.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestSupport.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCTestCore.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTestCore.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCTest.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/XCTest.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/XCTAutomationSupport.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+Copy /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks/Testing.framework /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks/Testing.framework /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/Frameworks
+
+RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    builtin-RegisterExecutionPolicyException /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest
+
+Touch /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest (in target 'ParadiseUITests' from project 'Paradise')
+    cd /Users/runner/work/Paradise/Paradise/apple
+    /usr/bin/touch -c /Users/runner/work/Paradise/Paradise/build/SimData/Build/Products/Debug-iphonesimulator/ParadiseUITests-Runner.app/PlugIns/ParadiseUITests.xctest
+
+** TEST BUILD SUCCEEDED **
+

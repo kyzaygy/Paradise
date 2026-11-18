@@ -1,0 +1,2 @@
+/Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift:17: error: -[ParadiseUITests.ParadiseUITests test2FavoritesPersist] : Failed to terminate com.kyzaygy.paradise:44004: Failed to terminate com.kyzaygy.paradise:0
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' failed (60.991 seconds).

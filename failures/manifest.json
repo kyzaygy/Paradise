@@ -1,0 +1,33 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "F4A9ECEC-0EF3-479B-B307-1869E34D8E0D",
+        "deviceName" : "main",
+        "exportedFileName" : "C8C2F5D0-4FE4-4FE2-BFF0-2FED98D7B183.txt",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "2026-11-18 143747 +0000-Spindump_0_126B119E-E66F-490B-B0D7-C44B3DC6A6D3.txt",
+        "timestamp" : 1795012833.989
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "F4A9ECEC-0EF3-479B-B307-1869E34D8E0D",
+        "deviceName" : "main",
+        "exportedFileName" : "A53A9223-EB2F-499E-9143-8F3A765379FB.txt",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Complete Issue Description.txt"
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "F4A9ECEC-0EF3-479B-B307-1869E34D8E0D",
+        "deviceName" : "main",
+        "exportedFileName" : "7CB13CCD-4F02-4894-9A44-1B9DB4103773.txt",
+        "isAssociatedWithFailure" : true,
+        "suggestedHumanReadableName" : "Complete Issue Description.txt"
+      }
+    ],
+    "testIdentifier" : "ParadiseUITests/test1HomeScreenFunctions()",
+    "testIdentifierURL" : "test://com.apple.xcode/Paradise/ParadiseUITests/ParadiseUITests/test1HomeScreenFunctions"
+  }
+]

@@ -1,0 +1,4 @@
+/Users/runner/work/Paradise/Paradise/apple/Paradise/App/AppModel.swift:290:26: warning: 'detectPatterns(for:completionHandler:)' was deprecated in iOS 15.0
+/Users/runner/work/Paradise/Paradise/apple/Paradise/UI/SettingsTab.swift:182:20: warning: main actor-isolated property 'state' can not be referenced from a Sendable closure
+2026-11-18 14:17:27.012 appintentsmetadataprocessor[21409:64052] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+2026-11-18 14:18:48.523 appintentsmetadataprocessor[22848:67580] warning: Metadata extraction skipped. No AppIntents.framework dependency found.

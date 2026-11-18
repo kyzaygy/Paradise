@@ -1,0 +1,22 @@
+runtime: com.apple.CoreSimulator.SimRuntime.iOS-26-5
+main: iPhone 14 Pro
+small: iPhone SE (2nd generation)
+build ok
+main-collapsed.png
+main-connected.png
+main-connected@aurora.png
+main-connected@light.png
+main-connected@nebula.png
+main-connected@solar.png
+main-connecting.png
+main-empty.png
+main-favorites.png
+main-full.png
+main-long.png
+main-motion.mp4
+main-reference.png
+main-reference@oled.png
+main-routes.png
+main-search.png
+screenshots done
+UI TESTS FAILED

@@ -1,0 +1,12 @@
+Test Case '-[ParadiseUITests.ParadiseUITests test1HomeScreenFunctions]' passed (275.184 seconds).
+/Users/runner/work/Paradise/Paradise/apple/UITests/ParadiseUITests.swift:17: error: -[ParadiseUITests.ParadiseUITests test2FavoritesPersist] : Failed to terminate com.kyzaygy.paradise:44004: Failed to terminate com.kyzaygy.paradise:0
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' failed (60.991 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test2FavoritesPersist]' passed (19.818 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test3ProtocolMenuAndLongNames]' passed (63.755 seconds).
+Test Case '-[ParadiseUITests.ParadiseUITests test4States]' passed (48.398 seconds).
+Test Suite 'ParadiseUITests' passed at 2026-11-18 14:42:54.658.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.985) seconds
+Test Suite 'ParadiseUITests.xctest' passed at 2026-11-18 14:42:54.659.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.987) seconds
+Test Suite 'Selected tests' passed at 2026-11-18 14:42:54.660.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 131.972 (131.991) seconds
