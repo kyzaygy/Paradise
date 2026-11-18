@@ -1,36 +1,28 @@
 import SwiftUI
 import UIKit
 
-/// Monochrome visual language of the home screen (see DS): near-black surfaces, light-grey accent.
-/// Color carries meaning only for latency (green) and for warnings and errors.
+/// Colors of the screens outside the home screen. They follow the theme chosen in Appearance (see Palette).
 enum Theme {
-  static func dynamic(light: UInt32, dark: UInt32) -> Color {
-    Color(UIColor { trait in
-      UIColor(hex: trait.userInterfaceStyle == .dark ? dark : light)
-    })
-  }
+  static var canvas: Color { Palette.current.background }
+  static var surface: Color { Palette.current.raised }
+  static var surfaceRaised: Color { Palette.current.selected }
+  static var hairline: Color { Palette.current.stroke }
+  static var accent: Color { Palette.current.tint }
+  static var accentSoft: Color { Palette.current.raised }
+  static var onAccent: Color { Palette.current.onTint }
+  static var warning: Color { Palette.current.warn }
+  static var danger: Color { Palette.current.danger }
+  static var muted: Color { Palette.current.text3 }
 
-  static let canvas = dynamic(light: 0xEDEEF0, dark: 0x0B0C0E)
-  static let surface = dynamic(light: 0xFFFFFF, dark: 0x131416)
-  static let surfaceRaised = dynamic(light: 0xE3E4E7, dark: 0x1B1C1F)
-  static let hairline = dynamic(light: 0xD4D5D9, dark: 0x26272A)
-  static let accent = dynamic(light: 0x2A2B30, dark: 0xDADAE2)
-  static let accentSoft = dynamic(light: 0xE1E2E6, dark: 0x1D1E21)
-  static let onAccent = dynamic(light: 0xFFFFFF, dark: 0x121216)
-  static let warning = dynamic(light: 0x9A6A1C, dark: 0xE0B05A)
-  static let danger = dynamic(light: 0xB83A3A, dark: 0xE57373)
-  static let muted = dynamic(light: 0x5F6066, dark: 0x95969A)
-
-  // Dark palette of the redesigned screens
-  static let space = Color(UIColor(hex: 0x0B0C0E))
-  static let spaceRaised = Color(UIColor(hex: 0x131416))
-  static let glow = Color(UIColor(hex: 0xE4E5E7))
-  static let glowCool = Color(UIColor(hex: 0xB5B6BA))
-  static let good = Color(UIColor(hex: 0x96D0A0))
-  static let fair = Color(UIColor(hex: 0xE0B05A))
-  static let poor = Color(UIColor(hex: 0xE57373))
-  static let dim = Color(UIColor(hex: 0x8E8F93))
-  static let line = Color.white.opacity(0.08)
+  static var space: Color { Palette.current.background }
+  static var spaceRaised: Color { Palette.current.raised }
+  static var glow: Color { Palette.current.text }
+  static var glowCool: Color { Palette.current.text2 }
+  static var good: Color { Palette.current.accent }
+  static var fair: Color { Palette.current.warn }
+  static var poor: Color { Palette.current.danger }
+  static var dim: Color { Palette.current.text3 }
+  static var line: Color { Palette.current.stroke }
 
   static func title(_ style: Font.TextStyle = .title2) -> Font { .system(style).weight(.bold) }
   static func label(_ style: Font.TextStyle = .body) -> Font { .system(style).weight(.semibold) }

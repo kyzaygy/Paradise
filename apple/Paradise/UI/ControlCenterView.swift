@@ -8,6 +8,7 @@ struct ControlCenterView: View {
   }
 
   @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var prefs: AppPrefs
   @Environment(\.dismiss) private var dismiss
 
   init() {}
@@ -24,9 +25,9 @@ struct ControlCenterView: View {
         Button { dismiss() } label: {
           Image(systemName: "xmark")
             .font(.system(size: 13, weight: .semibold))
-            .foregroundStyle(DS.textPrimary)
+            .foregroundStyle(Palette.current.text)
             .frame(width: 32, height: 32)
-            .background(DS.roundButton, in: Circle())
+            .background(Palette.current.raised, in: Circle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(L("common.close"))
@@ -43,6 +44,8 @@ struct ControlCenterView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .background(DS.background.ignoresSafeArea())
+    .background(Palette.current.background.ignoresSafeArea())
+    // follows a theme picked in Appearance while this sheet is open
+    .preferredColorScheme((AppTheme(rawValue: prefs.theme) ?? .graphite).palette.isLight ? .light : .dark)
   }
 }

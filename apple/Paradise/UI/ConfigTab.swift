@@ -290,7 +290,7 @@ struct ConfigEditorView: View {
         text = ConfigTemplates.insertRule(line, into: text)
         dirty = true
       }
-      .preferredColorScheme(.dark)
+      .preferredColorScheme(Palette.current.isLight ? .light : .dark)
     }
     .confirmationDialog(L("configs.delete_confirm"), isPresented: $confirmDelete, titleVisibility: .visible) {
       Button(L("common.delete"), role: .destructive) { Task { await delete() } }

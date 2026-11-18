@@ -3,6 +3,7 @@
 "common.close" = "Close";
 "common.copied" = "Copied";
 "common.copy" = "Copy";
+"common.clear" = "Clear";
 "common.delete" = "Delete";
 "common.done" = "Done";
 "common.save" = "Save";
@@ -18,8 +19,6 @@
 "home.add" = "Add";
 "home.offline" = "No internet connection";
 "home.choose_server" = "Select a server";
-"home.a11y.connect" = "Connect VPN";
-"home.a11y.disconnect" = "Disconnect VPN";
 "home.a11y.servers" = "Open the server list";
 
 "empty.title" = "Add a subscription";
@@ -253,6 +252,14 @@
 "config.warn.duplicate_final" = "second FINAL ignored:";
 "config.warn.unsupported_dns" = "DNS server not supported:";
 "appearance.footer" = "Animation and parallax use a little more battery. Reduce Motion in iOS settings turns them off.";
+"appearance.theme" = "Theme";
+"appearance.theme_footer" = "Changes the colors of the whole app and of the space on the home screen.";
+"theme.graphite" = "Graphite";
+"theme.oled" = "OLED";
+"theme.nebula" = "Nebula";
+"theme.aurora" = "Aurora";
+"theme.solar" = "Solar";
+"theme.light" = "Light";
 "appearance.motion" = "Animated galaxy";
 "appearance.parallax" = "Parallax on tilt";
 "appearance.ping" = "Ping on the galaxy";
@@ -412,6 +419,7 @@
 "servers.no_results" = "Nothing found";
 "servers.test" = "Test servers";
 "servers.test_one" = "Test";
+"servers.copy_address" = "Copy address";
 "settings.advanced" = "Advanced";
 "settings.appearance" = "Appearance";
 "settings.language_title" = "Language";

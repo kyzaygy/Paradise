@@ -3,6 +3,7 @@
 "common.close" = "Закрыть";
 "common.copied" = "Скопировано";
 "common.copy" = "Скопировать";
+"common.clear" = "Очистить";
 "common.delete" = "Удалить";
 "common.done" = "Готово";
 "common.save" = "Сохранить";
@@ -18,8 +19,6 @@
 "home.add" = "Добавить";
 "home.offline" = "Нет подключения к интернету";
 "home.choose_server" = "Выберите сервер";
-"home.a11y.connect" = "Подключить VPN";
-"home.a11y.disconnect" = "Отключить VPN";
 "home.a11y.servers" = "Открыть список серверов";
 
 "empty.title" = "Добавьте подписку";
@@ -253,6 +252,14 @@
 "config.warn.duplicate_final" = "второй FINAL пропущен:";
 "config.warn.unsupported_dns" = "DNS-сервер не поддерживается:";
 "appearance.footer" = "Анимация и параллакс тратят чуть больше заряда. «Уменьшение движения» в настройках iOS их отключает.";
+"appearance.theme" = "Тема";
+"appearance.theme_footer" = "Меняет цвета всего приложения и космоса на главном экране.";
+"theme.graphite" = "Графит";
+"theme.oled" = "OLED";
+"theme.nebula" = "Туманность";
+"theme.aurora" = "Аврора";
+"theme.solar" = "Солнце";
+"theme.light" = "Светлая";
 "appearance.motion" = "Анимированная галактика";
 "appearance.parallax" = "Параллакс при наклоне";
 "appearance.ping" = "Пинг на галактике";
@@ -412,6 +419,7 @@
 "servers.no_results" = "Ничего не найдено";
 "servers.test" = "Проверить серверы";
 "servers.test_one" = "Проверить";
+"servers.copy_address" = "Скопировать адрес";
 "settings.advanced" = "Дополнительно";
 "settings.appearance" = "Оформление";
 "settings.language_title" = "Язык";

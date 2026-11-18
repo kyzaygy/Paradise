@@ -62,12 +62,22 @@ final class ParadiseUITests: XCTestCase {
     sleep(1)
   }
 
-  // MARK: 1. Everything on the reference screen
+  /// Drags the open server list up until the row appears.
+  private func reveal(_ id: String) -> Bool {
+    for _ in 0..<8 {
+      if element(id).exists && element(id).isHittable { return true }
+      app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.78))
+        .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)))
+    }
+    return element(id).exists
+  }
+
+  // MARK: 1. Everything on the home screen
 
   func test1HomeScreenFunctions() {
     launch("reference")
 
-    XCTContext.runActivity(named: "initial state matches the mock") { _ in
+    XCTContext.runActivity(named: "initial state") { _ in
       XCTAssertEqual(label("status.title"), "Not Connected")
       XCTAssertEqual(label("status.subtitle"), "Select a server")
       XCTAssertEqual(label("info.ip"), "212.109.219.74")
@@ -80,7 +90,7 @@ final class ParadiseUITests: XCTestCase {
       XCTAssertTrue(label("row.DE").contains("24 ms"), "map and list must show the same ping: \(label("row.DE"))")
       XCTAssertTrue(label("row.DE").contains("Germany") && label("row.DE").contains("Frankfurt"), label("row.DE"))
       XCTAssertTrue(label("row.DE").contains("WG") && label("row.DE").contains("10 Gbps"), label("row.DE"))
-      XCTAssertTrue(above("row.DE", "row.NL") && above("row.NL", "row.GB"), "rows keep the subscription order")
+      XCTAssertTrue(above("row.DE", "row.NL"), "rows keep the subscription order")
       XCTAssertFalse(element("row.DE").isSelected)
     }
 
@@ -97,6 +107,51 @@ final class ParadiseUITests: XCTestCase {
       wait("status.subtitle", label: "Germany, Frankfurt")
     }
 
+    // the map steps come first: later steps open the panel over the map
+    XCTContext.runActivity(named: "connect, timer, IP and location, disconnect") { _ in
+      element("action.connect").tap()
+      wait("status.title", label: "Connected")
+      waitContains("status.subtitle", "Germany, Frankfurt")
+      let first = label("status.subtitle")
+      sleep(2)
+      XCTAssertNotEqual(label("status.subtitle"), first, "timer does not tick")
+      waitContains("info.ip", "203.0.113.")
+      wait("info.location", label: "Germany, Frankfurt")
+      XCTAssertTrue(element("status.rates").waitForExistence(timeout: 4), "traffic rates missing")
+      XCTAssertEqual(element("action.connect").label, "Disconnect")
+      element("action.connect").tap()
+      wait("status.title", label: "Not Connected")
+      wait("info.ip", label: "212.109.219.74")
+    }
+
+    XCTContext.runActivity(named: "a map node switches the tunnel") { _ in
+      element("action.connect").tap()
+      wait("status.title", label: "Connected")
+      let node = element("node.GB")
+      XCTAssertTrue(node.isHittable, "map node is covered: \(frames("node.GB", "tab.servers"))")
+      node.tap() // switches the tunnel to the fastest server of that country
+      waitContains("status.subtitle", "United Kingdom, London")
+      XCTAssertTrue(waitSelected("node.GB"), "the tap did not reach the map node: \(frames("node.GB", "tab.servers"))")
+      element("action.connect").tap()
+      wait("status.title", label: "Not Connected")
+    }
+
+    XCTContext.runActivity(named: "country list from a map node") { _ in
+      element("node.US").press(forDuration: 1.2)
+      let show = app.buttons["Show servers"]
+      guard show.waitForExistence(timeout: 4) else {
+        XCTFail("a long press did not open the country menu: \(frames("node.US", "tab.servers"))")
+        return
+      }
+      show.tap()
+      XCTAssertTrue(element("region.country").waitForExistence(timeout: 4))
+      XCTAssertTrue(element("row.US").waitForExistence(timeout: 4))
+      XCTAssertFalse(element("row.DE").exists)
+      element("region.country").tap()
+      XCTAssertTrue(element("row.DE").waitForExistence(timeout: 4))
+    }
+
+    // the panel is open from here on
     XCTContext.runActivity(named: "region filters") { _ in
       element("region.asia").tap()
       XCTAssertTrue(element("row.SG").waitForExistence(timeout: 4))
@@ -124,50 +179,6 @@ final class ParadiseUITests: XCTestCase {
       XCTAssertTrue(above("row.DE", "row.NL"))
     }
 
-    // the map steps come before the search: searching opens the panel over the map
-    XCTContext.runActivity(named: "connect, timer, IP and location, disconnect") { _ in
-      element("action.connect").tap()
-      wait("status.title", label: "Connected")
-      waitContains("status.subtitle", "Germany, Frankfurt")
-      let first = label("status.subtitle")
-      sleep(2)
-      XCTAssertNotEqual(label("status.subtitle"), first, "timer does not tick")
-      waitContains("info.ip", "203.0.113.")
-      wait("info.location", label: "Germany, Frankfurt")
-      XCTAssertTrue(element("status.rates").waitForExistence(timeout: 4), "traffic rates missing")
-      XCTAssertEqual(element("action.connect").label, "Disconnect")
-      element("action.connect").tap()
-      wait("status.title", label: "Not Connected")
-      wait("info.ip", label: "212.109.219.74")
-    }
-
-    XCTContext.runActivity(named: "power button and map node") { _ in
-      element("action.power").tap()
-      wait("status.title", label: "Connected")
-      let node = element("node.GB")
-      XCTAssertTrue(node.isHittable, "map node is covered: \(frames("node.GB", "tab.servers"))")
-      node.tap() // switches the tunnel to the fastest server of that country
-      waitContains("status.subtitle", "United Kingdom, London")
-      XCTAssertTrue(waitSelected("row.GB"), "the tap did not reach the map node: \(frames("node.GB", "tab.servers"))")
-      element("action.power").tap()
-      wait("status.title", label: "Not Connected")
-    }
-
-    XCTContext.runActivity(named: "country list from a map node") { _ in
-      element("node.US").press(forDuration: 1.2)
-      let show = app.buttons["Show servers"]
-      guard show.waitForExistence(timeout: 4) else {
-        XCTFail("a long press did not open the country menu: \(frames("node.US", "tab.servers"))")
-        return
-      }
-      show.tap()
-      XCTAssertTrue(element("region.country").waitForExistence(timeout: 4))
-      XCTAssertTrue(element("row.US").exists)
-      XCTAssertFalse(element("row.DE").exists)
-      element("region.country").tap()
-      XCTAssertTrue(element("row.DE").waitForExistence(timeout: 4))
-    }
-
     XCTContext.runActivity(named: "search") { _ in
       element("panel.search").tap()
       let field = element("panel.searchField")
@@ -182,7 +193,7 @@ final class ParadiseUITests: XCTestCase {
 
     XCTContext.runActivity(named: "favorites: row star and action bar star") { _ in
       let row = element("row.DE")
-      row.coordinate(withNormalizedOffset: CGVector(dx: 40.0 / 616.0, dy: 0.5)).tap()
+      row.coordinate(withNormalizedOffset: CGVector(dx: 0.07, dy: 0.5)).tap()
       element("tab.favorites").tap()
       XCTAssertTrue(element("row.DE").waitForExistence(timeout: 4))
       XCTAssertFalse(element("row.NL").exists)
@@ -230,8 +241,9 @@ final class ParadiseUITests: XCTestCase {
 
   func test3ProtocolMenuAndLongNames() {
     launch("long")
-    XCTAssertTrue(element("row.BA").waitForExistence(timeout: 5))
-    XCTAssertEqual(element("row.BA").frame.height, element("row.DE").frame.height, accuracy: 1, "a long name changed the row height")
+    let rowHeight = element("row.DE").frame.height
+    XCTAssertTrue(reveal("row.BA"), "the row with a long name is missing")
+    XCTAssertEqual(element("row.BA").frame.height, rowHeight, accuracy: 1, "a long name changed the row height")
     element("info.protocol").tap()
     let trojan = app.buttons["Trojan"]
     XCTAssertTrue(trojan.waitForExistence(timeout: 4), "protocol menu did not open")

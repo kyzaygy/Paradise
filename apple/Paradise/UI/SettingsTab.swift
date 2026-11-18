@@ -244,6 +244,21 @@ struct AppearanceView: View {
   var body: some View {
     Form {
       Section {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 92), spacing: 12)], spacing: 14) {
+          ForEach(AppTheme.allCases) { theme in
+            ThemeSwatch(theme: theme, selected: prefs.theme == theme.rawValue) {
+              Haptics.selection()
+              withAnimation(.easeInOut(duration: 0.25)) { prefs.theme = theme.rawValue }
+            }
+          }
+        }
+        .padding(.vertical, 8)
+      } header: {
+        Text(L("appearance.theme"))
+      } footer: {
+        Text(L("appearance.theme_footer"))
+      }
+      Section {
         Toggle(L("appearance.motion"), isOn: $prefs.galaxyMotion)
         Toggle(L("appearance.parallax"), isOn: $prefs.parallax)
         Toggle(L("appearance.ping"), isOn: $prefs.showPing)
@@ -256,6 +271,50 @@ struct AppearanceView: View {
     .background(Theme.space.ignoresSafeArea())
     .navigationTitle(L("settings.appearance"))
     .navigationBarTitleDisplayMode(.inline)
+  }
+}
+
+/// A theme in Appearance: a small picture of its space, accent and Connect button.
+struct ThemeSwatch: View {
+  let theme: AppTheme
+  let selected: Bool
+  var action: () -> Void
+
+  var body: some View {
+    let p = theme.palette
+    let glow = Color(uiColor: p.glow)
+    let shape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+    return Button(action: action) {
+      VStack(spacing: 7) {
+        ZStack {
+          shape.fill(LinearGradient(colors: [p.spaceTop, p.spaceBottom], startPoint: .top, endPoint: .bottom))
+          Ellipse()
+            .fill(Color(uiColor: p.nebula).opacity(p.isLight ? 0.25 : 0.4))
+            .frame(width: 70, height: 26)
+            .blur(radius: 10)
+          Circle()
+            .fill(RadialGradient(colors: [glow.opacity(p.isLight ? 0.5 : 0.95), glow.opacity(0)], center: .center, startRadius: 0, endRadius: 20))
+            .frame(width: 40, height: 40)
+            .offset(y: -6)
+          HStack(spacing: 5) {
+            Circle().fill(p.accent).frame(width: 7, height: 7)
+            Capsule().fill(p.connectFill).frame(width: 30, height: 9)
+          }
+          .offset(y: 24)
+        }
+        .frame(height: 74)
+        .clipShape(shape)
+        .overlay(shape.strokeBorder(selected ? Theme.accent : Color.gray.opacity(0.35), lineWidth: selected ? 2 : 1))
+        Text(theme.title)
+          .font(.footnote.weight(selected ? .semibold : .regular))
+          .foregroundStyle(selected ? Theme.glow : Theme.glowCool)
+          .lineLimit(1)
+          .minimumScaleFactor(0.8)
+      }
+    }
+    .buttonStyle(.plain)
+    .accessibilityAddTraits(selected ? .isSelected : [])
+    .accessibilityIdentifier("theme.\(theme.rawValue)")
   }
 }
 
@@ -675,6 +734,6 @@ struct AboutView: View {
     .background(Theme.space.ignoresSafeArea())
     .navigationTitle(L("settings.about"))
     .navigationBarTitleDisplayMode(.inline)
-    .sheet(isPresented: $showLicenses) { LicensesView().preferredColorScheme(.dark) }
+    .sheet(isPresented: $showLicenses) { LicensesView().preferredColorScheme(Palette.current.isLight ? .light : .dark) }
   }
 }

@@ -1,114 +1,157 @@
 import SwiftUI
 import UIKit
 
-/// Design tokens measured from the reference mock (640 × 1280 px, portrait).
-///
-/// The mock is drawn at about 1 px = 1 pt of a 640-wide screen, so every size here is in
-/// reference pixels and is multiplied by `u = screen width / 640` at runtime. On a 393 pt wide
-/// iPhone u ≈ 0.614, which reproduces the mock proportionally. Colors were sampled from the
-/// mock; values marked "≈" were estimated from anti-aliased pixels.
-enum DS {
-  static let refWidth: CGFloat = 640
+/// The color themes of the app. A theme restyles every screen and the space map.
+enum AppTheme: String, CaseIterable, Identifiable {
+  case graphite, oled, nebula, aurora, solar, light
 
-  // MARK: Colors
-  static let background = Color(hex: 0x0B0C0E)
-  static let card = Color(hex: 0x131416)
-  static let cardBorder = Color.white.opacity(0.08)
-  static let panel = Color(hex: 0x0E0F11)
-  static let panelBorder = Color.white.opacity(0.09)
-  static let tabSelected = Color(hex: 0x26272B)
-  static let tabSelectedBorder = Color.white.opacity(0.06)
-  static let roundButton = Color(hex: 0x161719)
-  static let chip = Color(hex: 0x17181A)
-  static let chipBorder = Color.white.opacity(0.04)
-  static let chipSelected = Color(hex: 0x36373B)
-  static let chipSelectedBorder = Color.white.opacity(0.35) // ≈
-  static let routeChip = Color(hex: 0x1A1B1D)
-  static let separator = Color.white.opacity(0.045)
-  static let squareButton = Color(hex: 0x151618)
-  static let squareBorder = Color.white.opacity(0.05)
-  static let connectFill = Color(hex: 0xDADAE2)
-  static let connectText = Color(hex: 0x121216)
-  static let powerRing = Color(hex: 0xE8E9EB)
-  static let powerFill = Color(hex: 0x1B1C1E)
-  static let infoDivider = Color(hex: 0x2E2F31)
-  static let badge = Color(hex: 0x1A1B1E)
-  static let nodeFill = Color(hex: 0x111214).opacity(0.86)
-  static let nodeBorder = Color.white.opacity(0.08)
-  static let handle = Color(hex: 0x76777A)
+  var id: String { rawValue }
+  var title: String { L("theme.\(rawValue)") }
 
-  static let textPrimary = Color.white
-  static let textValue = Color(hex: 0xD4D5D7)
-  static let textSecondary = Color(hex: 0xA7A8AC)
-  static let textLabel = Color(hex: 0x9D9D9F)
-  static let textColumn = Color(hex: 0xB5B6BA)
-  static let textSubtitle = Color(hex: 0x95969A)
-  static let textChip = Color(hex: 0xE2E3E5)
-  static let textRoute = Color(hex: 0xE5E6EA)
-  static let textNodeMs = Color(hex: 0xA2A3A7)
-  static let textBadge = Color(hex: 0xE6E7EB)
-  static let radio = Color(hex: 0x717276)
-  static let star = Color(hex: 0x828387)
-  static let iconLight = Color(hex: 0xE4E5E7)
-  /// The only accent: ping values.
-  static let ping = Color(hex: 0x96D0A0) // ≈
+  /// The theme chosen in Appearance (Graphite until another one is picked).
+  static var current: AppTheme { AppTheme(rawValue: AppPrefs.shared.theme) ?? .graphite }
 
-  // MARK: Typography (reference px)
-  enum Size {
-    static let title: CGFloat = 18.5
-    static let badge: CGFloat = 11
-    static let statusTitle: CGFloat = 17.5
-    static let statusSubtitle: CGFloat = 14
-    static let infoLabel: CGFloat = 11.2
-    static let infoValue: CGFloat = 12.3
-    static let tab: CGFloat = 12
-    static let chip: CGFloat = 11.5
-    static let column: CGFloat = 10.8
-    static let rowTitle: CGFloat = 12.3
-    static let rowSubtitle: CGFloat = 10.8
-    static let route: CGFloat = 10.4
-    static let ping: CGFloat = 12.4
-    static let nodeCode: CGFloat = 12.6
-    static let nodeMs: CGFloat = 9.8
-    static let connect: CGFloat = 15.5
+  var palette: Palette {
+    switch self {
+    case .graphite: return .graphite
+    case .oled: return .oled
+    case .nebula: return .nebula
+    case .aurora: return .aurora
+    case .solar: return .solar
+    case .light: return .light
+    }
   }
+}
 
-  // MARK: Geometry (reference px)
-  enum Geo {
-    static let refStatusBarBottom: CGFloat = 50 // the mock's status bar ends here
-    static let refBottomGap: CGFloat = 69 // from the action bar to the bottom edge
-    static let headerCenterY: CGFloat = 83
-    static let logoCenterX: CGFloat = 48
-    static let logoDiameter: CGFloat = 24
-    static let titleX: CGFloat = 77
-    static let badgeX: CGFloat = 176
-    static let badgeSize = CGSize(width: 37, height: 20)
-    static let bellCenterX: CGFloat = 538
-    static let menuCenterX: CGFloat = 593
-    static let card = CGRect(x: 31, y: 123, width: 578, height: 69)
-    static let cardRadius: CGFloat = 15
-    static let powerCenter = CGPoint(x: 73.5, y: 158)
-    static let powerDiameter: CGFloat = 46
-    static let statusTextX: CGFloat = 125
-    static let chevronCenterX: CGFloat = 587
-    static let infoLabelTop: CGFloat = 208
-    static let infoValueTop: CGFloat = 226
-    static let infoColumns: [CGFloat] = [48, 248, 474]
-    static let infoDividers: [CGFloat] = [202, 427]
-    static let infoDividerSpan: ClosedRange<CGFloat> = 210...237
-    static let infoFlagDiameter: CGFloat = 16
-    static let infoBottom: CGFloat = 250
-    static let mapHeight: CGFloat = 495
-    static let mapCenter = CGPoint(x: 327.5, y: 240)
-    static let panelTop: CGFloat = 746
-    static let panelInset: CGFloat = 12
-    static let panelRadius: CGFloat = 26
-    static let panelBottomRadius: CGFloat = 52
-    static let actionBarTop: CGFloat = 1158
-    static let actionBarBottom: CGFloat = 1211
-    static let rowPitch: CGFloat = 46
-    static let listBottom: CGFloat = 1124 // five rows below the column header
-  }
+/// Colors of one theme.
+struct Palette {
+  let isLight: Bool
+  // space
+  let spaceTop: Color
+  let spaceBottom: Color
+  /// Stars, the web of the galaxy and the orbits.
+  let ink: UIColor
+  /// The core, comets and the data flow to the connected country.
+  let glow: UIColor
+  let nebula: UIColor
+  let nebula2: UIColor
+  // surfaces
+  let background: Color
+  /// Tint over the blur of cards and round buttons.
+  let glass: Color
+  /// Tint over the blur of the server panel.
+  let panel: Color
+  /// Chips, route labels and small buttons.
+  let raised: Color
+  /// The selected tab or chip.
+  let selected: Color
+  let stroke: Color
+  let strokeStrong: Color
+  let separator: Color
+  // text
+  let text: Color
+  let text2: Color
+  let text3: Color
+  // meaning
+  /// Good latency and the connected state.
+  let accent: Color
+  let warn: Color
+  let danger: Color
+  /// System controls: switches, links, pickers.
+  let tint: Color
+  let onTint: Color
+  let connectFill: Color
+  let connectText: Color
+
+  static var current: Palette { AppTheme.current.palette }
+
+  /// Latency in the theme's colors: accent up to 180 ms, amber up to 350 ms, red above.
+  func latencyColor(_ ms: Int64) -> Color { ms <= 180 ? accent : (ms <= 350 ? warn : danger) }
+
+  var spaceInk: SpaceInk { SpaceInk(ink: ink, glow: glow, nebula: nebula, nebula2: nebula2, isLight: isLight) }
+}
+
+/// The UIKit colors of the space renderer, which draws off the main thread.
+struct SpaceInk {
+  let ink: UIColor
+  let glow: UIColor
+  let nebula: UIColor
+  let nebula2: UIColor
+  let isLight: Bool
+}
+
+extension Palette {
+  static let graphite = Palette(
+    isLight: false,
+    spaceTop: Color(hex: 0x101116), spaceBottom: Color(hex: 0x060709),
+    ink: UIColor(hex: 0xFFFFFF), glow: UIColor(hex: 0xFFFFFF), nebula: UIColor(hex: 0x7E8BA8), nebula2: UIColor(hex: 0xA3A9B8),
+    background: Color(hex: 0x0A0B0D), glass: Color(hex: 0x17181C).opacity(0.6), panel: Color(hex: 0x0E0F12).opacity(0.78),
+    raised: Color(hex: 0x1E1F23), selected: Color(hex: 0x303136), stroke: Color.white.opacity(0.1),
+    strokeStrong: Color.white.opacity(0.34), separator: Color.white.opacity(0.06),
+    text: Color(hex: 0xF5F5F7), text2: Color(hex: 0xB4B6BD), text3: Color(hex: 0x83858D),
+    accent: Color(hex: 0x8FD9A8), warn: Color(hex: 0xE9BB66), danger: Color(hex: 0xEE7C74),
+    tint: Color(hex: 0xDCDCE4), onTint: Color(hex: 0x111216),
+    connectFill: Color(hex: 0xEDEDF3), connectText: Color(hex: 0x0F1014))
+
+  static let oled = Palette(
+    isLight: false,
+    spaceTop: Color(hex: 0x000000), spaceBottom: Color(hex: 0x000000),
+    ink: UIColor(hex: 0xFFFFFF), glow: UIColor(hex: 0xFFFFFF), nebula: UIColor(hex: 0x4B5266), nebula2: UIColor(hex: 0x5E6372),
+    background: Color(hex: 0x000000), glass: Color(hex: 0x0C0C0E).opacity(0.72), panel: Color(hex: 0x050506).opacity(0.86),
+    raised: Color(hex: 0x141416), selected: Color(hex: 0x26262A), stroke: Color.white.opacity(0.11),
+    strokeStrong: Color.white.opacity(0.4), separator: Color.white.opacity(0.07),
+    text: Color(hex: 0xFFFFFF), text2: Color(hex: 0xB9B9BF), text3: Color(hex: 0x86868E),
+    accent: Color(hex: 0x7EE2A2), warn: Color(hex: 0xF0C060), danger: Color(hex: 0xF27A72),
+    tint: Color(hex: 0xFFFFFF), onTint: Color(hex: 0x000000),
+    connectFill: Color(hex: 0xFFFFFF), connectText: Color(hex: 0x000000))
+
+  static let nebula = Palette(
+    isLight: false,
+    spaceTop: Color(hex: 0x15112C), spaceBottom: Color(hex: 0x07060F),
+    ink: UIColor(hex: 0xDCD3FF), glow: UIColor(hex: 0xEEE8FF), nebula: UIColor(hex: 0x8B5CF6), nebula2: UIColor(hex: 0x3B82F6),
+    background: Color(hex: 0x0B0A16), glass: Color(hex: 0x1A1630).opacity(0.6), panel: Color(hex: 0x110F22).opacity(0.8),
+    raised: Color(hex: 0x231F3E), selected: Color(hex: 0x372F60), stroke: Color(hex: 0xC4B5FD).opacity(0.13),
+    strokeStrong: Color(hex: 0xC4B5FD).opacity(0.45), separator: Color(hex: 0xC4B5FD).opacity(0.08),
+    text: Color(hex: 0xF5F2FF), text2: Color(hex: 0xBBB5DC), text3: Color(hex: 0x8B86AE),
+    accent: Color(hex: 0xB9A4FF), warn: Color(hex: 0xF2C46D), danger: Color(hex: 0xF5838B),
+    tint: Color(hex: 0xB9A4FF), onTint: Color(hex: 0x15102E),
+    connectFill: Color(hex: 0xD6CBFF), connectText: Color(hex: 0x15102E))
+
+  static let aurora = Palette(
+    isLight: false,
+    spaceTop: Color(hex: 0x0A1D1B), spaceBottom: Color(hex: 0x040A09),
+    ink: UIColor(hex: 0xD2FAF1), glow: UIColor(hex: 0xE8FFFA), nebula: UIColor(hex: 0x14B8A6), nebula2: UIColor(hex: 0x22C55E),
+    background: Color(hex: 0x061110), glass: Color(hex: 0x10221F).opacity(0.6), panel: Color(hex: 0x0A1716).opacity(0.8),
+    raised: Color(hex: 0x14302C), selected: Color(hex: 0x1F4540), stroke: Color(hex: 0x99F6E4).opacity(0.12),
+    strokeStrong: Color(hex: 0x99F6E4).opacity(0.42), separator: Color(hex: 0x99F6E4).opacity(0.07),
+    text: Color(hex: 0xF0FFFB), text2: Color(hex: 0xA9CCC5), text3: Color(hex: 0x799891),
+    accent: Color(hex: 0x5EEAD4), warn: Color(hex: 0xEFC56A), danger: Color(hex: 0xF08A7E),
+    tint: Color(hex: 0x5EEAD4), onTint: Color(hex: 0x05201C),
+    connectFill: Color(hex: 0xA7F3E4), connectText: Color(hex: 0x05201C))
+
+  static let solar = Palette(
+    isLight: false,
+    spaceTop: Color(hex: 0x1C130A), spaceBottom: Color(hex: 0x0A0704),
+    ink: UIColor(hex: 0xFFEACB), glow: UIColor(hex: 0xFFF4DC), nebula: UIColor(hex: 0xF59E0B), nebula2: UIColor(hex: 0xEF4444),
+    background: Color(hex: 0x100B06), glass: Color(hex: 0x241B11).opacity(0.6), panel: Color(hex: 0x1A130B).opacity(0.8),
+    raised: Color(hex: 0x2C2115), selected: Color(hex: 0x40311D), stroke: Color(hex: 0xFCD34D).opacity(0.12),
+    strokeStrong: Color(hex: 0xFCD34D).opacity(0.42), separator: Color(hex: 0xFCD34D).opacity(0.07),
+    text: Color(hex: 0xFFF8EE), text2: Color(hex: 0xD8C6AA), text3: Color(hex: 0xA28E72),
+    accent: Color(hex: 0xFBBF24), warn: Color(hex: 0xFB923C), danger: Color(hex: 0xF87171),
+    tint: Color(hex: 0xFBBF24), onTint: Color(hex: 0x2A1A03),
+    connectFill: Color(hex: 0xFDE3A0), connectText: Color(hex: 0x2A1A03))
+
+  static let light = Palette(
+    isLight: true,
+    spaceTop: Color(hex: 0xF6F7FA), spaceBottom: Color(hex: 0xE3E7EE),
+    ink: UIColor(hex: 0x1F2737), glow: UIColor(hex: 0x52617E), nebula: UIColor(hex: 0x8FA3C8), nebula2: UIColor(hex: 0xB7A6D6),
+    background: Color(hex: 0xEFF1F5), glass: Color.white.opacity(0.55), panel: Color.white.opacity(0.72),
+    raised: Color(hex: 0xFFFFFF), selected: Color(hex: 0xDFE3EA), stroke: Color.black.opacity(0.08),
+    strokeStrong: Color.black.opacity(0.3), separator: Color.black.opacity(0.07),
+    text: Color(hex: 0x0E1116), text2: Color(hex: 0x4A505E), text3: Color(hex: 0x7A808E),
+    accent: Color(hex: 0x15924A), warn: Color(hex: 0xB7791F), danger: Color(hex: 0xC2413A),
+    tint: Color(hex: 0x1F2737), onTint: Color(hex: 0xFFFFFF),
+    connectFill: Color(hex: 0x12151B), connectText: Color(hex: 0xFFFFFF))
 }
 
 extension Color {
@@ -117,37 +160,45 @@ extension Color {
   }
 }
 
-/// Scale context (RefScale): converts reference pixels to points for the current screen width.
-struct RefScale {
-  let u: CGFloat
-  init(width: CGFloat) { u = max(0.45, width / DS.refWidth) }
-  func callAsFunction(_ px: CGFloat) -> CGFloat { px * u }
-  func font(_ px: CGFloat, _ weight: Font.Weight = .regular) -> Font { .system(size: px * u, weight: weight) }
-
-  /// SF Pro tracking in points at a point size (Apple's tracking table, interpolated).
-  static func sfTracking(_ size: CGFloat) -> CGFloat {
-    let table: [(CGFloat, CGFloat)] = [(6, 0.24), (7, 0.23), (8, 0.21), (9, 0.17), (10, 0.12), (11, 0.06), (12, 0), (13, -0.08),
-                                       (14, -0.15), (15, -0.23), (16, -0.31), (17, -0.43), (18, -0.44), (19, -0.45), (20, -0.45)]
-    guard let first = table.first, let last = table.last else { return 0 }
-    if size <= first.0 { return first.1 }
-    if size >= last.0 { return last.1 }
-    for i in 1..<table.count where size <= table[i].0 {
-      let (s0, t0) = table[i - 1], (s1, t1) = table[i]
-      return t0 + (t1 - t0) * (size - s0) / (s1 - s0)
-    }
-    return 0
-  }
-
-  /// Extra tracking so text set at `px * u` keeps the letter spacing the mock has at `px`
-  /// (the system font loosens small sizes, the mock was drawn at the larger size).
-  func tracking(_ px: CGFloat) -> CGFloat { Self.sfTracking(px) * u - Self.sfTracking(px * u) }
+/// Sizes of the home screen are points on a 393 pt wide iPhone, scaled by `k` on other widths.
+struct HomeMetrics {
+  let k: CGFloat
+  init(width: CGFloat) { k = min(1.12, max(0.88, width / 393)) }
+  func callAsFunction(_ value: CGFloat) -> CGFloat { value * k }
+  func font(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font { .system(size: size * k, weight: weight) }
 }
 
 extension View {
-  /// Mock typography: the scaled system font with the mock's letter spacing.
-  func refFont(_ s: RefScale, _ px: CGFloat, _ weight: Font.Weight = .regular, digits: Bool = false) -> some View {
-    let font = s.font(px, weight)
-    return self.font(digits ? font.monospacedDigit() : font).tracking(s.tracking(px))
+  /// Frosted glass: the blur of what is behind, the theme's tint and a hairline that is lighter on top.
+  func glass<S: InsettableShape>(_ shape: S, tint: Color? = nil, stroke: Color? = nil) -> some View {
+    let p = Palette.current
+    let edge = stroke ?? p.stroke
+    return background {
+      ZStack {
+        shape.fill(.ultraThinMaterial)
+        shape.fill(tint ?? p.glass)
+      }
+    }
+    .overlay(shape.strokeBorder(LinearGradient(colors: [edge, edge.opacity(0.45)], startPoint: .top, endPoint: .bottom), lineWidth: 1))
+  }
+}
+
+/// Buttons shrink a little while pressed.
+struct PressableStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .scaleEffect(configuration.isPressed ? 0.96 : 1)
+      .opacity(configuration.isPressed ? 0.85 : 1)
+      .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+  }
+}
+
+/// Buttons inside cards dim while pressed.
+struct DimOnPressStyle: ButtonStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .opacity(configuration.isPressed ? 0.6 : 1)
+      .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
   }
 }
 
@@ -158,8 +209,9 @@ struct RoundFlag: View {
   let diameter: CGFloat
 
   var body: some View {
+    let p = Palette.current
     ZStack {
-      Circle().fill(Color.white.opacity(0.10))
+      Circle().fill(p.raised)
       if let code = cc?.lowercased(), code.count == 2 {
         if let image = UIImage(named: "Flags/\(code)") {
           Image(uiImage: image)
@@ -175,28 +227,29 @@ struct RoundFlag: View {
       } else {
         Image(systemName: "globe")
           .font(.system(size: diameter * 0.62, weight: .regular))
-          .foregroundStyle(DS.textSecondary)
+          .foregroundStyle(p.text2)
       }
     }
     .frame(width: diameter, height: diameter)
     .clipShape(Circle())
+    .overlay(Circle().strokeBorder(p.stroke, lineWidth: 0.5))
     .accessibilityHidden(true)
   }
 }
 
-/// The round monochrome globe used as the logo in the header: a light sphere with dark land.
+/// The round globe of the header: a sphere in the text color with land in the background color.
 struct GlobeLogo: View {
   let diameter: CGFloat
 
   var body: some View {
+    let p = Palette.current
     ZStack {
-      Circle().fill(RadialGradient(colors: [Color(hex: 0xE4E4E6), Color(hex: 0xBDBEC1), Color(hex: 0x8C8D90)],
-                                   center: .init(x: 0.38, y: 0.32), startRadius: 0, endRadius: diameter * 0.62))
+      Circle().fill(RadialGradient(colors: [p.text, p.text2, p.text3], center: .init(x: 0.38, y: 0.32), startRadius: 0, endRadius: diameter * 0.62))
       // the symbol's outline ring is pushed outside the clip, only the continents remain
       Image(systemName: "globe.europe.africa.fill")
         .resizable()
         .scaledToFit()
-        .foregroundStyle(Color(hex: 0x17181A))
+        .foregroundStyle(p.background)
         .scaleEffect(1.14)
     }
     .frame(width: diameter, height: diameter)

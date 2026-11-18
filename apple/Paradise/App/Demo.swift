@@ -14,6 +14,8 @@ enum Demo {
   static let scenario: Scenario? = UserDefaults.standard.string(forKey: "ParadiseDemo").flatMap(Scenario.init(rawValue:))
   /// `-ParadiseDemoKeep YES` keeps the demo profile from the previous launch (persistence checks).
   static let keep = UserDefaults.standard.bool(forKey: "ParadiseDemoKeep")
+  /// `-ParadiseDemoMotion YES` keeps the space animated (the demo is still otherwise, for screenshots and tests).
+  static let motion = UserDefaults.standard.bool(forKey: "ParadiseDemoMotion")
 
   static var initialDetent: ServerPanel.Detent {
     switch scenario {

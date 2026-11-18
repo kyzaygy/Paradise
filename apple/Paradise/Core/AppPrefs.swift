@@ -24,6 +24,8 @@ final class AppPrefs: ObservableObject {
   @Published var seenNotices: [String] { didSet { defaults.set(seenNotices, forKey: "pref.seenNotices") } }
   /// "auto" or a protocol family shown on the home screen (Protocol column).
   @Published var protocolFilter: String { didSet { defaults.set(protocolFilter, forKey: "pref.protocolFilter") } }
+  /// Raw value of AppTheme.
+  @Published var theme: String { didSet { defaults.set(theme, forKey: "pref.theme") } }
 
   private init() {
     let d = UserDefaults.standard
@@ -43,6 +45,7 @@ final class AppPrefs: ObservableObject {
     probeOnLaunch = bool("pref.probeOnLaunch", true)
     seenNotices = d.stringArray(forKey: "pref.seenNotices") ?? []
     protocolFilter = d.string(forKey: "pref.protocolFilter") ?? "auto"
+    theme = d.string(forKey: "pref.theme") ?? AppTheme.graphite.rawValue
   }
 
   func resetUI() {
@@ -57,6 +60,7 @@ final class AppPrefs: ObservableObject {
     showPing = true
     probeOnLaunch = true
     protocolFilter = "auto"
+    theme = AppTheme.graphite.rawValue
   }
 }
 

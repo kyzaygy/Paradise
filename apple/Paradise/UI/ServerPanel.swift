@@ -3,8 +3,7 @@ import SwiftUI
 import UIKit
 
 /// The bottom panel of the home screen: Servers / Routes / Favorites with search, region filters
-/// and the server table. Every x/y below is a reference pixel relative to the panel's top-left
-/// corner (the panel starts at x = 12, y = 746 in the mock).
+/// and the server list. It stands on the action bar; its content ends above it.
 struct ServerPanel: View {
   enum Detent: Equatable { case collapsed, standard, full }
   enum Section: String, CaseIterable, Identifiable {
@@ -29,14 +28,16 @@ struct ServerPanel: View {
   let panelTop: CGFloat
 
   @EnvironmentObject private var model: AppModel
-  @EnvironmentObject private var vpn: VPNController
   @State private var section: Section = Demo.initialSection
   @State private var region: Region = .all
   @State private var query = Demo.initialQuery
   @State private var searching = Demo.scenario == .search
+  /// Where the panel was before the search opened it, to go back there when the search closes.
+  @State private var detentBeforeSearch: Detent?
   @State private var pingOrder: PingOrder = .none
   @State private var showRouteInfo = false
   @FocusState private var searchFocused: Bool
+  @Namespace private var tabs
 
   init(detent: Binding<Detent>, countryFilter: Binding<String?>, layout: HomeLayout, panelTop: CGFloat) {
     _detent = detent
@@ -45,161 +46,205 @@ struct ServerPanel: View {
     self.panelTop = panelTop
   }
 
-  private var s: RefScale { layout.s }
-  /// Bottom of the server table, panel coordinates (five rows in the standard position, as in the mock).
-  private var listBottom: CGFloat { layout.bottom(DS.Geo.listBottom) - panelTop }
-  /// Everything below this is behind the action bar.
-  private var contentHeight: CGFloat { max(0, layout.bottom(DS.Geo.actionBarTop) - panelTop - s(4)) }
+  private var m: HomeMetrics { layout.m }
 
   var body: some View {
-    ZStack(alignment: .topLeading) {
-      PanelShape(top: s(DS.Geo.panelRadius), bottom: s(DS.Geo.panelBottomRadius))
-        .fill(DS.panel)
-      PanelShape(top: s(DS.Geo.panelRadius), bottom: s(DS.Geo.panelBottomRadius))
-        .stroke(DS.panelBorder, lineWidth: 1)
-      ZStack(alignment: .topLeading) {
-        Capsule().fill(DS.handle)
-          .frame(width: s(38), height: s(4))
-          .frame(maxWidth: .infinity)
-          .offset(y: s(9))
-          .accessibilityHidden(true)
-        tabsRow
-        Rectangle().fill(DS.separator).frame(width: s(576), height: 1).offset(x: s(19), y: s(65))
-        switch section {
-        case .servers:
-          regionRow.offset(y: s(80))
-          table(servers: filtered, top: 121)
-        case .favorites:
-          table(servers: favorites, top: 80)
-        case .routes:
-          RoutesList(s: s, height: max(0, listBottom - s(76)))
-            .offset(y: s(76))
-        }
+    let p = Palette.current
+    let m = self.m
+    let shape = PanelShape(top: m(30), bottom: m(46))
+    return VStack(alignment: .leading, spacing: 0) {
+      Capsule()
+        .fill(p.text3.opacity(0.55))
+        .frame(width: m(38), height: m(5))
+        .frame(maxWidth: .infinity)
+        .padding(.top, m(7))
+        .padding(.bottom, m(4))
+        .accessibilityHidden(true)
+      tabsRow
+        .frame(height: m(40))
+        .padding(.horizontal, m(12))
+      switch section {
+      case .servers:
+        regionRow
+          .padding(.top, m(12))
+        table(servers: filtered)
+      case .favorites:
+        table(servers: favorites)
+          .padding(.top, m(12))
+      case .routes:
+        RoutesList(m: m)
+          .padding(.top, m(10))
       }
-      .frame(width: s(616), height: contentHeight, alignment: .topLeading)
-      .clipped()
     }
+    .frame(height: max(0, layout.panelBottom - panelTop), alignment: .top)
+    .clipped()
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    .background {
+      ZStack {
+        shape.fill(.ultraThinMaterial)
+        shape.fill(p.panel)
+      }
+    }
+    .overlay(shape.stroke(p.stroke, lineWidth: 1))
   }
 
   // MARK: Tabs and search
 
   private var tabsRow: some View {
-    ZStack(alignment: .topLeading) {
+    let p = Palette.current
+    return HStack(spacing: m(8)) {
       if searching {
-        HStack(spacing: s(10)) {
-          Image(systemName: "magnifyingglass").font(.system(size: s(14))).foregroundStyle(DS.textLabel)
+        HStack(spacing: m(8)) {
+          Image(systemName: "magnifyingglass")
+            .font(.system(size: m(15), weight: .medium))
+            .foregroundStyle(p.text3)
           TextField(L("sheet.search"), text: $query)
-            .refFont(s, 13)
-            .foregroundStyle(DS.textPrimary)
+            .font(m.font(15))
+            .foregroundStyle(p.text)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .focused($searchFocused)
             .submitLabel(.search)
             .accessibilityIdentifier("panel.searchField")
-        }
-        .padding(.horizontal, s(16))
-        .frame(width: s(530), height: s(37))
-        .background(DS.tabSelected, in: Capsule())
-        .overlay(Capsule().strokeBorder(DS.tabSelectedBorder))
-        .offset(x: s(19), y: s(22))
-      } else {
-        HStack(spacing: 0) {
-          ForEach(Section.allCases) { item in
-            Button {
-              guard section != item else { return }
-              Haptics.selection()
-              withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) { section = item }
-            } label: {
-              HStack(spacing: s(12)) {
-                Image(systemName: item.icon).font(.system(size: s(13.5), weight: .regular))
-                Text(L("sheet.\(item.rawValue)")).refFont(s, DS.Size.tab, .medium)
-              }
-              .foregroundStyle(section == item ? DS.textPrimary : DS.textSecondary)
-              .padding(.horizontal, s(27))
-              .frame(height: s(37))
-              .background {
-                if section == item {
-                  Capsule().fill(DS.tabSelected).overlay(Capsule().strokeBorder(DS.tabSelectedBorder))
-                }
-              }
-              .contentShape(Rectangle())
+          if !query.isEmpty {
+            Button { query = "" } label: {
+              Image(systemName: "xmark.circle.fill")
+                .font(.system(size: m(15)))
+                .foregroundStyle(p.text3)
             }
             .buttonStyle(.plain)
-            .accessibilityAddTraits(section == item ? .isSelected : [])
-            .accessibilityIdentifier("tab.\(item.rawValue)")
+            .accessibilityLabel(L("common.clear"))
           }
         }
-        .offset(x: s(19), y: s(22))
+        .padding(.horizontal, m(14))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(p.raised, in: Capsule())
+        .overlay(Capsule().strokeBorder(p.stroke))
+      } else {
+        HStack(spacing: m(2)) {
+          ForEach(Section.allCases) { item in
+            tabButton(item)
+          }
+        }
+        .padding(m(3))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(p.raised.opacity(0.55), in: Capsule())
+        .overlay(Capsule().strokeBorder(p.stroke))
       }
-      Button {
-        Haptics.selection()
-        withAnimation(.easeInOut(duration: 0.2)) {
-          searching.toggle()
-          if searching {
-            section = .servers
-            detent = .full
-          } else {
-            query = ""
-          }
-        }
-        searchFocused = searching
-      } label: {
+      Button(action: toggleSearch) {
         Image(systemName: searching ? "xmark" : "magnifyingglass")
-          .font(.system(size: s(15), weight: .regular))
-          .foregroundStyle(DS.textPrimary)
-          .frame(width: s(37), height: s(37))
-          .background(DS.roundButton, in: Circle())
+          .font(.system(size: m(16), weight: .semibold))
+          .foregroundStyle(p.text)
+          .frame(width: m(40), height: m(40))
+          .background(p.raised, in: Circle())
+          .overlay(Circle().strokeBorder(p.stroke))
           .contentShape(Circle())
       }
-      .buttonStyle(.plain)
-      .offset(x: s(574.5 - 18.5), y: s(42 - 18.5))
+      .buttonStyle(PressableStyle())
       .accessibilityLabel(searching ? L("common.close") : L("sheet.search"))
       .accessibilityIdentifier("panel.search")
     }
   }
 
-  // MARK: Regions
-
-  private var regionRow: some View {
-    ZStack(alignment: .topLeading) {
-      if let cc = countryFilter {
-        chip(title: Format.country(cc), selected: true, width: nil, icon: "xmark", flag: cc) { countryFilter = nil }
-          .accessibilityIdentifier("region.country")
-          .offset(x: s(19))
-      } else {
-        HStack(spacing: s(19)) {
-          ForEach(Region.allCases) { r in
-            chip(title: L("region.\(r.rawValue)"), selected: region == r, width: r == .americas ? 91 : 86) {
-              Haptics.selection()
-              region = r
-            }
-            .accessibilityIdentifier("region.\(r.rawValue)")
-          }
+  private func tabButton(_ item: Section) -> some View {
+    let p = Palette.current
+    let on = section == item
+    return Button {
+      guard section != item else { return }
+      Haptics.selection()
+      withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) { section = item }
+    } label: {
+      HStack(spacing: m(6)) {
+        Image(systemName: item.icon)
+          .font(.system(size: m(12.5), weight: .semibold))
+        Text(L("sheet.\(item.rawValue)"))
+          .font(m.font(13.5, .semibold))
+          .lineLimit(1)
+          .minimumScaleFactor(0.75)
+      }
+      .foregroundStyle(on ? p.text : p.text3)
+      .padding(.horizontal, m(8))
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .background {
+        if on {
+          Capsule()
+            .fill(p.selected)
+            .overlay(Capsule().strokeBorder(p.stroke))
+            .matchedGeometryEffect(id: "tab", in: tabs)
         }
-        .offset(x: s(19))
       }
-      chip(title: L("sheet.fastest"), selected: false, width: 99, icon: "bolt") { selectFastest() }
-        .accessibilityIdentifier("region.fastest")
-        .offset(x: s(498))
-    }
-  }
-
-  private func chip(title: String, selected: Bool, width: CGFloat?, icon: String? = nil, flag: String? = nil, action: @escaping () -> Void) -> some View {
-    Button(action: action) {
-      HStack(spacing: s(10)) {
-        if let flag = flag { RoundFlag(cc: flag, diameter: s(16)) }
-        if let icon = icon, flag == nil { Image(systemName: icon).font(.system(size: s(12), weight: .regular)) }
-        Text(title).refFont(s, DS.Size.chip, selected ? .semibold : .medium).lineLimit(1)
-        if flag != nil, let icon = icon { Image(systemName: icon).font(.system(size: s(10), weight: .semibold)) }
-      }
-      .foregroundStyle(selected ? DS.textPrimary : DS.textChip)
-      .padding(.horizontal, width == nil ? s(14) : 0)
-      .frame(width: width.map { s($0) }, height: s(30))
-      .background(selected ? DS.chipSelected : DS.chip, in: Capsule())
-      .overlay(Capsule().strokeBorder(selected ? DS.chipSelectedBorder : DS.chipBorder, lineWidth: 1))
       .contentShape(Capsule())
     }
     .buttonStyle(.plain)
+    .accessibilityAddTraits(on ? .isSelected : [])
+    .accessibilityIdentifier("tab.\(item.rawValue)")
+  }
+
+  private func toggleSearch() {
+    Haptics.selection()
+    withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+      searching.toggle()
+      if searching {
+        section = .servers
+        detentBeforeSearch = detent
+        detent = .full
+      } else {
+        query = ""
+        if let previous = detentBeforeSearch { detent = previous }
+        detentBeforeSearch = nil
+      }
+    }
+    searchFocused = searching
+  }
+
+  // MARK: Regions
+
+  private var regionRow: some View {
+    HStack(spacing: m(8)) {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: m(8)) {
+          if let cc = countryFilter {
+            chip(title: Format.country(cc), selected: true, flag: cc, trailing: "xmark") { countryFilter = nil }
+              .accessibilityIdentifier("region.country")
+          } else {
+            ForEach(Region.allCases) { r in
+              chip(title: L("region.\(r.rawValue)"), selected: region == r) {
+                Haptics.selection()
+                withAnimation(.easeInOut(duration: 0.2)) { region = r }
+              }
+              .accessibilityIdentifier("region.\(r.rawValue)")
+            }
+          }
+        }
+        .padding(.horizontal, m(12))
+      }
+      chip(title: L("sheet.fastest"), selected: false, icon: "bolt.fill") { selectFastest() }
+        .accessibilityIdentifier("region.fastest")
+        .padding(.trailing, m(12))
+    }
+    .frame(height: m(34))
+  }
+
+  private func chip(title: String, selected: Bool, icon: String? = nil, flag: String? = nil, trailing: String? = nil,
+                    action: @escaping () -> Void) -> some View {
+    let p = Palette.current
+    return Button(action: action) {
+      HStack(spacing: m(6)) {
+        if let flag = flag { RoundFlag(cc: flag, diameter: m(18)) }
+        if let icon = icon { Image(systemName: icon).font(.system(size: m(12), weight: .semibold)) }
+        Text(title)
+          .font(m.font(13.5, selected ? .semibold : .medium))
+          .lineLimit(1)
+        if let trailing = trailing { Image(systemName: trailing).font(.system(size: m(10), weight: .bold)) }
+      }
+      .foregroundStyle(selected ? p.text : p.text2)
+      .padding(.horizontal, m(13))
+      .frame(height: m(34))
+      .background(selected ? p.selected : p.raised, in: Capsule())
+      .overlay(Capsule().strokeBorder(selected ? p.strokeStrong : p.stroke, lineWidth: 1))
+      .contentShape(Capsule())
+    }
+    .buttonStyle(PressableStyle())
     .accessibilityAddTraits(selected ? .isSelected : [])
   }
 
@@ -248,35 +293,44 @@ struct ServerPanel: View {
     }.map(\.1)
   }
 
-  private func table(servers: [CoreServer], top: CGFloat) -> some View {
-    let headerHeight: CGFloat = 26
-    let rowsTop = top + headerHeight
+  private func table(servers: [CoreServer]) -> some View {
+    let p = Palette.current
     let target = model.scrollTarget
     let store = model
-    return ZStack(alignment: .topLeading) {
-      columnHeader.offset(y: s(top))
-      Rectangle().fill(DS.separator).frame(width: s(546), height: 1).offset(x: s(28), y: s(rowsTop))
+    return VStack(spacing: 0) {
+      columnHeader
+        .frame(height: m(22))
+        .padding(.top, m(10))
+      Rectangle()
+        .fill(p.separator)
+        .frame(height: 1)
+        .padding(.horizontal, m(14))
       if servers.isEmpty {
         Text(section == .favorites ? L("sheet.favorites_empty") : (model.state.servers.isEmpty ? L("sheet.empty") : L("servers.no_results")))
-          .refFont(s, 12.5)
-          .foregroundStyle(DS.textSecondary)
+          .font(m.font(14))
+          .foregroundStyle(p.text2)
           .multilineTextAlignment(.center)
-          .frame(width: s(616))
+          .padding(.horizontal, m(24))
+          .padding(.top, m(22))
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           .accessibilityIdentifier("table.empty")
-          .offset(y: s(rowsTop + 30))
       } else {
         ScrollViewReader { proxy in
           ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 0) {
               ForEach(servers) { server in
-                ServerTableRow(server: server, s: s)
+                ServerTableRow(server: server, m: m)
                   .id(server.id)
                 if server.id != servers.last?.id {
-                  Rectangle().fill(DS.separator).frame(width: s(546), height: 1).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, s(28))
+                  Rectangle()
+                    .fill(p.separator)
+                    .frame(height: 1)
+                    .padding(.leading, m(88))
+                    .padding(.trailing, m(14))
                 }
               }
             }
-            .padding(.bottom, s(30))
+            .padding(.bottom, m(24))
           }
           .refreshable {
             await store.refreshAll()
@@ -287,8 +341,13 @@ struct ServerPanel: View {
             withAnimation { proxy.scrollTo(id, anchor: .center) }
           }
         }
-        .frame(width: s(616), height: max(0, listBottom - s(rowsTop)))
-        .offset(y: s(rowsTop + 1))
+        // the last row fades out above the action bar
+        .mask {
+          VStack(spacing: 0) {
+            Color.black
+            LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom).frame(height: m(16))
+          }
+        }
       }
     }
     .popover(isPresented: $showRouteInfo) {
@@ -297,34 +356,37 @@ struct ServerPanel: View {
   }
 
   private var columnHeader: some View {
-    ZStack(alignment: .topLeading) {
-      Text(L("table.country")).offset(x: s(69))
+    let p = Palette.current
+    return HStack(spacing: m(8)) {
+      Text(L("table.country"))
       Button { showRouteInfo = true } label: {
-        HStack(spacing: s(8)) {
+        HStack(spacing: m(4)) {
           Text(L("table.route"))
-          Image(systemName: "info.circle").font(.system(size: s(11.5)))
+          Image(systemName: "info.circle").font(.system(size: m(11)))
         }
       }
       .buttonStyle(.plain)
       .accessibilityIdentifier("table.route")
-      .offset(x: s(291))
+      Spacer(minLength: m(8))
       Button {
         Haptics.selection()
-        pingOrder = pingOrder.next
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) { pingOrder = pingOrder.next }
       } label: {
-        HStack(spacing: s(6)) {
+        HStack(spacing: m(4)) {
           Text(L("table.ping"))
-          Image(systemName: pingIcon).font(.system(size: s(10), weight: .regular))
+          Image(systemName: pingIcon).font(.system(size: m(10), weight: .semibold))
         }
+        .frame(width: m(100) - m(14), alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
-      .offset(x: s(479))
       .accessibilityLabel(pingLabel)
       .accessibilityIdentifier("table.ping")
     }
-    .refFont(s, DS.Size.column)
-    .foregroundStyle(DS.textColumn)
-    .frame(height: s(20))
+    .font(m.font(12, .medium))
+    .foregroundStyle(p.text3)
+    .padding(.leading, m(88))
+    .padding(.trailing, m(14))
   }
 
   private var pingIcon: String {
@@ -388,62 +450,66 @@ struct PanelShape: Shape {
   }
 }
 
-/// One server row: star | flag | country + city | route chips | ping | radio.
+/// One server row: star | flag | country, city and route | ping | radio.
 struct ServerTableRow: View {
   let server: CoreServer
-  let s: RefScale
+  let m: HomeMetrics
   @EnvironmentObject private var model: AppModel
   @EnvironmentObject private var vpn: VPNController
 
+  init(server: CoreServer, m: HomeMetrics) {
+    self.server = server
+    self.m = m
+  }
+
   private var selected: Bool { model.state.selected == server.id }
   private var connected: Bool { vpn.isConnected && vpn.connectedServerID == server.id }
-  /// Row plus its 1 pt separator make one reference row pitch.
-  private var rowHeight: CGFloat { s(DS.Geo.rowPitch) - 1 }
 
   var body: some View {
-    ZStack(alignment: .topLeading) {
-      Color.clear.frame(width: s(616), height: rowHeight)
+    let p = Palette.current
+    let on = selected || connected
+    let subtitle = ServerText.subtitle(server)
+    return HStack(spacing: 0) {
       Button { Task { await model.toggleFavorite(server) } } label: {
         Image(systemName: server.favorite ? "star.fill" : "star")
-          .font(.system(size: s(14.5), weight: .regular))
-          .foregroundStyle(server.favorite ? DS.textPrimary : DS.star)
-          .frame(width: s(40), height: rowHeight)
+          .font(.system(size: m(16), weight: .medium))
+          .foregroundStyle(server.favorite ? p.warn : p.text3)
+          .frame(width: m(36), height: m(HomeLayout.row))
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
-      .offset(x: s(20))
       .accessibilityLabel(server.favorite ? L("servers.unfavorite") : L("servers.favorite"))
-      RoundFlag(cc: server.cc, diameter: s(28))
-        .offset(x: s(82.5 - 14), y: s(23 - 14))
-      VStack(alignment: .leading, spacing: s(2)) {
+      RoundFlag(cc: server.cc, diameter: m(34))
+      VStack(alignment: .leading, spacing: m(4)) {
         Text(ServerText.title(server))
-          .refFont(s, DS.Size.rowTitle, .semibold)
-          .foregroundStyle(DS.textPrimary)
+          .font(m.font(16, .semibold))
+          .foregroundStyle(p.text)
           .lineLimit(1)
-        let subtitle = ServerText.subtitle(server)
-        if !subtitle.isEmpty {
-          Text(subtitle)
-            .refFont(s, DS.Size.rowSubtitle)
-            .foregroundStyle(DS.textSubtitle)
-            .lineLimit(1)
+        HStack(spacing: m(6)) {
+          if !subtitle.isEmpty {
+            Text(subtitle)
+              .font(m.font(13))
+              .foregroundStyle(p.text2)
+              .lineLimit(1)
+          }
+          routeChip(ServerText.chip(server))
+          if let second = ServerText.secondChip(server) { routeChip(second) }
         }
       }
-      .frame(width: s(165), height: rowHeight, alignment: .leading)
-      .offset(x: s(110))
-      HStack(spacing: s(17)) {
-        let chip = ServerText.chip(server)
-        routeChip(chip, width: chip.count <= 3 ? 36 : nil)
-        if let second = ServerText.secondChip(server) { routeChip(second, width: nil) }
-      }
-      .frame(height: rowHeight)
-      .offset(x: s(285))
+      .padding(.leading, m(10))
+      .frame(maxWidth: .infinity, alignment: .leading)
       latency
-        .frame(height: rowHeight)
-        .offset(x: s(482))
-      radio
-        .offset(x: s(577.5 - 8.5), y: s(23 - 8.5))
+        .frame(width: m(60), alignment: .leading)
+      ZStack {
+        Circle().strokeBorder(on ? p.accent : p.text3.opacity(0.7), lineWidth: m(1.8))
+        if on { Circle().fill(p.accent).frame(width: m(10), height: m(10)) }
+      }
+      .frame(width: m(22), height: m(22))
     }
-    .frame(width: s(616), height: rowHeight, alignment: .topLeading)
+    .padding(.leading, m(8))
+    .padding(.trailing, m(14))
+    .frame(height: m(HomeLayout.row))
+    .background(on ? p.selected.opacity(0.4) : Color.clear)
     .contentShape(Rectangle())
     .onTapGesture { Task { await model.select(server) } }
     .contextMenu {
@@ -452,6 +518,7 @@ struct ServerTableRow: View {
       Button { Task { await model.toggleFavorite(server) } } label: {
         Label(server.favorite ? L("servers.unfavorite") : L("servers.favorite"), systemImage: server.favorite ? "star.slash" : "star")
       }
+      Button { UIPasteboard.general.string = server.address } label: { Label(L("servers.copy_address"), systemImage: "doc.on.doc") }
       Text(server.name)
       if let desc = server.desc, !desc.isEmpty { Text(desc) }
     }
@@ -460,52 +527,52 @@ struct ServerTableRow: View {
     .accessibilityIdentifier("row.\(server.cc ?? "none")")
   }
 
-  private func routeChip(_ text: String, width: CGFloat?) -> some View {
-    Text(text)
-      .refFont(s, DS.Size.route, .medium)
-      .foregroundStyle(DS.textRoute)
+  private func routeChip(_ text: String) -> some View {
+    let p = Palette.current
+    return Text(text)
+      .font(m.font(10.5, .semibold))
+      .foregroundStyle(p.text2)
       .lineLimit(1)
-      .padding(.horizontal, width == nil ? s(11) : 0)
-      .frame(width: width.map { s($0) }, height: s(20))
-      .background(DS.routeChip, in: Capsule())
+      .padding(.horizontal, m(7))
+      .frame(height: m(18))
+      .background(p.raised, in: Capsule())
+      .overlay(Capsule().strokeBorder(p.stroke, lineWidth: 0.5))
+      .fixedSize()
   }
 
   @ViewBuilder
   private var latency: some View {
+    let p = Palette.current
     switch model.latency[server.id] {
     case .testing:
-      ProgressView().controlSize(.mini).tint(DS.textSecondary)
+      ProgressView().controlSize(.small).tint(p.text3)
     case .ms(let ms):
       Text(Format.ms(ms))
-        .refFont(s, DS.Size.ping, .semibold)
-        .foregroundStyle(DS.ping)
+        .font(m.font(15, .semibold).monospacedDigit())
+        .foregroundStyle(p.latencyColor(ms))
     case .failed:
-      Text("—").refFont(s, DS.Size.ping).foregroundStyle(DS.textSubtitle)
+      Text("—")
+        .font(m.font(15, .medium))
+        .foregroundStyle(p.text3)
         .accessibilityLabel(L("latency.failed"))
     case nil:
       EmptyView()
     }
   }
-
-  private var radio: some View {
-    ZStack {
-      Circle().strokeBorder(selected || connected ? DS.textPrimary : DS.radio, lineWidth: s(1.6))
-      if selected || connected {
-        Circle().fill(DS.textPrimary).frame(width: s(8), height: s(8))
-      }
-    }
-    .frame(width: s(17), height: s(17))
-  }
 }
 
 /// Routing modes and configs.
 struct RoutesList: View {
-  let s: RefScale
-  let height: CGFloat
+  let m: HomeMetrics
   @EnvironmentObject private var model: AppModel
 
+  init(m: HomeMetrics) {
+    self.m = m
+  }
+
   var body: some View {
-    ScrollView(showsIndicators: false) {
+    let p = Palette.current
+    return ScrollView(showsIndicators: false) {
       VStack(alignment: .leading, spacing: 0) {
         ForEach(["all", "config", "profile", "direct"], id: \.self) { mode in
           let enabled = mode != "profile" || model.state.selectedServer?.fullProfile == true
@@ -516,11 +583,19 @@ struct RoutesList: View {
           .disabled(!enabled)
           .opacity(enabled ? 1 : 0.4)
           .accessibilityIdentifier("route.\(mode)")
-          Rectangle().fill(DS.separator).frame(width: s(546), height: 1).padding(.leading, s(28))
+          Rectangle()
+            .fill(p.separator)
+            .frame(height: 1)
+            .padding(.leading, m(62))
+            .padding(.trailing, m(14))
         }
         if model.state.configs.count > 1 {
-          Text(L("routes.configs")).refFont(s, DS.Size.column).foregroundStyle(DS.textColumn)
-            .padding(.leading, s(28)).padding(.top, s(16)).padding(.bottom, s(4))
+          Text(L("routes.configs"))
+            .font(m.font(12, .medium))
+            .foregroundStyle(p.text3)
+            .padding(.leading, m(16))
+            .padding(.top, m(16))
+            .padding(.bottom, m(4))
           ForEach(model.state.configs) { c in
             Button { Task { await model.activateConfig(c.id) } } label: {
               row(icon: "doc.text", title: c.name, subtitle: LF("configs.rules", c.rules), selected: c.active && model.state.settings.mode == "config")
@@ -530,18 +605,19 @@ struct RoutesList: View {
         }
         Button { model.openControlCenter(.config) } label: {
           Label(L("routes.edit"), systemImage: "square.and.pencil")
-            .refFont(s, 12.5, .medium)
-            .foregroundStyle(DS.textPrimary)
-            .frame(width: s(560), height: s(40))
-            .background(DS.chip, in: RoundedRectangle(cornerRadius: s(12), style: .continuous))
+            .font(m.font(14, .semibold))
+            .foregroundStyle(p.text)
+            .frame(maxWidth: .infinity)
+            .frame(height: m(46))
+            .background(p.raised, in: RoundedRectangle(cornerRadius: m(14), style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: m(14), style: .continuous).strokeBorder(p.stroke))
         }
-        .buttonStyle(.plain)
-        .padding(.leading, s(28))
-        .padding(.top, s(14))
-        .padding(.bottom, s(30))
+        .buttonStyle(PressableStyle())
+        .padding(.horizontal, m(14))
+        .padding(.top, m(14))
+        .padding(.bottom, m(28))
       }
     }
-    .frame(width: s(616), height: height)
   }
 
   private func icon(_ mode: String) -> String {
@@ -559,27 +635,34 @@ struct RoutesList: View {
   }
 
   private func row(icon: String, title: String, subtitle: String, selected: Bool) -> some View {
-    HStack(spacing: 0) {
+    let p = Palette.current
+    return HStack(spacing: m(12)) {
       Image(systemName: icon)
-        .font(.system(size: s(13)))
-        .foregroundStyle(DS.textPrimary)
-        .frame(width: s(28), height: s(28))
-        .background(DS.routeChip, in: Circle())
-        .padding(.leading, s(68.5))
-      VStack(alignment: .leading, spacing: s(4)) {
-        Text(title).refFont(s, DS.Size.rowTitle, .semibold).foregroundStyle(DS.textPrimary).lineLimit(1)
-        Text(subtitle).refFont(s, DS.Size.rowSubtitle).foregroundStyle(DS.textSubtitle).lineLimit(1)
+        .font(.system(size: m(14), weight: .medium))
+        .foregroundStyle(p.text)
+        .frame(width: m(34), height: m(34))
+        .background(p.raised, in: Circle())
+        .overlay(Circle().strokeBorder(p.stroke))
+      VStack(alignment: .leading, spacing: m(3)) {
+        Text(title)
+          .font(m.font(15.5, .semibold))
+          .foregroundStyle(p.text)
+          .lineLimit(1)
+        Text(subtitle)
+          .font(m.font(12.5))
+          .foregroundStyle(p.text2)
+          .lineLimit(1)
       }
-      .padding(.leading, s(13.5))
-      Spacer(minLength: s(8))
+      Spacer(minLength: m(8))
       ZStack {
-        Circle().strokeBorder(selected ? DS.textPrimary : DS.radio, lineWidth: s(1.6))
-        if selected { Circle().fill(DS.textPrimary).frame(width: s(8), height: s(8)) }
+        Circle().strokeBorder(selected ? p.accent : p.text3.opacity(0.7), lineWidth: m(1.8))
+        if selected { Circle().fill(p.accent).frame(width: m(10), height: m(10)) }
       }
-      .frame(width: s(17), height: s(17))
-      .padding(.trailing, s(616 - 586))
+      .frame(width: m(22), height: m(22))
     }
-    .frame(width: s(616), height: s(DS.Geo.rowPitch))
+    .padding(.leading, m(16))
+    .padding(.trailing, m(14))
+    .frame(height: m(HomeLayout.row))
     .contentShape(Rectangle())
   }
 }

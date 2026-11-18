@@ -37,6 +37,7 @@ struct ParadiseApp: App {
 
   var body: some Scene {
     WindowGroup {
+      // a new language rebuilds every screen with the new strings
       RootView()
         .id(prefs.language)
         .environmentObject(model)
@@ -44,7 +45,7 @@ struct ParadiseApp: App {
         .environmentObject(prefs)
         .environment(\.locale, Localization.locale)
         .tint(Theme.accent)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(Palette.current.isLight ? .light : .dark)
         .task { await model.start() }
         .onOpenURL { url in model.handle(url: url) }
     }
@@ -67,8 +68,10 @@ struct RootView: View {
 
   var body: some View {
     ZStack(alignment: .top) {
-      DS.background.ignoresSafeArea()
+      Palette.current.background.ignoresSafeArea()
+      // a new theme rebuilds the home screen with its colors (open sheets follow prefs themselves)
       HomeView()
+        .id(prefs.theme)
       if let banner = model.banner {
         BannerView(banner: banner) { model.banner = nil }
           .padding(.top, 8)
@@ -96,7 +99,7 @@ struct RootView: View {
       .environmentObject(model)
       .environmentObject(vpn)
       .environmentObject(prefs)
-      .preferredColorScheme(.dark)
+      .preferredColorScheme(Palette.current.isLight ? .light : .dark)
     }
   }
 }

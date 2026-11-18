@@ -11,7 +11,8 @@ REPORT="$ROOT/build/report"
 DERIVED="$ROOT/build/SimData"
 STATE="$ROOT/build/devices.env"
 BUNDLE=com.kyzaygy.paradise
-SCENARIOS="reference connecting connected empty long full collapsed search favorites routes"
+# scenario[@theme]: a theme other than the default is passed as -pref.theme
+SCENARIOS="reference connecting connected empty long full collapsed search favorites routes connected@nebula connected@aurora connected@solar connected@light reference@oled"
 mkdir -p "$REPORT/shots"
 note() { echo "$*" | tee -a "$REPORT/summary.txt"; }
 
@@ -93,7 +94,7 @@ status_bar() {
 }
 
 shoot() {
-  local udid=$1 tag=$2 app container ready scenario i
+  local udid=$1 tag=$2 app container ready scenario token args i recorder
   shift 2
   app=$(app_path)
   xcrun simctl boot "$udid" 2>/dev/null
@@ -107,17 +108,31 @@ shoot() {
   # first launch after boot: system banners (e.g. Apple Intelligence) show up and go away
   xcrun simctl launch "$udid" "$BUNDLE" -ParadiseDemo reference -pref.language en > /dev/null 2>&1
   sleep 15
-  for scenario in "$@"; do
+  for token in "$@"; do
+    scenario=${token%@*}
+    args=(-ParadiseDemo "$scenario" -pref.language en)
+    [ "$token" != "$scenario" ] && args+=(-pref.theme "${token#*@}")
     xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
     rm -f "$ready"
-    xcrun simctl launch "$udid" "$BUNDLE" -ParadiseDemo "$scenario" -pref.language en > /dev/null || note "launch failed: $tag $scenario"
+    xcrun simctl launch "$udid" "$BUNDLE" "${args[@]}" > /dev/null || note "launch failed: $tag $token"
     for i in $(seq 1 60); do
       [ -f "$ready" ] && break
       sleep 0.5
     done
-    if [ -f "$ready" ]; then sleep 2.5; else note "not ready after 30 s: $tag $scenario"; fi
-    xcrun simctl io "$udid" screenshot "$REPORT/shots/$tag-$scenario.png" > /dev/null 2>&1 || note "screenshot failed: $tag $scenario"
+    if [ -f "$ready" ]; then sleep 2.5; else note "not ready after 30 s: $tag $token"; fi
+    xcrun simctl io "$udid" screenshot "$REPORT/shots/$tag-$token.png" > /dev/null 2>&1 || note "screenshot failed: $tag $token"
   done
+  # a few seconds of the animated space, from the start (the fly-out of the core)
+  if [ "$tag" = main ]; then
+    xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
+    xcrun simctl io "$udid" recordVideo --codec=h264 --force "$REPORT/shots/$tag-motion.mp4" > /dev/null 2>&1 &
+    recorder=$!
+    sleep 2
+    xcrun simctl launch "$udid" "$BUNDLE" -ParadiseDemo connected -ParadiseDemoMotion YES -pref.language en > /dev/null || note "launch failed: motion"
+    sleep 10
+    kill -INT "$recorder" 2>/dev/null
+    wait "$recorder" 2>/dev/null
+  fi
   xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
   xcrun simctl status_bar "$udid" list >> "$REPORT/statusbar.txt" 2>&1
   xcrun simctl spawn "$udid" log show --last 15m --style compact --predicate 'process == "Paradise"' 2>/dev/null \
