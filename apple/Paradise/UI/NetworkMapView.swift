@@ -112,7 +112,7 @@ enum MapTexture {
             if first { path.move(to: p); first = false } else { path.addLine(to: p) }
           }
           cg.addPath(path)
-          cg.setStrokeColor(white(rng.range(0.07, 0.17)))
+          cg.setStrokeColor(white(rng.range(0.05, 0.12)))
           cg.setLineWidth(CGFloat(rng.range(0.6, 1.0)))
           cg.strokePath()
         }
@@ -122,13 +122,13 @@ enum MapTexture {
           let a = rng.range(0, 2 * .pi)
           let p = CGPoint(x: center.x + rx * CGFloat(cos(a)) + CGFloat(rng.range(-1.2, 1.2)), y: center.y + ry * CGFloat(sin(a)) + CGFloat(rng.range(-1.2, 1.2)))
           let s = CGFloat(rng.range(0.7, 1.6))
-          cg.setFillColor(white(rng.range(0.12, 0.45)))
+          cg.setFillColor(white(rng.range(0.08, 0.3)))
           cg.fillEllipse(in: CGRect(x: p.x - s / 2, y: p.y - s / 2, width: s, height: s))
         }
       }
 
       // star field, denser toward the core
-      for _ in 0..<2100 {
+      for _ in 0..<1800 {
         let r = 285 * pow(rng.next(), 1.35)
         let a = rng.range(0, 2 * .pi)
         let p = CGPoint(x: core.x + CGFloat(cos(a) * r), y: core.y + CGFloat(sin(a) * r * 0.88))
@@ -180,11 +180,11 @@ enum MapTexture {
       }
 
       // glow of the core
-      let stops: [(CGFloat, Double)] = [(0, 1.0), (0.05, 0.95), (0.1, 0.64), (0.16, 0.4), (0.24, 0.21), (0.38, 0.1), (0.6, 0.045), (0.8, 0.02), (1, 0)]
+      let stops: [(CGFloat, Double)] = [(0, 1.0), (0.05, 0.92), (0.1, 0.58), (0.16, 0.33), (0.24, 0.16), (0.38, 0.075), (0.6, 0.03), (0.8, 0.012), (1, 0)]
       let colors = stops.map { white($0.1) } as CFArray
       let locations = stops.map { $0.0 }
       if let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: locations) {
-        cg.drawRadialGradient(gradient, startCenter: core, startRadius: 0, endCenter: core, endRadius: 175, options: [])
+        cg.drawRadialGradient(gradient, startCenter: core, startRadius: 0, endCenter: core, endRadius: 165, options: [])
       }
 
       // bright hubs with a small flare
@@ -324,8 +324,11 @@ struct NetworkMapView: View {
               var arc = Path()
               arc.move(to: p)
               arc.addQuadCurve(to: corePoint, control: control)
-              ctx.stroke(arc, with: .color(.white.opacity(0.07 * shimmer)), lineWidth: 3.5 * m)
-              ctx.stroke(arc, with: .color(.white.opacity((active ? 0.85 : 0.42) * shimmer)), lineWidth: (active ? 1.5 : 1.0) * m)
+              // bright at the country, fading toward the core so the centre doesn't turn into a starburst
+              let line = active ? 0.8 : 0.3
+              let fade = Gradient(colors: [.white.opacity(line * shimmer), .white.opacity(line * 0.35 * shimmer), .white.opacity(0.03)])
+              ctx.stroke(arc, with: .color(.white.opacity((active ? 0.08 : 0.035) * shimmer)), lineWidth: 3.5 * m)
+              ctx.stroke(arc, with: .linearGradient(fade, startPoint: p, endPoint: corePoint), lineWidth: (active ? 1.4 : 0.9) * m)
             }
           }
           .allowsHitTesting(false)

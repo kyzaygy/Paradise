@@ -55,10 +55,15 @@ stage_build() {
   [ -n "$rt" ] || { note "no iOS simulator runtime"; exit 1; }
   note "runtime: $rt"
   main=$(device main "$rt" "iPhone 14 Pro" "iPhone 15 Pro" "iPhone 16 Pro" "iPhone 17 Pro") || { note "no simulator for the main device"; exit 1; }
+  small=$(device small "$rt" "iPhone SE (2nd generation)" "iPhone SE (3rd generation)" "iPhone 16e") || small=""
   {
     echo "RUNTIME=$rt"
     echo "MAIN=$main"
+    echo "SMALL=$small"
   } > "$STATE"
+  # simulators boot slowly on CI runners: start them now, while the app builds
+  xcrun simctl boot "$main" 2>/dev/null
+  [ -n "$small" ] && xcrun simctl boot "$small" 2>/dev/null
   command -v xcodegen >/dev/null || brew install xcodegen
   (cd "$ROOT/apple" && xcodegen generate --spec project.yml) > "$REPORT/xcodegen.log" 2>&1 || { note "xcodegen failed"; annotate xcodegen "$REPORT/xcodegen.log"; exit 1; }
   xcodebuild -project "$ROOT/apple/Paradise.xcodeproj" -scheme Paradise -configuration Debug \
@@ -81,8 +86,9 @@ app_path() {
 
 status_bar() {
   local udid=$1 try
+  xcrun simctl spawn "$udid" defaults write -g AppleICUForce24HourTime -bool YES 2>/dev/null
   for try in 1 2 3; do
-    xcrun simctl status_bar "$udid" override --time "00:42" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+    xcrun simctl status_bar "$udid" override --time "2026-11-18T00:42:00Z" --dataNetwork wifi --wifiMode active --wifiBars 3 \
       --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100 2>> "$REPORT/statusbar.txt" && break
     sleep 3
   done
@@ -100,6 +106,9 @@ shoot() {
   status_bar "$udid"
   container=$(xcrun simctl get_app_container "$udid" "$BUNDLE" data)
   ready="$container/tmp/ParadiseDemo/ready"
+  # first launch after boot: system banners (e.g. Apple Intelligence) show up and go away
+  xcrun simctl launch "$udid" "$BUNDLE" -ParadiseDemo reference -pref.language en > /dev/null 2>&1
+  sleep 15
   for scenario in "$@"; do
     xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
     rm -f "$ready"
@@ -126,16 +135,12 @@ collect_crashes() {
 stage_shots() {
   # shellcheck disable=SC1090
   source "$STATE"
-  local small large tablet
   # shellcheck disable=SC2086
   shoot "$MAIN" main $SCENARIOS
   ls "$REPORT/shots" >> "$REPORT/summary.txt"
-  small=$(device small "$RUNTIME" "iPhone SE (2nd generation)" "iPhone SE (3rd generation)" "iPhone 16e") || small=""
-  if [ -n "$small" ]; then shoot "$small" small reference connected long collapsed; xcrun simctl shutdown "$small"; fi
-  large=$(device large "$RUNTIME" "iPhone 17 Pro Max" "iPhone 16 Pro Max" "iPhone 15 Pro Max") || large=""
-  if [ -n "$large" ]; then shoot "$large" large reference connected; xcrun simctl shutdown "$large"; fi
-  tablet=$(device tablet "$RUNTIME" "iPad Air 11-inch (M3)" "iPad Air 11-inch (M2)" "iPad (A16)" "iPad (10th generation)") || tablet=""
-  if [ -n "$tablet" ]; then shoot "$tablet" tablet reference; xcrun simctl shutdown "$tablet"; fi
+  # the main device is enough to start comparing: publish it before the small screen
+  [ -n "${GH_TOKEN:-}" ] && "$ROOT/scripts/publish-report.sh" > /dev/null 2>&1
+  if [ -n "$SMALL" ]; then shoot "$SMALL" small reference connected long collapsed; xcrun simctl shutdown "$SMALL"; fi
   ls "$REPORT/shots" > "$REPORT/shots.txt"
   collect_crashes
   note "screenshots done"

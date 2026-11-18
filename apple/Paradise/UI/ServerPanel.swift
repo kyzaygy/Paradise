@@ -314,7 +314,7 @@ struct ServerPanel: View {
       } label: {
         HStack(spacing: s(6)) {
           Text(L("table.ping"))
-          Image(systemName: pingIcon).font(.system(size: s(11), weight: .medium))
+          Image(systemName: pingIcon).font(.system(size: s(10), weight: .regular))
         }
       }
       .buttonStyle(.plain)
@@ -415,7 +415,7 @@ struct ServerTableRow: View {
       .accessibilityLabel(server.favorite ? L("servers.unfavorite") : L("servers.favorite"))
       RoundFlag(cc: server.cc, diameter: s(28))
         .offset(x: s(82.5 - 14), y: s(23 - 14))
-      VStack(alignment: .leading, spacing: s(4)) {
+      VStack(alignment: .leading, spacing: s(2)) {
         Text(ServerText.title(server))
           .refFont(s, DS.Size.rowTitle, .semibold)
           .foregroundStyle(DS.textPrimary)
@@ -477,7 +477,7 @@ struct ServerTableRow: View {
       ProgressView().controlSize(.mini).tint(DS.textSecondary)
     case .ms(let ms):
       Text(Format.ms(ms))
-        .refFont(s, DS.Size.ping, .semibold, digits: true)
+        .refFont(s, DS.Size.ping, .semibold)
         .foregroundStyle(DS.ping)
     case .failed:
       Text("—").refFont(s, DS.Size.ping).foregroundStyle(DS.textSubtitle)

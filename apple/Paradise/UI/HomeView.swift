@@ -102,7 +102,7 @@ struct HomeScreen: View {
         .offset(x: s(DS.Geo.card.minX), y: layout.top(DS.Geo.card.minY))
       InfoRow(s: s)
         .frame(width: layout.width, height: s(44), alignment: .topLeading)
-        .offset(y: layout.top(DS.Geo.infoLabelTop - 4))
+        .offset(y: layout.top(DS.Geo.infoLabelTop - 1))
       ServerPanel(detent: $detent, countryFilter: $countryFilter, layout: layout, panelTop: panelTop)
         .frame(width: layout.width - s(DS.Geo.panelInset * 2), height: max(0, layout.height - panelTop), alignment: .top)
         .offset(x: s(DS.Geo.panelInset), y: panelTop)
@@ -387,7 +387,7 @@ struct InfoRow: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       column(L("home.ip"), x: DS.Geo.infoColumns[0]) {
-        Text(model.publicIP ?? "—").refFont(s, DS.Size.infoValue, digits: true).foregroundStyle(DS.textValue)
+        Text(model.publicIP ?? "—").refFont(s, DS.Size.infoValue, .medium).foregroundStyle(DS.textValue)
           .lineLimit(1).minimumScaleFactor(0.55)
           .frame(maxWidth: s(DS.Geo.infoDividers[0] - DS.Geo.infoColumns[0] - 10), alignment: .leading)
           .accessibilityIdentifier("info.ip")
@@ -396,7 +396,7 @@ struct InfoRow: View {
       column(L("home.location"), x: DS.Geo.infoColumns[1] - 1) {
         HStack(spacing: s(8)) {
           if let cc = model.publicCountry { RoundFlag(cc: cc, diameter: s(DS.Geo.infoFlagDiameter)) }
-          Text(locationText).refFont(s, DS.Size.infoValue).foregroundStyle(DS.textValue).lineLimit(1).minimumScaleFactor(0.8)
+          Text(locationText).refFont(s, DS.Size.infoValue, .medium).foregroundStyle(DS.textValue).lineLimit(1).minimumScaleFactor(0.8)
             .accessibilityIdentifier("info.location")
         }
         .frame(maxWidth: s(DS.Geo.infoDividers[1] - DS.Geo.infoColumns[1] - 8), alignment: .leading)
@@ -416,7 +416,7 @@ struct InfoRow: View {
   }
 
   private func column<V: View>(_ label: String, x: CGFloat, @ViewBuilder value: () -> V) -> some View {
-    VStack(alignment: .leading, spacing: s(8)) {
+    VStack(alignment: .leading, spacing: s(5)) {
       Text(label).refFont(s, DS.Size.infoLabel).foregroundStyle(DS.textLabel)
       value()
     }
@@ -427,7 +427,7 @@ struct InfoRow: View {
   private func divider(x: CGFloat) -> some View {
     Rectangle().fill(DS.infoDivider)
       .frame(width: 1, height: s(DS.Geo.infoDividerSpan.upperBound - DS.Geo.infoDividerSpan.lowerBound))
-      .offset(x: s(x), y: s(DS.Geo.infoDividerSpan.lowerBound - DS.Geo.infoLabelTop + 4))
+      .offset(x: s(x), y: s(DS.Geo.infoDividerSpan.lowerBound - DS.Geo.infoLabelTop + 1))
   }
 }
 
@@ -448,15 +448,15 @@ struct ProtocolMenu: View {
       }
     } label: {
       HStack(alignment: .top, spacing: 0) {
-        VStack(alignment: .leading, spacing: s(8)) {
+        VStack(alignment: .leading, spacing: s(5)) {
           Text(L("home.protocol")).refFont(s, DS.Size.infoLabel).foregroundStyle(DS.textLabel)
-          Text(display).refFont(s, DS.Size.infoValue).foregroundStyle(DS.textValue).lineLimit(1)
+          Text(display).refFont(s, DS.Size.infoValue, .medium).foregroundStyle(DS.textValue).lineLimit(1)
         }
         Spacer(minLength: 0)
         Image(systemName: "chevron.down")
           .font(.system(size: s(10), weight: .semibold))
           .foregroundStyle(DS.iconLight)
-          .padding(.top, s(11))
+          .padding(.top, s(8))
           .padding(.trailing, s(DS.refWidth - 600))
       }
       .frame(width: s(DS.refWidth - DS.Geo.infoColumns[2]), alignment: .leading)
@@ -580,6 +580,7 @@ enum ServerText {
   /// Second route chip: published link speed, otherwise the transport.
   static func secondChip(_ s: CoreServer) -> String? {
     if let b = s.bandwidth, !b.isEmpty { return b }
+    if s.protocol == "hysteria" || s.protocol == "hysteria2" { return "QUIC" }
     switch s.security {
     case "reality": return "Reality"
     case "tls": return s.network == "tcp" ? "TLS" : s.network.uppercased()
@@ -594,8 +595,9 @@ enum ServerText {
 
   static func subtitle(_ s: CoreServer) -> String {
     if let city = s.city, !city.isEmpty { return city }
-    if let label = s.label, !label.isEmpty { return label }
+    // without a country the title is already the provider's name
     if (s.cc ?? "").isEmpty { return s.address }
+    if let label = s.label, !label.isEmpty { return label }
     return ""
   }
 

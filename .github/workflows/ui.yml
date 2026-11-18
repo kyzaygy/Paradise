@@ -75,10 +75,13 @@ jobs:
           gomobile bind -target=iossimulator/amd64 -iosversion=16.0 -trimpath \
             -ldflags='-checklinkname=0 -s -w' -o ../apple/Frameworks/PDCore.xcframework ./pdcore
       - name: Build for the simulator
+        id: build
         timeout-minutes: 35
         run: scripts/ui-check.sh build
       - name: Screenshots
         timeout-minutes: 25
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: scripts/ui-check.sh shots
       - name: Publish screenshots
         if: always()
@@ -86,6 +89,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: scripts/publish-report.sh
       - name: UI tests
+        if: always() && steps.build.outcome == 'success'
         timeout-minutes: 40
         run: scripts/ui-check.sh tests
       - name: Publish report

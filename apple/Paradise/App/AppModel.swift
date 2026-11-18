@@ -141,6 +141,7 @@ final class AppModel: ObservableObject {
       await Demo.load(demo, into: self)
       lastStatus = vpn.status
       loading = false
+      refreshViews()
       Demo.markReady()
       return
     }
@@ -148,6 +149,7 @@ final class AppModel: ObservableObject {
     await vpn.load()
     lastStatus = vpn.status
     loading = false
+    refreshViews()
     AppLog.info("app", "ready: \(state.subscriptions.count) subscriptions, \(state.servers.count) servers, vpn \(VPNController.name(vpn.status))")
     refreshIPInfo()
     if vpn.isConnected { startStatsPolling() }
@@ -160,6 +162,15 @@ final class AppModel: ObservableObject {
     }
     if state.settings.autoUpdateConfigs {
       await updateRemoteConfigs()
+    }
+  }
+
+  /// A fast start can finish before every view of the first frame observes the model;
+  /// one more change notification a moment later brings them up to date.
+  private func refreshViews() {
+    Task { @MainActor [weak self] in
+      try? await Task.sleep(nanoseconds: 300_000_000)
+      self?.objectWillChange.send()
     }
   }
 
