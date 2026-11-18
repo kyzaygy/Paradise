@@ -45,7 +45,7 @@ jobs:
 
   simulator:
     runs-on: macos-26-intel
-    timeout-minutes: 75
+    timeout-minutes: 110
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -69,8 +69,20 @@ jobs:
           gomobile init
           gomobile bind -target=iossimulator/amd64 -iosversion=16.0 -trimpath \
             -ldflags='-checklinkname=0 -s -w' -o ../apple/Frameworks/PDCore.xcframework ./pdcore
-      - name: Screenshots and UI tests
-        run: scripts/ui-check.sh
+      - name: Build for the simulator
+        timeout-minutes: 35
+        run: scripts/ui-check.sh build
+      - name: Screenshots
+        timeout-minutes: 25
+        run: scripts/ui-check.sh shots
+      - name: Publish screenshots
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/publish-report.sh
+      - name: UI tests
+        timeout-minutes: 40
+        run: scripts/ui-check.sh tests
       - name: Publish report
         if: always()
         env:

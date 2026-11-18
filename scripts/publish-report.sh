@@ -6,6 +6,7 @@ REPORT="$(cd "$(dirname "$0")/.." && pwd)/build/report"
 [ -d "$REPORT" ] || exit 0
 cd "$REPORT"
 printf 'commit %s\nrun %s\n' "${GITHUB_SHA:-local}" "${GITHUB_RUN_NUMBER:-0}" > RUN.txt
+rm -rf .git
 git init -q
 git checkout -q -b ci-screens
 git add -A
