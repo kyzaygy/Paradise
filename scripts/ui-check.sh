@@ -138,7 +138,8 @@ stage_shots() {
   ls "$REPORT/shots" >> "$REPORT/summary.txt"
   # the main device is enough to start comparing: publish it before the small screen
   [ -n "${GH_TOKEN:-}" ] && "$ROOT/scripts/publish-report.sh" > /dev/null 2>&1
-  if [ -n "$SMALL" ]; then shoot "$SMALL" small reference connected long collapsed; xcrun simctl shutdown "$SMALL"; fi
+  # the small screen is slow to boot on CI; SMALL_SHOTS=1 includes it
+  if [ -n "$SMALL" ] && [ "${SMALL_SHOTS:-0}" = 1 ]; then shoot "$SMALL" small reference connected long collapsed; xcrun simctl shutdown "$SMALL"; fi
   ls "$REPORT/shots" > "$REPORT/shots.txt"
   collect_crashes
   note "screenshots done"
@@ -147,7 +148,8 @@ stage_shots() {
 stage_tests() {
   # shellcheck disable=SC1090
   source "$STATE"
-  xcodebuild test-without-building -project "$ROOT/apple/Paradise.xcodeproj" -scheme Paradise \
+  # unbuffered, so the log shows progress even if the step times out
+  NSUnbufferedIO=YES xcodebuild test-without-building -project "$ROOT/apple/Paradise.xcodeproj" -scheme Paradise \
     -destination "platform=iOS Simulator,id=$MAIN" -derivedDataPath "$DERIVED" \
     -test-timeouts-enabled YES -default-test-execution-time-allowance 180 -maximum-test-execution-time-allowance 300 \
     -resultBundlePath "$ROOT/build/UITests.xcresult" > "$REPORT/uitests.log" 2>&1

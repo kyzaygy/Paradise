@@ -115,7 +115,7 @@ struct ServerPanel: View {
                 Text(L("sheet.\(item.rawValue)")).refFont(s, DS.Size.tab, .medium)
               }
               .foregroundStyle(section == item ? DS.textPrimary : DS.textSecondary)
-              .padding(.horizontal, s(31))
+              .padding(.horizontal, s(27))
               .frame(height: s(37))
               .background {
                 if section == item {
