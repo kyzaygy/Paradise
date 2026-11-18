@@ -23,7 +23,16 @@ struct SeededRandom {
 /// When they don't all fit, the slowest countries are left out (the list still has them).
 enum OrbitLayout {
   private static let rings: [CGFloat] = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.42]
-  private static let offsets: [Double] = [0] + (1...12).flatMap { [Double($0) * 0.05, -Double($0) * 0.05] }
+  /// Angle offsets tried around the preferred angle: 0, ±0.05, ±0.1 … ±0.6 radians.
+  private static let offsets: [Double] = {
+    var values: [Double] = [0]
+    for step in 1...12 {
+      let offset = Double(step) * 0.05
+      values.append(offset)
+      values.append(-offset)
+    }
+    return values
+  }()
 
   /// Centers of the capsules inside a box of `size`, by country id.
   static func place(_ nodes: [AppModel.CountryNode], in size: CGSize, chip: CGSize) -> [String: CGPoint] {
@@ -143,11 +152,13 @@ enum SpaceRenderer {
       weight.reserveCapacity(count)
       for i in 0..<count {
         let t = pow(rng.next(), 0.8)
-        let r = r0 * (0.05 + 0.95 * t) + rng.range(-0.04, 0.04) * r0
+        let spread = rng.range(-0.04, 0.04)
+        let r = r0 * (0.05 + 0.95 * t + spread)
         let a: Double
         if rng.next() < 0.8 {
           let arm = Double(i % 3) * 2 * Double.pi / 3
-          a = arm + t * twist + rng.range(-0.34, 0.34) * (1 - 0.45 * t)
+          let jitter = rng.range(-0.34, 0.34) * (1 - 0.45 * t)
+          a = arm + t * twist + jitter
         } else {
           a = rng.range(0, 2 * Double.pi)
         }
