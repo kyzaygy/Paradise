@@ -42,6 +42,11 @@ jobs:
           fi
           cat ../test.log
           echo "::notice title=core tests::$(grep -E '^(ok|---|PASS|FAIL)' ../test.log | head -40 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+      - name: Protocol end-to-end results
+        working-directory: core
+        run: |
+          go test -count=1 -ldflags=-checklinkname=0 -v -run 'TestEndToEndProtocols|TestSimpleConfAcceptedByXray|AcceptedByXray' ./pdcore/ > ../e2e.log 2>&1 || true
+          echo "::notice title=protocol tests::$(grep -E -- '--- (PASS|FAIL)' ../e2e.log | head -40 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
 
   simulator:
     runs-on: macos-26-intel
