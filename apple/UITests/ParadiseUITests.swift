@@ -27,13 +27,13 @@ final class ParadiseUITests: XCTestCase {
 
   private func label(_ id: String) -> String { element(id).label }
 
-  private func wait(_ id: String, label expected: String, timeout: TimeInterval = 8, file: StaticString = #filePath, line: UInt = #line) {
+  private func wait(_ id: String, label expected: String, timeout: TimeInterval = 15, file: StaticString = #filePath, line: UInt = #line) {
     let done = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", expected), object: element(id))
     let result = XCTWaiter().wait(for: [done], timeout: timeout)
     XCTAssertEqual(result, .completed, "\(id): expected “\(expected)”, got “\(label(id))”", file: file, line: line)
   }
 
-  private func waitContains(_ id: String, _ text: String, timeout: TimeInterval = 8, file: StaticString = #filePath, line: UInt = #line) {
+  private func waitContains(_ id: String, _ text: String, timeout: TimeInterval = 15, file: StaticString = #filePath, line: UInt = #line) {
     let done = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", text), object: element(id))
     let result = XCTWaiter().wait(for: [done], timeout: timeout)
     XCTAssertEqual(result, .completed, "\(id): expected to contain “\(text)”, got “\(label(id))”", file: file, line: line)

@@ -331,8 +331,8 @@ struct NetworkMapView: View {
               ctx.stroke(arc, with: .linearGradient(fade, startPoint: p, endPoint: corePoint), lineWidth: (active ? 1.4 : 0.9) * m)
             }
           }
-          .allowsHitTesting(false)
         }
+        .allowsHitTesting(false)
         ForEach(placed) { item in
           NodeChip(node: item.node, active: item.node.cc == highlighted, connected: connected && item.node.cc == highlighted, s: s,
                    onTap: { onNode(item.node) }, onList: { onNodeList(item.node) })
@@ -354,20 +354,21 @@ struct NetworkMapView: View {
               ctx.fill(Path(ellipseIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)), with: .color(.white))
             }
           }
-          .allowsHitTesting(false)
         }
+        .allowsHitTesting(false)
       }
       .frame(width: geo.size.width, height: geo.size.height, alignment: .topLeading)
       .contentShape(Rectangle())
-      .gesture(dragGesture.simultaneously(with: pinchGesture.simultaneously(with: rotateGesture)))
-      .onTapGesture(count: 2) {
+      // simultaneous, so the country capsules keep their taps and long presses
+      .simultaneousGesture(dragGesture.simultaneously(with: pinchGesture.simultaneously(with: rotateGesture)))
+      .simultaneousGesture(TapGesture(count: 2).onEnded {
         Haptics.soft()
         withAnimation(.spring(response: 0.45, dampingFraction: 0.86)) {
           zoom = 1
           angle = .zero
           pan = .zero
         }
-      }
+      })
       .task(id: m) {
         guard textureScale != m else { return }
         let scale = UIScreen.main.scale
