@@ -44,6 +44,11 @@ final class ParadiseUITests: XCTestCase {
     return XCTWaiter().wait(for: [done], timeout: timeout) == .completed
   }
 
+  private func waitSelectedButton(_ button: XCUIElement, timeout: TimeInterval = 4) -> Bool {
+    let done = XCTNSPredicateExpectation(predicate: NSPredicate(format: "isSelected == true"), object: button)
+    return XCTWaiter().wait(for: [done], timeout: timeout) == .completed
+  }
+
   private func above(_ a: String, _ b: String) -> Bool { element(a).frame.minY < element(b).frame.minY }
 
   /// Frames of a few elements, for failure messages.
@@ -201,12 +206,15 @@ final class ParadiseUITests: XCTestCase {
       element("header.menu").tap()
       XCTAssertTrue(app.buttons["Add"].waitForExistence(timeout: 4))
       XCTAssertTrue(app.buttons["Share"].exists && app.buttons["Diagnostics"].exists)
-      app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.45)).tap()
-      sleep(1)
+      // the menu hangs from the top right corner: close it with a tap on the title, outside the menu
+      app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.09)).tap()
+      XCTAssertTrue(app.buttons["Add"].waitForNonExistence(timeout: 4), "the menu did not close")
       element("action.settings").tap()
-      XCTAssertTrue(app.segmentedControls.buttons["Settings"].waitForExistence(timeout: 5))
-      app.segmentedControls.buttons["Data"].tap()
-      XCTAssertTrue(app.segmentedControls.buttons["Data"].isSelected)
+      let data = app.buttons["Data"]
+      XCTAssertTrue(data.waitForExistence(timeout: 5), "the sliders button did not open the control center")
+      XCTAssertFalse(data.isSelected, "the control center opens on Settings")
+      data.tap()
+      XCTAssertTrue(waitSelectedButton(data), "the Data section did not open")
     }
   }
 
