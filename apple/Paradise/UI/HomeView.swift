@@ -38,14 +38,8 @@ struct HomeLayout {
   }
 }
 
+/// Measures the screen and lays out the home screen for it.
 struct HomeView: View {
-  @EnvironmentObject private var model: AppModel
-  @EnvironmentObject private var vpn: VPNController
-  @EnvironmentObject private var prefs: AppPrefs
-  @State private var detent: ServerPanel.Detent = Demo.initialDetent
-  @GestureState private var panelDrag: CGFloat = 0
-  @State private var countryFilter: String?
-
   init() {}
 
   var body: some View {
@@ -53,48 +47,8 @@ struct HomeView: View {
       let insets = Self.insets(geo.safeAreaInsets)
       // phone proportions; on iPad and in landscape the screen becomes a centered column
       let column = CGSize(width: min(geo.size.width, max(320, geo.size.height * 0.57)), height: geo.size.height)
-      let layout = HomeLayout(size: column, safeTop: insets.top, safeBottom: insets.bottom)
-      let s = layout.s
-      let panelTop = min(layout.collapsedPanelTop, max(layout.fullPanelTop, layout.panelTop(detent) + panelDrag))
-      ZStack(alignment: .topLeading) {
-        DS.background
-        if model.storageBroken {
-          storageNotice.padding(.horizontal, s(31)).offset(y: layout.top(260))
-        } else {
-          NetworkMapView(nodes: model.countryNodes, highlighted: highlightedCC, connected: vpn.isConnected,
-                         animate: prefs.galaxyMotion && model.demo == nil, parallax: prefs.parallax, s: s,
-                         onNode: { node in Task { await model.connect(country: node) } },
-                         onNodeList: { node in
-                           countryFilter = node.cc
-                           detent = .full
-                         })
-            .frame(width: layout.width, height: max(0, layout.standardPanelTop - layout.mapTop))
-            .offset(y: layout.mapTop)
-          if model.state.servers.isEmpty && !model.loading {
-            emptyHint(s).frame(width: layout.width).offset(y: layout.mapTop + s(150))
-          }
-        }
-        header(layout)
-        StatusCard(s: s, onSelect: { detent = .full })
-          .frame(width: s(DS.Geo.card.width), height: s(DS.Geo.card.height))
-          .offset(x: s(DS.Geo.card.minX), y: layout.top(DS.Geo.card.minY))
-        InfoRow(s: s)
-          .frame(width: layout.width, height: s(44), alignment: .topLeading)
-          .offset(y: layout.top(DS.Geo.infoLabelTop - 4))
-        ServerPanel(detent: $detent, countryFilter: $countryFilter, layout: layout, panelTop: panelTop)
-          .frame(width: layout.width - s(DS.Geo.panelInset * 2), height: max(0, layout.height - panelTop), alignment: .top)
-          .offset(x: s(DS.Geo.panelInset), y: panelTop)
-          .simultaneousGesture(panelGesture(layout), including: .all)
-        ActionBar(s: s)
-          .frame(width: layout.width, height: s(DS.Geo.actionBarBottom - DS.Geo.actionBarTop), alignment: .topLeading)
-          .offset(y: layout.bottom(DS.Geo.actionBarTop))
-        if model.loading {
-          ProgressView().tint(.white).frame(width: layout.width, height: layout.height)
-        }
-      }
-      .frame(width: layout.width, height: layout.height, alignment: .topLeading)
-      .frame(width: geo.size.width, height: geo.size.height)
-      .animation(.spring(response: 0.42, dampingFraction: 0.88), value: detent)
+      HomeScreen(layout: HomeLayout(size: column, safeTop: insets.top, safeBottom: insets.bottom))
+        .frame(width: geo.size.width, height: geo.size.height)
     }
     .ignoresSafeArea()
   }
@@ -107,10 +61,66 @@ struct HomeView: View {
     }
     return (proxy.top, proxy.bottom)
   }
+}
+
+/// The home screen for one layout. It reads the model in its own body, so it follows every change.
+struct HomeScreen: View {
+  let layout: HomeLayout
+  @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var vpn: VPNController
+  @EnvironmentObject private var prefs: AppPrefs
+  @State private var detent: ServerPanel.Detent = Demo.initialDetent
+  @GestureState private var panelDrag: CGFloat = 0
+  @State private var countryFilter: String?
+
+  var body: some View {
+    let s = layout.s
+    let panelTop = min(layout.collapsedPanelTop, max(layout.fullPanelTop, layout.panelTop(detent) + panelDrag))
+    let nodes = model.countryNodes
+    let showEmptyHint = model.state.servers.isEmpty && !model.loading
+    ZStack(alignment: .topLeading) {
+      DS.background
+      if model.storageBroken {
+        storageNotice.padding(.horizontal, s(31)).offset(y: layout.top(260))
+      } else {
+        NetworkMapView(nodes: nodes, highlighted: highlightedCC, connected: vpn.isConnected,
+                       animate: prefs.galaxyMotion && model.demo == nil, parallax: prefs.parallax, s: s,
+                       onNode: { node in Task { await model.connect(country: node) } },
+                       onNodeList: { node in
+                         countryFilter = node.cc
+                         detent = .full
+                       })
+          .frame(width: layout.width, height: max(0, layout.standardPanelTop - layout.mapTop))
+          .offset(y: layout.mapTop)
+        if showEmptyHint {
+          emptyHint(s).frame(width: layout.width).offset(y: layout.mapTop + s(150))
+        }
+      }
+      header
+      StatusCard(s: s, onSelect: { detent = .full })
+        .frame(width: s(DS.Geo.card.width), height: s(DS.Geo.card.height))
+        .offset(x: s(DS.Geo.card.minX), y: layout.top(DS.Geo.card.minY))
+      InfoRow(s: s)
+        .frame(width: layout.width, height: s(44), alignment: .topLeading)
+        .offset(y: layout.top(DS.Geo.infoLabelTop - 4))
+      ServerPanel(detent: $detent, countryFilter: $countryFilter, layout: layout, panelTop: panelTop)
+        .frame(width: layout.width - s(DS.Geo.panelInset * 2), height: max(0, layout.height - panelTop), alignment: .top)
+        .offset(x: s(DS.Geo.panelInset), y: panelTop)
+        .simultaneousGesture(panelGesture, including: .all)
+      ActionBar(s: s)
+        .frame(width: layout.width, height: s(DS.Geo.actionBarBottom - DS.Geo.actionBarTop), alignment: .topLeading)
+        .offset(y: layout.bottom(DS.Geo.actionBarTop))
+      if model.loading {
+        ProgressView().tint(.white).frame(width: layout.width, height: layout.height)
+      }
+    }
+    .frame(width: layout.width, height: layout.height, alignment: .topLeading)
+    .animation(.spring(response: 0.42, dampingFraction: 0.88), value: detent)
+  }
 
   private var highlightedCC: String? { model.currentServer?.cc }
 
-  private func panelGesture(_ layout: HomeLayout) -> some Gesture {
+  private var panelGesture: some Gesture {
     DragGesture(minimumDistance: 10)
       .updating($panelDrag) { v, state, _ in
         // only vertical drags that start on the handle area move the panel
@@ -129,7 +139,7 @@ struct HomeView: View {
 
   // MARK: Header
 
-  private func header(_ layout: HomeLayout) -> some View {
+  private var header: some View {
     let s = layout.s
     let cy = layout.top(DS.Geo.headerCenterY)
     return ZStack(alignment: .topLeading) {
@@ -137,14 +147,14 @@ struct HomeView: View {
         .offset(x: s(DS.Geo.logoCenterX - DS.Geo.logoDiameter / 2), y: cy - s(DS.Geo.logoDiameter / 2))
         .onLongPressGesture(minimumDuration: 0.8) { model.sheet = .diagnostics }
       Text("Paradise")
-        .font(s.font(DS.Size.title, .semibold))
+        .refFont(s, DS.Size.title, .semibold)
         .foregroundStyle(DS.textPrimary)
         .fixedSize()
         .frame(height: s(24))
         .offset(x: s(DS.Geo.titleX), y: cy - s(12.5))
         .accessibilityAddTraits(.isHeader)
       Text("Pro")
-        .font(s.font(DS.Size.badge, .medium))
+        .refFont(s, DS.Size.badge, .medium)
         .foregroundStyle(DS.textBadge)
         .frame(width: s(DS.Geo.badgeSize.width), height: s(DS.Geo.badgeSize.height))
         .background(DS.badge, in: Capsule())
@@ -206,17 +216,17 @@ struct HomeView: View {
 
   private func emptyHint(_ s: RefScale) -> some View {
     VStack(spacing: s(12)) {
-      Text(L("empty.title")).font(s.font(17, .semibold)).foregroundStyle(DS.textPrimary)
-      Text(L("empty.body")).font(s.font(13)).foregroundStyle(DS.textSecondary).multilineTextAlignment(.center)
+      Text(L("empty.title")).refFont(s, 17, .semibold).foregroundStyle(DS.textPrimary)
+      Text(L("empty.body")).refFont(s, 13).foregroundStyle(DS.textSecondary).multilineTextAlignment(.center)
       HStack(spacing: s(10)) {
         Button { Task { await pasteFromClipboard() } } label: {
-          Label(L("empty.paste"), systemImage: "doc.on.clipboard").font(s.font(13, .semibold))
+          Label(L("empty.paste"), systemImage: "doc.on.clipboard").refFont(s, 13, .semibold)
             .frame(maxWidth: .infinity, minHeight: s(40))
             .foregroundStyle(DS.connectText)
             .background(DS.connectFill, in: RoundedRectangle(cornerRadius: s(11), style: .continuous))
         }
         Button { model.sheet = .add } label: {
-          Label(L("empty.other"), systemImage: "qrcode.viewfinder").font(s.font(13, .semibold))
+          Label(L("empty.other"), systemImage: "qrcode.viewfinder").refFont(s, 13, .semibold)
             .frame(maxWidth: .infinity, minHeight: s(40))
             .foregroundStyle(DS.textPrimary)
             .background(DS.squareButton, in: RoundedRectangle(cornerRadius: s(11), style: .continuous))
@@ -255,6 +265,9 @@ struct StatusCard: View {
   @EnvironmentObject private var vpn: VPNController
 
   var body: some View {
+    // read the model here so the card follows it; only the timer is computed in the timeline
+    let title = self.title
+    let line = subtitleParts
     ZStack(alignment: .leading) {
       RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous).fill(DS.card)
       RoundedRectangle(cornerRadius: s(DS.Geo.cardRadius), style: .continuous).strokeBorder(DS.cardBorder, lineWidth: 1)
@@ -264,12 +277,12 @@ struct StatusCard: View {
           TimelineView(.periodic(from: .now, by: 1)) { context in
             VStack(alignment: .leading, spacing: s(5)) {
               Text(title)
-                .font(s.font(DS.Size.statusTitle, .semibold))
+                .refFont(s, DS.Size.statusTitle, .semibold)
                 .foregroundStyle(DS.textPrimary)
                 .lineLimit(1)
                 .accessibilityIdentifier("status.title")
-              Text(subtitle(now: context.date))
-                .font(s.font(DS.Size.statusSubtitle).monospacedDigit())
+              Text(Self.subtitle(line, now: context.date))
+                .refFont(s, DS.Size.statusSubtitle, digits: true)
                 .foregroundStyle(DS.textSecondary)
                 .lineLimit(1)
                 .accessibilityIdentifier("status.subtitle")
@@ -281,7 +294,7 @@ struct StatusCard: View {
               Text("↓ \(Format.rate(model.rateDown))")
               Text("↑ \(Format.rate(model.rateUp))")
             }
-            .font(s.font(11).monospacedDigit())
+            .refFont(s, 11, digits: true)
             .foregroundStyle(DS.textLabel)
             .padding(.trailing, s(14))
             .accessibilityElement(children: .combine)
@@ -315,18 +328,24 @@ struct StatusCard: View {
     }
   }
 
-  private func subtitle(now: Date) -> String {
+  /// The second line without the timer, and the start of the timer while connected.
+  private var subtitleParts: (text: String, since: Date?) {
     let place = server.map { ServerText.place($0) } ?? ""
     switch vpn.status {
     case .connected, .reasserting:
-      let time = vpn.connectedDate.map { Format.duration(since: $0, now: now) } ?? ""
-      return [place, time].filter { !$0.isEmpty }.joined(separator: " · ")
+      return (place, vpn.connectedDate)
     case .connecting, .disconnecting:
-      return place
+      return (place, nil)
     default:
-      if !model.online { return L("home.offline") }
-      return server == nil ? L("home.choose_server") : place
+      if !model.online { return (L("home.offline"), nil) }
+      return (server == nil ? L("home.choose_server") : place, nil)
     }
+  }
+
+  private static func subtitle(_ line: (text: String, since: Date?), now: Date) -> String {
+    guard let since = line.since else { return line.text }
+    let time = Format.duration(since: since, now: now)
+    return line.text.isEmpty ? time : "\(line.text) · \(time)"
   }
 }
 
@@ -368,7 +387,7 @@ struct InfoRow: View {
   var body: some View {
     ZStack(alignment: .topLeading) {
       column(L("home.ip"), x: DS.Geo.infoColumns[0]) {
-        Text(model.publicIP ?? "—").font(s.font(DS.Size.infoValue).monospacedDigit()).foregroundStyle(DS.textValue)
+        Text(model.publicIP ?? "—").refFont(s, DS.Size.infoValue, digits: true).foregroundStyle(DS.textValue)
           .lineLimit(1).minimumScaleFactor(0.55)
           .frame(maxWidth: s(DS.Geo.infoDividers[0] - DS.Geo.infoColumns[0] - 10), alignment: .leading)
           .accessibilityIdentifier("info.ip")
@@ -377,7 +396,7 @@ struct InfoRow: View {
       column(L("home.location"), x: DS.Geo.infoColumns[1] - 1) {
         HStack(spacing: s(8)) {
           if let cc = model.publicCountry { RoundFlag(cc: cc, diameter: s(DS.Geo.infoFlagDiameter)) }
-          Text(locationText).font(s.font(DS.Size.infoValue)).foregroundStyle(DS.textValue).lineLimit(1).minimumScaleFactor(0.8)
+          Text(locationText).refFont(s, DS.Size.infoValue).foregroundStyle(DS.textValue).lineLimit(1).minimumScaleFactor(0.8)
             .accessibilityIdentifier("info.location")
         }
         .frame(maxWidth: s(DS.Geo.infoDividers[1] - DS.Geo.infoColumns[1] - 8), alignment: .leading)
@@ -398,7 +417,7 @@ struct InfoRow: View {
 
   private func column<V: View>(_ label: String, x: CGFloat, @ViewBuilder value: () -> V) -> some View {
     VStack(alignment: .leading, spacing: s(8)) {
-      Text(label).font(s.font(DS.Size.infoLabel)).foregroundStyle(DS.textLabel)
+      Text(label).refFont(s, DS.Size.infoLabel).foregroundStyle(DS.textLabel)
       value()
     }
     .fixedSize(horizontal: false, vertical: true)
@@ -417,18 +436,21 @@ struct ProtocolMenu: View {
   @EnvironmentObject private var model: AppModel
 
   var body: some View {
-    Menu {
-      Picker(L("home.protocol"), selection: Binding(get: { model.protocolFilter }, set: { model.setProtocolFilter($0) })) {
+    let display = model.protocolDisplay
+    let families = model.availableProtocols
+    let store = model
+    return Menu {
+      Picker(L("home.protocol"), selection: Binding(get: { store.protocolFilter }, set: { store.setProtocolFilter($0) })) {
         Text(L("protocol.auto")).tag("auto")
-        ForEach(model.availableProtocols, id: \.self) { family in
+        ForEach(families, id: \.self) { family in
           Text(ServerText.familyName(family)).tag(family)
         }
       }
     } label: {
       HStack(alignment: .top, spacing: 0) {
         VStack(alignment: .leading, spacing: s(8)) {
-          Text(L("home.protocol")).font(s.font(DS.Size.infoLabel)).foregroundStyle(DS.textLabel)
-          Text(model.protocolDisplay).font(s.font(DS.Size.infoValue)).foregroundStyle(DS.textValue).lineLimit(1)
+          Text(L("home.protocol")).refFont(s, DS.Size.infoLabel).foregroundStyle(DS.textLabel)
+          Text(display).refFont(s, DS.Size.infoValue).foregroundStyle(DS.textValue).lineLimit(1)
         }
         Spacer(minLength: 0)
         Image(systemName: "chevron.down")
@@ -440,7 +462,7 @@ struct ProtocolMenu: View {
       .frame(width: s(DS.refWidth - DS.Geo.infoColumns[2]), alignment: .leading)
       .contentShape(Rectangle())
     }
-    .accessibilityLabel("\(L("home.protocol")): \(model.protocolDisplay)")
+    .accessibilityLabel("\(L("home.protocol")): \(display)")
     .accessibilityIdentifier("info.protocol")
   }
 }
@@ -464,7 +486,7 @@ struct ActionBar: View {
           } else {
             Image(systemName: "power").font(.system(size: s(19), weight: .medium))
           }
-          Text(connectTitle).font(s.font(DS.Size.connect, .semibold))
+          Text(connectTitle).refFont(s, DS.Size.connect, .semibold)
         }
         .foregroundStyle(DS.connectText)
         .frame(width: s(403), height: s(51))

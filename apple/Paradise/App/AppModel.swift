@@ -141,6 +141,7 @@ final class AppModel: ObservableObject {
       await Demo.load(demo, into: self)
       lastStatus = vpn.status
       loading = false
+      Demo.markReady()
       return
     }
     await reload()

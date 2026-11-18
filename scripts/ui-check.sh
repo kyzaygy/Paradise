@@ -79,23 +79,48 @@ app_path() {
   find "$DERIVED/Build/Products" -maxdepth 2 -name Paradise.app -path "*iphonesimulator*" | head -1
 }
 
+status_bar() {
+  local udid=$1 try
+  for try in 1 2 3; do
+    xcrun simctl status_bar "$udid" override --time "00:42" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+      --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100 2>> "$REPORT/statusbar.txt" && break
+    sleep 3
+  done
+}
+
 shoot() {
-  local udid=$1 tag=$2 app scenario
+  local udid=$1 tag=$2 app container ready scenario i
   shift 2
   app=$(app_path)
   xcrun simctl boot "$udid" 2>/dev/null
   xcrun simctl bootstatus "$udid" -b > /dev/null
   xcrun simctl ui "$udid" appearance dark
-  xcrun simctl status_bar "$udid" override --time "00:42" --dataNetwork wifi --wifiMode active --wifiBars 3 \
-    --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
   xcrun simctl install "$udid" "$app" || { note "install failed on $tag"; return 1; }
+  sleep 5
+  status_bar "$udid"
+  container=$(xcrun simctl get_app_container "$udid" "$BUNDLE" data)
+  ready="$container/tmp/ParadiseDemo/ready"
   for scenario in "$@"; do
     xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
+    rm -f "$ready"
     xcrun simctl launch "$udid" "$BUNDLE" -ParadiseDemo "$scenario" -pref.language en > /dev/null || note "launch failed: $tag $scenario"
-    sleep 6
+    for i in $(seq 1 60); do
+      [ -f "$ready" ] && break
+      sleep 0.5
+    done
+    if [ -f "$ready" ]; then sleep 2.5; else note "not ready after 30 s: $tag $scenario"; fi
     xcrun simctl io "$udid" screenshot "$REPORT/shots/$tag-$scenario.png" > /dev/null 2>&1 || note "screenshot failed: $tag $scenario"
   done
   xcrun simctl terminate "$udid" "$BUNDLE" > /dev/null 2>&1
+  xcrun simctl status_bar "$udid" list >> "$REPORT/statusbar.txt" 2>&1
+  xcrun simctl spawn "$udid" log show --last 15m --style compact --predicate 'process == "Paradise"' 2>/dev/null \
+    | grep -iE "error|fault|crash|paradise" | tail -n 300 > "$REPORT/applog-$tag.txt"
+}
+
+collect_crashes() {
+  mkdir -p "$REPORT/crashes"
+  find "$HOME/Library/Logs/DiagnosticReports" -name "Paradise*" -mmin -120 -exec cp {} "$REPORT/crashes/" \; 2>/dev/null
+  ls "$REPORT/crashes" >> "$REPORT/summary.txt" 2>/dev/null
 }
 
 stage_shots() {
@@ -112,6 +137,7 @@ stage_shots() {
   tablet=$(device tablet "$RUNTIME" "iPad Air 11-inch (M3)" "iPad Air 11-inch (M2)" "iPad (A16)" "iPad (10th generation)") || tablet=""
   if [ -n "$tablet" ]; then shoot "$tablet" tablet reference; xcrun simctl shutdown "$tablet"; fi
   ls "$REPORT/shots" > "$REPORT/shots.txt"
+  collect_crashes
   note "screenshots done"
 }
 
@@ -126,6 +152,7 @@ stage_tests() {
   grep -E "Test Case .*(passed|failed)|: error: |Executed [0-9]+ test|Test Suite .* (passed|failed)" "$REPORT/uitests.log" > "$REPORT/uitests-summary.txt"
   mkdir -p "$REPORT/failures"
   xcrun xcresulttool export attachments --path "$ROOT/build/UITests.xcresult" --output-path "$REPORT/failures" --only-failures > /dev/null 2>&1 || true
+  collect_crashes
   if [ $status -ne 0 ]; then
     note "UI TESTS FAILED"
     grep -E "failed|error:" "$REPORT/uitests-summary.txt" > "$REPORT/uitests-failures.txt"

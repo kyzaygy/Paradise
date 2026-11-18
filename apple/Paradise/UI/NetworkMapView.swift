@@ -116,20 +116,20 @@ enum MapTexture {
           cg.setLineWidth(CGFloat(rng.range(0.6, 1.0)))
           cg.strokePath()
         }
-        let dots = Int(rx * 0.95)
+        let dots = Int(rx * 0.7)
         for _ in 0..<dots {
           guard rng.next() > 0.35 else { continue }
           let a = rng.range(0, 2 * .pi)
           let p = CGPoint(x: center.x + rx * CGFloat(cos(a)) + CGFloat(rng.range(-1.2, 1.2)), y: center.y + ry * CGFloat(sin(a)) + CGFloat(rng.range(-1.2, 1.2)))
-          let s = CGFloat(rng.range(0.7, 1.7))
-          cg.setFillColor(white(rng.range(0.2, 0.75)))
+          let s = CGFloat(rng.range(0.7, 1.6))
+          cg.setFillColor(white(rng.range(0.12, 0.45)))
           cg.fillEllipse(in: CGRect(x: p.x - s / 2, y: p.y - s / 2, width: s, height: s))
         }
       }
 
       // star field, denser toward the core
-      for _ in 0..<1500 {
-        let r = 285 * pow(rng.next(), 1.45)
+      for _ in 0..<2100 {
+        let r = 285 * pow(rng.next(), 1.35)
         let a = rng.range(0, 2 * .pi)
         let p = CGPoint(x: core.x + CGFloat(cos(a) * r), y: core.y + CGFloat(sin(a) * r * 0.88))
         let falloff = max(0.1, 1 - r / 330)
@@ -140,8 +140,8 @@ enum MapTexture {
 
       // fine web around the core
       var nodes: [CGPoint] = []
-      for _ in 0..<280 {
-        let r = 175 * pow(rng.next(), 1.15)
+      for _ in 0..<360 {
+        let r = 195 * pow(rng.next(), 1.15)
         let a = rng.range(0, 2 * .pi)
         nodes.append(CGPoint(x: core.x + CGFloat(cos(a) * r), y: core.y + CGFloat(sin(a) * r * 0.9)))
       }
@@ -180,11 +180,11 @@ enum MapTexture {
       }
 
       // glow of the core
-      let stops: [(CGFloat, Double)] = [(0, 1.0), (0.05, 0.95), (0.1, 0.62), (0.16, 0.36), (0.24, 0.17), (0.38, 0.07), (0.6, 0.025), (1, 0)]
+      let stops: [(CGFloat, Double)] = [(0, 1.0), (0.05, 0.95), (0.1, 0.64), (0.16, 0.4), (0.24, 0.21), (0.38, 0.1), (0.6, 0.045), (0.8, 0.02), (1, 0)]
       let colors = stops.map { white($0.1) } as CFArray
       let locations = stops.map { $0.0 }
       if let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: locations) {
-        cg.drawRadialGradient(gradient, startCenter: core, startRadius: 0, endCenter: core, endRadius: 150, options: [])
+        cg.drawRadialGradient(gradient, startCenter: core, startRadius: 0, endCenter: core, endRadius: 175, options: [])
       }
 
       // bright hubs with a small flare
@@ -270,17 +270,23 @@ struct NetworkMapView: View {
   private var moving: Bool { animate && !reduceMotion }
 
   var body: some View {
-    GeometryReader { geo in
+    // read every input here, in body, so that changes reach the deferred GeometryReader content
+    let nodes = self.nodes
+    let highlighted = self.highlighted
+    let connected = self.connected
+    let moving = self.moving
+    let texture = self.texture
+    let positions = MapLayout.positions(for: nodes)
+    let z = min(2.6, max(0.7, zoom * pinch))
+    let rot = angle + twist
+    let offset = CGSize(width: pan.width + drag.width, height: pan.height + drag.height)
+    let tilt = parallax && !reduceMotion ? motion.tilt : .zero
+    return GeometryReader { geo in
       // the map keeps the mock's proportions and shrinks on short screens; country chips keep their size
       let m = max(0.1, min(s.u, geo.size.height / DS.Geo.mapHeight))
       let mapSize = CGSize(width: DS.refWidth * m, height: DS.Geo.mapHeight * m)
       let left = (geo.size.width - mapSize.width) / 2
       let top = (geo.size.height - mapSize.height) / 2
-      let positions = MapLayout.positions(for: nodes)
-      let z = min(2.6, max(0.7, zoom * pinch))
-      let rot = angle + twist
-      let offset = CGSize(width: pan.width + drag.width, height: pan.height + drag.height)
-      let tilt = parallax && !reduceMotion ? motion.tilt : .zero
       let core = CGPoint(x: left + MapLayout.core.x * m, y: top + MapLayout.core.y * m)
       let transform: (CGPoint) -> CGPoint = { p in
         let dx = (p.x - core.x) * z, dy = (p.y - core.y) * z
@@ -363,7 +369,7 @@ struct NetworkMapView: View {
         guard textureScale != m else { return }
         let scale = UIScreen.main.scale
         let image = await Task.detached(priority: .userInitiated) { MapTexture.render(m: m, scale: scale) }.value
-        texture = image
+        self.texture = image
         textureScale = m
       }
     }
@@ -416,11 +422,10 @@ struct NodeChip: View {
         RoundFlag(cc: node.cc, diameter: s(21))
         VStack(alignment: .leading, spacing: s(3.5)) {
           Text(node.cc.isEmpty ? "??" : node.cc)
-            .font(s.font(DS.Size.nodeCode, .semibold))
+            .refFont(s, DS.Size.nodeCode, .semibold)
             .foregroundStyle(DS.textPrimary)
           Text(pingText)
-            .font(s.font(DS.Size.nodeMs))
-            .monospacedDigit()
+            .refFont(s, DS.Size.nodeMs, digits: true)
             .foregroundStyle(DS.textNodeMs)
         }
       }

@@ -107,6 +107,7 @@ enum DS {
     static let actionBarTop: CGFloat = 1158
     static let actionBarBottom: CGFloat = 1211
     static let rowPitch: CGFloat = 46
+    static let listBottom: CGFloat = 1124 // five rows below the column header
   }
 }
 
@@ -122,9 +123,36 @@ struct RefScale {
   init(width: CGFloat) { u = max(0.45, width / DS.refWidth) }
   func callAsFunction(_ px: CGFloat) -> CGFloat { px * u }
   func font(_ px: CGFloat, _ weight: Font.Weight = .regular) -> Font { .system(size: px * u, weight: weight) }
+
+  /// SF Pro tracking in points at a point size (Apple's tracking table, interpolated).
+  static func sfTracking(_ size: CGFloat) -> CGFloat {
+    let table: [(CGFloat, CGFloat)] = [(6, 0.24), (7, 0.23), (8, 0.21), (9, 0.17), (10, 0.12), (11, 0.06), (12, 0), (13, -0.08),
+                                       (14, -0.15), (15, -0.23), (16, -0.31), (17, -0.43), (18, -0.44), (19, -0.45), (20, -0.45)]
+    guard let first = table.first, let last = table.last else { return 0 }
+    if size <= first.0 { return first.1 }
+    if size >= last.0 { return last.1 }
+    for i in 1..<table.count where size <= table[i].0 {
+      let (s0, t0) = table[i - 1], (s1, t1) = table[i]
+      return t0 + (t1 - t0) * (size - s0) / (s1 - s0)
+    }
+    return 0
+  }
+
+  /// Extra tracking so text set at `px * u` keeps the letter spacing the mock has at `px`
+  /// (the system font loosens small sizes, the mock was drawn at the larger size).
+  func tracking(_ px: CGFloat) -> CGFloat { Self.sfTracking(px) * u - Self.sfTracking(px * u) }
 }
 
-/// A round country flag (the emoji flag, scaled up and clipped to a circle).
+extension View {
+  /// Mock typography: the scaled system font with the mock's letter spacing.
+  func refFont(_ s: RefScale, _ px: CGFloat, _ weight: Font.Weight = .regular, digits: Bool = false) -> some View {
+    let font = s.font(px, weight)
+    return self.font(digits ? font.monospacedDigit() : font).tracking(s.tracking(px))
+  }
+}
+
+/// A flat round country flag (flag-icons, square artwork clipped to a circle);
+/// the emoji flag for codes without artwork, a globe when the country is unknown.
 struct RoundFlag: View {
   let cc: String?
   let diameter: CGFloat
@@ -132,11 +160,18 @@ struct RoundFlag: View {
   var body: some View {
     ZStack {
       Circle().fill(Color.white.opacity(0.10))
-      if let cc = cc, cc.count == 2 {
-        Text(Format.flag(cc))
-          .font(.system(size: diameter * 1.42))
-          .fixedSize()
-          .frame(width: diameter, height: diameter)
+      if let code = cc?.lowercased(), code.count == 2 {
+        if let image = UIImage(named: "Flags/\(code)") {
+          Image(uiImage: image)
+            .resizable()
+            .interpolation(.high)
+            .frame(width: diameter, height: diameter)
+        } else {
+          Text(Format.flag(code))
+            .font(.system(size: diameter * 1.42))
+            .fixedSize()
+            .frame(width: diameter, height: diameter)
+        }
       } else {
         Image(systemName: "globe")
           .font(.system(size: diameter * 0.62, weight: .regular))
@@ -149,19 +184,20 @@ struct RoundFlag: View {
   }
 }
 
-/// The round monochrome globe used as the logo in the header.
+/// The round monochrome globe used as the logo in the header: a light sphere with dark land.
 struct GlobeLogo: View {
   let diameter: CGFloat
 
   var body: some View {
     ZStack {
-      Circle().fill(RadialGradient(colors: [Color(hex: 0x6B6C70), Color(hex: 0x2A2B2E), Color(hex: 0x151618)],
-                                   center: .init(x: 0.35, y: 0.3), startRadius: 0, endRadius: diameter * 0.7))
+      Circle().fill(RadialGradient(colors: [Color(hex: 0xE4E4E6), Color(hex: 0xBDBEC1), Color(hex: 0x8C8D90)],
+                                   center: .init(x: 0.38, y: 0.32), startRadius: 0, endRadius: diameter * 0.62))
+      // the symbol's outline ring is pushed outside the clip, only the continents remain
       Image(systemName: "globe.europe.africa.fill")
         .resizable()
         .scaledToFit()
-        .foregroundStyle(Color.white.opacity(0.92))
-        .padding(diameter * 0.02)
+        .foregroundStyle(Color(hex: 0x17181A))
+        .scaleEffect(1.14)
     }
     .frame(width: diameter, height: diameter)
     .clipShape(Circle())

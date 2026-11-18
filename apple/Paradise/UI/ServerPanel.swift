@@ -34,7 +34,7 @@ struct ServerPanel: View {
   @State private var region: Region = .all
   @State private var query = Demo.initialQuery
   @State private var searching = Demo.scenario == .search
-  @State private var pingDescending = false
+  @State private var pingOrder: PingOrder = .none
   @State private var showRouteInfo = false
   @FocusState private var searchFocused: Bool
 
@@ -46,8 +46,10 @@ struct ServerPanel: View {
   }
 
   private var s: RefScale { layout.s }
-  /// Height available for the table (above the action bar).
-  private var listBottom: CGFloat { layout.bottom(DS.Geo.actionBarTop) - panelTop - s(6) }
+  /// Bottom of the server table, panel coordinates (five rows in the standard position, as in the mock).
+  private var listBottom: CGFloat { layout.bottom(DS.Geo.listBottom) - panelTop }
+  /// Everything below this is behind the action bar.
+  private var contentHeight: CGFloat { max(0, layout.bottom(DS.Geo.actionBarTop) - panelTop - s(4)) }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
@@ -55,25 +57,28 @@ struct ServerPanel: View {
         .fill(DS.panel)
       PanelShape(top: s(DS.Geo.panelRadius), bottom: s(DS.Geo.panelBottomRadius))
         .stroke(DS.panelBorder, lineWidth: 1)
-      Capsule().fill(DS.handle)
-        .frame(width: s(38), height: s(4))
-        .frame(maxWidth: .infinity)
-        .offset(y: s(9))
-        .accessibilityHidden(true)
-      tabsRow
-      Rectangle().fill(DS.separator).frame(width: s(576), height: 1).offset(x: s(19), y: s(65))
-      switch section {
-      case .servers:
-        regionRow.offset(y: s(80))
-        table(servers: filtered, top: 121)
-      case .favorites:
-        table(servers: favorites, top: 80)
-      case .routes:
-        RoutesList(s: s, height: max(0, listBottom - s(76)))
-          .offset(y: s(76))
+      ZStack(alignment: .topLeading) {
+        Capsule().fill(DS.handle)
+          .frame(width: s(38), height: s(4))
+          .frame(maxWidth: .infinity)
+          .offset(y: s(9))
+          .accessibilityHidden(true)
+        tabsRow
+        Rectangle().fill(DS.separator).frame(width: s(576), height: 1).offset(x: s(19), y: s(65))
+        switch section {
+        case .servers:
+          regionRow.offset(y: s(80))
+          table(servers: filtered, top: 121)
+        case .favorites:
+          table(servers: favorites, top: 80)
+        case .routes:
+          RoutesList(s: s, height: max(0, listBottom - s(76)))
+            .offset(y: s(76))
+        }
       }
+      .frame(width: s(616), height: contentHeight, alignment: .topLeading)
+      .clipped()
     }
-    .clipped()
   }
 
   // MARK: Tabs and search
@@ -84,7 +89,7 @@ struct ServerPanel: View {
         HStack(spacing: s(10)) {
           Image(systemName: "magnifyingglass").font(.system(size: s(14))).foregroundStyle(DS.textLabel)
           TextField(L("sheet.search"), text: $query)
-            .font(s.font(13))
+            .refFont(s, 13)
             .foregroundStyle(DS.textPrimary)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
@@ -107,7 +112,7 @@ struct ServerPanel: View {
             } label: {
               HStack(spacing: s(12)) {
                 Image(systemName: item.icon).font(.system(size: s(13.5), weight: .regular))
-                Text(L("sheet.\(item.rawValue)")).font(s.font(DS.Size.tab, .medium))
+                Text(L("sheet.\(item.rawValue)")).refFont(s, DS.Size.tab, .medium)
               }
               .foregroundStyle(section == item ? DS.textPrimary : DS.textSecondary)
               .padding(.horizontal, s(31))
@@ -184,7 +189,7 @@ struct ServerPanel: View {
       HStack(spacing: s(10)) {
         if let flag = flag { RoundFlag(cc: flag, diameter: s(16)) }
         if let icon = icon, flag == nil { Image(systemName: icon).font(.system(size: s(12), weight: .regular)) }
-        Text(title).font(s.font(DS.Size.chip, selected ? .semibold : .medium)).lineLimit(1)
+        Text(title).refFont(s, DS.Size.chip, selected ? .semibold : .medium).lineLimit(1)
         if flag != nil, let icon = icon { Image(systemName: icon).font(.system(size: s(10), weight: .semibold)) }
       }
       .foregroundStyle(selected ? DS.textPrimary : DS.textChip)
@@ -216,12 +221,26 @@ struct ServerPanel: View {
 
   private var favorites: [CoreServer] { sorted(model.visibleServers.filter(\.favorite)) }
 
+  /// List order by default (as the subscription lists them); the Ping header cycles ascending, descending, off.
+  enum PingOrder {
+    case none, ascending, descending
+    var next: PingOrder {
+      switch self {
+      case .none: return .ascending
+      case .ascending: return .descending
+      case .descending: return .none
+      }
+    }
+  }
+
   private func sorted(_ list: [CoreServer]) -> [CoreServer] {
+    guard pingOrder != .none else { return list }
+    let descending = pingOrder == .descending
     let indexed = list.enumerated().map { ($0.offset, $0.element) }
     return indexed.sorted { a, b in
       let pa = model.latency[a.1.id]?.value, pb = model.latency[b.1.id]?.value
       switch (pa, pb) {
-      case let (x?, y?): return x == y ? a.0 < b.0 : (pingDescending ? x > y : x < y)
+      case let (x?, y?): return x == y ? a.0 < b.0 : (descending ? x > y : x < y)
       case (.some, .none): return true
       case (.none, .some): return false
       default: return a.0 < b.0
@@ -232,12 +251,14 @@ struct ServerPanel: View {
   private func table(servers: [CoreServer], top: CGFloat) -> some View {
     let headerHeight: CGFloat = 26
     let rowsTop = top + headerHeight
+    let target = model.scrollTarget
+    let store = model
     return ZStack(alignment: .topLeading) {
       columnHeader.offset(y: s(top))
       Rectangle().fill(DS.separator).frame(width: s(546), height: 1).offset(x: s(28), y: s(rowsTop))
       if servers.isEmpty {
         Text(section == .favorites ? L("sheet.favorites_empty") : (model.state.servers.isEmpty ? L("sheet.empty") : L("servers.no_results")))
-          .font(s.font(12.5))
+          .refFont(s, 12.5)
           .foregroundStyle(DS.textSecondary)
           .multilineTextAlignment(.center)
           .frame(width: s(616))
@@ -258,10 +279,10 @@ struct ServerPanel: View {
             .padding(.bottom, s(30))
           }
           .refreshable {
-            await model.refreshAll()
-            model.probe(model.visibleServers)
+            await store.refreshAll()
+            store.probe(store.visibleServers)
           }
-          .onChange(of: model.scrollTarget) { id in
+          .onChange(of: target) { id in
             guard let id = id else { return }
             withAnimation { proxy.scrollTo(id, anchor: .center) }
           }
@@ -289,21 +310,37 @@ struct ServerPanel: View {
       .offset(x: s(291))
       Button {
         Haptics.selection()
-        pingDescending.toggle()
+        pingOrder = pingOrder.next
       } label: {
         HStack(spacing: s(6)) {
           Text(L("table.ping"))
-          Image(systemName: "arrow.up.arrow.down").font(.system(size: s(11), weight: .medium))
+          Image(systemName: pingIcon).font(.system(size: s(11), weight: .medium))
         }
       }
       .buttonStyle(.plain)
       .offset(x: s(479))
-      .accessibilityLabel(pingDescending ? L("table.ping_desc") : L("table.ping_asc"))
+      .accessibilityLabel(pingLabel)
       .accessibilityIdentifier("table.ping")
     }
-    .font(s.font(DS.Size.column))
+    .refFont(s, DS.Size.column)
     .foregroundStyle(DS.textColumn)
     .frame(height: s(20))
+  }
+
+  private var pingIcon: String {
+    switch pingOrder {
+    case .none: return "arrow.up.arrow.down"
+    case .ascending: return "arrow.up"
+    case .descending: return "arrow.down"
+    }
+  }
+
+  private var pingLabel: String {
+    switch pingOrder {
+    case .none: return L("table.ping")
+    case .ascending: return L("table.ping_asc")
+    case .descending: return L("table.ping_desc")
+    }
   }
 
   private func selectFastest() {
@@ -360,15 +397,17 @@ struct ServerTableRow: View {
 
   private var selected: Bool { model.state.selected == server.id }
   private var connected: Bool { vpn.isConnected && vpn.connectedServerID == server.id }
+  /// Row plus its 1 pt separator make one reference row pitch.
+  private var rowHeight: CGFloat { s(DS.Geo.rowPitch) - 1 }
 
   var body: some View {
     ZStack(alignment: .topLeading) {
-      Color.clear.frame(width: s(616), height: s(DS.Geo.rowPitch))
+      Color.clear.frame(width: s(616), height: rowHeight)
       Button { Task { await model.toggleFavorite(server) } } label: {
         Image(systemName: server.favorite ? "star.fill" : "star")
           .font(.system(size: s(14.5), weight: .regular))
           .foregroundStyle(server.favorite ? DS.textPrimary : DS.star)
-          .frame(width: s(40), height: s(DS.Geo.rowPitch))
+          .frame(width: s(40), height: rowHeight)
           .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
@@ -378,33 +417,33 @@ struct ServerTableRow: View {
         .offset(x: s(82.5 - 14), y: s(23 - 14))
       VStack(alignment: .leading, spacing: s(4)) {
         Text(ServerText.title(server))
-          .font(s.font(DS.Size.rowTitle, .semibold))
+          .refFont(s, DS.Size.rowTitle, .semibold)
           .foregroundStyle(DS.textPrimary)
           .lineLimit(1)
         let subtitle = ServerText.subtitle(server)
         if !subtitle.isEmpty {
           Text(subtitle)
-            .font(s.font(DS.Size.rowSubtitle))
+            .refFont(s, DS.Size.rowSubtitle)
             .foregroundStyle(DS.textSubtitle)
             .lineLimit(1)
         }
       }
-      .frame(width: s(165), height: s(DS.Geo.rowPitch), alignment: .leading)
+      .frame(width: s(165), height: rowHeight, alignment: .leading)
       .offset(x: s(110))
       HStack(spacing: s(17)) {
         let chip = ServerText.chip(server)
         routeChip(chip, width: chip.count <= 3 ? 36 : nil)
         if let second = ServerText.secondChip(server) { routeChip(second, width: nil) }
       }
-      .frame(height: s(DS.Geo.rowPitch))
+      .frame(height: rowHeight)
       .offset(x: s(285))
       latency
-        .frame(height: s(DS.Geo.rowPitch))
+        .frame(height: rowHeight)
         .offset(x: s(482))
       radio
         .offset(x: s(577.5 - 8.5), y: s(23 - 8.5))
     }
-    .frame(width: s(616), height: s(DS.Geo.rowPitch), alignment: .topLeading)
+    .frame(width: s(616), height: rowHeight, alignment: .topLeading)
     .contentShape(Rectangle())
     .onTapGesture { Task { await model.select(server) } }
     .contextMenu {
@@ -423,7 +462,7 @@ struct ServerTableRow: View {
 
   private func routeChip(_ text: String, width: CGFloat?) -> some View {
     Text(text)
-      .font(s.font(DS.Size.route, .medium))
+      .refFont(s, DS.Size.route, .medium)
       .foregroundStyle(DS.textRoute)
       .lineLimit(1)
       .padding(.horizontal, width == nil ? s(11) : 0)
@@ -438,11 +477,10 @@ struct ServerTableRow: View {
       ProgressView().controlSize(.mini).tint(DS.textSecondary)
     case .ms(let ms):
       Text(Format.ms(ms))
-        .font(s.font(DS.Size.ping, .medium))
-        .monospacedDigit()
+        .refFont(s, DS.Size.ping, .semibold, digits: true)
         .foregroundStyle(DS.ping)
     case .failed:
-      Text("—").font(s.font(DS.Size.ping)).foregroundStyle(DS.textSubtitle)
+      Text("—").refFont(s, DS.Size.ping).foregroundStyle(DS.textSubtitle)
         .accessibilityLabel(L("latency.failed"))
     case nil:
       EmptyView()
@@ -481,7 +519,7 @@ struct RoutesList: View {
           Rectangle().fill(DS.separator).frame(width: s(546), height: 1).padding(.leading, s(28))
         }
         if model.state.configs.count > 1 {
-          Text(L("routes.configs")).font(s.font(DS.Size.column)).foregroundStyle(DS.textColumn)
+          Text(L("routes.configs")).refFont(s, DS.Size.column).foregroundStyle(DS.textColumn)
             .padding(.leading, s(28)).padding(.top, s(16)).padding(.bottom, s(4))
           ForEach(model.state.configs) { c in
             Button { Task { await model.activateConfig(c.id) } } label: {
@@ -492,7 +530,7 @@ struct RoutesList: View {
         }
         Button { model.openControlCenter(.config) } label: {
           Label(L("routes.edit"), systemImage: "square.and.pencil")
-            .font(s.font(12.5, .medium))
+            .refFont(s, 12.5, .medium)
             .foregroundStyle(DS.textPrimary)
             .frame(width: s(560), height: s(40))
             .background(DS.chip, in: RoundedRectangle(cornerRadius: s(12), style: .continuous))
@@ -529,8 +567,8 @@ struct RoutesList: View {
         .background(DS.routeChip, in: Circle())
         .padding(.leading, s(68.5))
       VStack(alignment: .leading, spacing: s(4)) {
-        Text(title).font(s.font(DS.Size.rowTitle, .semibold)).foregroundStyle(DS.textPrimary).lineLimit(1)
-        Text(subtitle).font(s.font(DS.Size.rowSubtitle)).foregroundStyle(DS.textSubtitle).lineLimit(1)
+        Text(title).refFont(s, DS.Size.rowTitle, .semibold).foregroundStyle(DS.textPrimary).lineLimit(1)
+        Text(subtitle).refFont(s, DS.Size.rowSubtitle).foregroundStyle(DS.textSubtitle).lineLimit(1)
       }
       .padding(.leading, s(13.5))
       Spacer(minLength: s(8))

@@ -82,6 +82,12 @@ enum Demo {
 
   static let homeIP = (ip: "212.109.219.74", cc: "EE", city: "Tallinn")
 
+  /// Written when the scenario is on screen; the screenshot script waits for it.
+  static func markReady() {
+    guard let scenario = scenario else { return }
+    try? Data(scenario.rawValue.utf8).write(to: directory.appendingPathComponent("ready"))
+  }
+
   /// Starts every demo launch from an empty profile unless asked to keep it.
   static func resetData(for scenario: Scenario) {
     guard !keep else { return }

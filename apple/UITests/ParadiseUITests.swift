@@ -67,7 +67,7 @@ final class ParadiseUITests: XCTestCase {
     XCTAssertTrue(label("row.DE").contains("24 ms"), label("row.DE"))
     XCTAssertTrue(label("row.DE").contains("Germany") && label("row.DE").contains("Frankfurt"), label("row.DE"))
     XCTAssertTrue(label("row.DE").contains("WG") && label("row.DE").contains("10 Gbps"), label("row.DE"))
-    // rows are sorted by ping: Germany (24) above the Netherlands (28) above the UK (42)
+    // rows keep the subscription order: Germany, the Netherlands, the UK, France, the United States
     XCTAssertLessThan(element("row.DE").frame.minY, element("row.NL").frame.minY)
     XCTAssertLessThan(element("row.NL").frame.minY, element("row.GB").frame.minY)
   }
@@ -155,15 +155,18 @@ final class ParadiseUITests: XCTestCase {
     XCTAssertTrue(element("row.US").waitForExistence(timeout: 3))
   }
 
-  func testPingSortToggles() {
+  func testPingSortCycles() {
     launch("full")
-    XCTAssertLessThan(element("row.DE").frame.minY, element("row.AU").frame.minY)
-    element("table.ping").tap()
-    XCTAssertTrue(element("row.AU").waitForExistence(timeout: 3))
-    XCTAssertLessThan(element("row.AU").frame.minY, element("row.SG").frame.minY, "descending order expected")
-    element("table.ping").tap()
-    XCTAssertTrue(element("row.DE").waitForExistence(timeout: 3))
+    // list order first: the United States (76 ms) comes before Türkiye (69 ms), as the subscription lists them
+    XCTAssertLessThan(element("row.US").frame.minY, element("row.TR").frame.minY)
+    element("table.ping").tap() // fastest first
+    XCTAssertLessThan(element("row.TR").frame.minY, element("row.US").frame.minY)
     XCTAssertLessThan(element("row.DE").frame.minY, element("row.NL").frame.minY)
+    element("table.ping").tap() // slowest first
+    XCTAssertLessThan(element("row.AU").frame.minY, element("row.SG").frame.minY)
+    XCTAssertLessThan(element("row.SG").frame.minY, element("row.BR").frame.minY)
+    element("table.ping").tap() // back to the list order
+    XCTAssertLessThan(element("row.US").frame.minY, element("row.TR").frame.minY)
   }
 
   func testSearch() {
