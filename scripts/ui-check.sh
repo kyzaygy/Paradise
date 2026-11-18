@@ -61,13 +61,11 @@ stage_build() {
     echo "MAIN=$main"
     echo "SMALL=$small"
   } > "$STATE"
-  # simulators boot slowly on CI runners: start them now, while the app builds
-  xcrun simctl boot "$main" 2>/dev/null
-  [ -n "$small" ] && xcrun simctl boot "$small" 2>/dev/null
   command -v xcodegen >/dev/null || brew install xcodegen
   (cd "$ROOT/apple" && xcodegen generate --spec project.yml) > "$REPORT/xcodegen.log" 2>&1 || { note "xcodegen failed"; annotate xcodegen "$REPORT/xcodegen.log"; exit 1; }
+  # a generic destination: the build doesn't wait for a simulator to boot
   xcodebuild -project "$ROOT/apple/Paradise.xcodeproj" -scheme Paradise -configuration Debug \
-    -destination "platform=iOS Simulator,id=$main" -derivedDataPath "$DERIVED" \
+    -destination "generic/platform=iOS Simulator" -derivedDataPath "$DERIVED" \
     ARCHS=x86_64 ONLY_ACTIVE_ARCH=NO build-for-testing > "$REPORT/build.log" 2>&1
   if [ $? -ne 0 ]; then
     grep -E "error:|fatal error|Undefined symbol|ld: " "$REPORT/build.log" | sort -u | head -120 > "$REPORT/errors.txt"
